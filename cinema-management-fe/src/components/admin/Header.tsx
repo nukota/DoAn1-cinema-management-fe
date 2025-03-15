@@ -27,11 +27,11 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ ProfileName, ProfileRole, Pro
     // alert("Arrow down clicked")
   }
   return (
-    <header className={`header fixed top-0 left-0 z-[1000] bg-white w-[100vw] h-[60px] flex items-center p-4 border-b-[2px] border-light-gray ${className}`}>
+    <header className={`header fixed top-0 left-0 z-[1000] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray ${className}`}>
       <Link to="/" className="logo pl-3 shrink-0 w-60">
         <img src={logo} alt="Clinic logo" />
       </Link>
-      <div className="border-l-[2px] border-light-gray absolute left-60 h-70" />
+      <div className="border-l-[2px] border-light-gray absolute left-56 h-70" />
       <div className="flex items-center ml-auto mr-6 w-[calc(100vw - 240px)] space-x-4 flex-shrink-0">
         <div className="space-x-4">
           <button className="header-calendar hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleCalendarClick}>
@@ -46,8 +46,8 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ ProfileName, ProfileRole, Pro
         </div>
         <div className="flex">
           <div className="profile-info flex flex-col text-right leading-snug">
-            <span className="profile-name text-dark-gray">{ProfileName}</span>
-            <span className="profile-role text-dark-gray text-14px">{ProfileRole}</span>
+            <span className="profile-name text-dark-gray text-[14px]">{ProfileName}</span>
+            <span className="profile-role text-dark-gray text-[12px]">{ProfileRole}</span>
           </div>
         </div>
         <img className="profile-pic size-10 rounded-full" src={ProfilePic} />

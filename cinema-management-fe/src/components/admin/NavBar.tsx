@@ -16,8 +16,8 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   // }
 
   return (
-    <div className="fixed top-[60px] left-0 z-[999] h-[calc(100vh-60px)] w-60 flex flex-col items-start bg-white">
-      <div className="border-l-[2px] border-light-gray absolute left-60 h-full" />
+    <div className="fixed top-[48px] left-0 z-[999] h-[calc(100vh-48px)] w-56 flex flex-col items-start bg-white">
+      <div className="border-l-[2px] border-light-gray absolute left-56 h-full" />
       <div className="relative flex flex-col py-3 pl-[20px] w-full box-border overflow-hidden h-[62%] min-h-[316px]">
         {React.Children.map(topChildren, (child, index) =>
           React.cloneElement(child as React.ReactElement, { key: index })

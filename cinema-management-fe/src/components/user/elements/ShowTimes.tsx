@@ -1,6 +1,7 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "@emotion/styled";
+import { useTheme } from "@mui/material/styles"
 
 const CustomTab = styled(Tab)(({ theme }) => ({
   minWidth: 0,

@@ -47,7 +47,7 @@ const Movies: React.FC = () => {
 
   return (
     <div className="movies flex flex-col h-[673px]">
-      <div className="text-40px font-medium text-light-gray">Movies</div>
+      <div className="text-40px font-medium text-dark-gray">Movies</div>
       <div className="movie-tabs flex mt-4 z-20 text-light-gray">
         <button
           className={`tab ${activeTab === "All" ? "active" : ""}`}
@@ -77,7 +77,7 @@ const Movies: React.FC = () => {
           <input
             type="date"
             id="date-picker"
-            className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-black border-red border-2 focus:outline-none focus:ring-1"
+            className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-white border-red border-2 focus:outline-none focus:ring-1"
             value={selectedDate}
             onChange={handleDateChange}
           />
@@ -95,7 +95,7 @@ const Movies: React.FC = () => {
         <div className="SearchBar relative ml-5 w-full max-w-[240px] h-8 -mt-2">
           <input
             type="text"
-            className="size-full pl-10 pr-5 text-sm text-gray rounded-full text-gray-700 bg-black border-light-gray border-2 focus:outline-none focus:ring-1"
+            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
             placeholder="Search"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -107,7 +107,7 @@ const Movies: React.FC = () => {
           />
         </div>
       </div>
-      <div className="content relative -mt-[3px] w-full h-full bg-black border-[3px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
+      <div className="content relative -mt-[2px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
         <div className="list flex-1 grid grid-cols-6 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
           {filteredMovies.map((movie, index) => (
             <Movie key={index} {...movie} />

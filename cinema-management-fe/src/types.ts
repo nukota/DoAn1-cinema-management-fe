@@ -10,6 +10,13 @@ export type UserType = {
   created_at: string;
 };
 
+export type EmployeeType = UserType & {
+  employee_id: number;
+  cinema_id: number;
+  position: string;
+  shift: string;
+};
+
 export type CinemaType = {
   cinema_id: number;
   name: string;
@@ -48,15 +55,6 @@ export type RoomType = {
   name: string;
   seat_count: number;
   repairing: boolean;
-};
-
-export type ReceiptType = {
-  receipt_id: number;
-  date: string;
-  movie: string;
-  showtime: string;
-  items: string;
-  totalCost: number;
 };
 
 export type ShowtimeType = {
@@ -108,9 +106,17 @@ export type OrderProductType = {
 export type DiscountType = {
   discount_id: number;
   code: string;
-  discount: number;
+  discount_type: "percentage" | "fixed";
+  value: number;
   min_purchase: number;
-  max_price: number;
-  start_date: string;
-  end_date: string;
+  expiry_date: string;
+};
+
+export type ReviewType = {
+  review_id: number;
+  user_id: number;
+  showtime_id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
 };

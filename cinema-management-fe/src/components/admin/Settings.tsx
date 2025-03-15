@@ -3,7 +3,7 @@ import React from "react"
 const Settings: React.FC = () => {
   return (
     <div className="settings flex flex-col h-full">
-      <div className="text-40px font-medium text-light-gray">Settings</div>
+      <div className="text-40px font-medium text-dark-gray">Settings</div>
       
     </div>
   )

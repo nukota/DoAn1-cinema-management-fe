@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import User from "./items/User"
+import Employee from "./items/Employee"
 import SearchImg from "../../assets/images/search.svg"
 import CalendarImg from "../../assets/images/calendar.svg"
-import { exampleUsers } from "../../data"
+import { exampleEmployees } from "../../data"
 
-const Users: React.FC = () => {
+const Employees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -38,24 +38,24 @@ const Users: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber))
   }
 
-  const uniqueEmployees = exampleUsers.filter(
-    (user, index, self) =>
-      index === self.findIndex((e) => e.user_id === user.user_id)
+  const uniqueEmployees = exampleEmployees.filter(
+    (employee, index, self) =>
+      index === self.findIndex((e) => e.employee_id === employee.employee_id)
   )
 
-  const filteredUsers = uniqueEmployees.filter((user) => {
+  const filteredEmployees = uniqueEmployees.filter((employee) => {
     const searchTermLower = searchTerm.toLowerCase()
     return (
-      (user.fullname && user.fullname.toLowerCase().includes(searchTermLower)) ||
-      (user.cccd && user.cccd.toString().includes(searchTermLower)) ||
-      (user.role && user.role.toLowerCase().includes(searchTermLower)) ||
-      (user.dob && user.dob.includes(searchTermLower))
+      (employee.fullname && employee.fullname.toLowerCase().includes(searchTermLower)) ||
+      (employee.cccd && employee.cccd.toString().includes(searchTermLower)) ||
+      (employee.role && employee.role.toLowerCase().includes(searchTermLower)) ||
+      (employee.dob && employee.dob.includes(searchTermLower))
     )
   })
 
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
-  const currentUsers = filteredUsers.slice(
+  const currentEmployees = filteredEmployees.slice(
     startIndex,
     startIndex + itemsPerPage
   )
@@ -133,11 +133,12 @@ const Users: React.FC = () => {
       <div className="employees-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
-          <div className="w-[24%] text-base">Name</div>
-          <div className="w-[14%] text-base">Role</div>
-          <div className="w-[12%] text-base">CCCD</div>
-          <div className="w-[22%] text-base">Dob</div>
-          <div className="w-[20%] text-base">User Action</div>
+          <div className="w-[8%] text-base">Cinema</div>
+          <div className="w-[16%] text-base">Name</div>
+          <div className="w-[14%] text-base">DoB</div>
+          <div className="w-[12%] text-base">Position</div>
+          <div className="w-[22%] text-base">Shift</div>
+          <div className="w-[20%] text-base">Employee Action</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
@@ -146,8 +147,8 @@ const Users: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
-          {currentUsers.map((user) => (
-            <User key={user.user_id} {...user} />
+          {currentEmployees.map((employee) => (
+            <Employee key={employee.employee_id} {...employee} />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -187,4 +188,4 @@ const Users: React.FC = () => {
   )
 }
 
-export default Users
+export default Employees

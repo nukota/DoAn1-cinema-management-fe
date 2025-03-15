@@ -37,7 +37,7 @@ const Products: React.FC = () => {
 
   return (
     <div className="products flex flex-col h-[673px]">
-      <div className="text-40px font-medium text-light-gray">Products</div>
+      <div className="text-40px font-medium text-dark-gray">Products</div>
       <div className="product-tabs flex mt-4 z-20 text-light-gray">
         <button
           className={`tab ${activeTab === "All" ? "active" : ""}`}
@@ -66,7 +66,7 @@ const Products: React.FC = () => {
         <div className="SearchBar relative ml-auto w-full max-w-[240px] h-8 -mt-2">
           <input
             type="text"
-            className="size-full pl-10 pr-5 text-sm text-gray rounded-full text-gray-700 bg-black border-light-gray border-2 focus:outline-none focus:ring-1"
+            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
             placeholder="Search"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -78,7 +78,7 @@ const Products: React.FC = () => {
           />
         </div>
       </div>
-      <div className="content relative -mt-[3px] w-full h-full bg-black border-[3px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
+      <div className="content relative -mt-[2px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
         <div className="list grid grid-cols-7 gap-2 max-h-[510px] py-3 overflow-y-auto">
           {filteredProducts.map((product, index) => (
             <Product key={index} {...product} />

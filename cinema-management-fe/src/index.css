@@ -10,12 +10,17 @@
   position: relative;
   z-index: 1;
 }
+
+.nav-selection img{
+  filter: brightness(10%);
+} 
+
 .nav-selection::before {
   content: "";
   position: absolute;
   top: 0px;
-  left: -6px;
-  right: -6px;
+  left: -12px;
+  right: 0px;
   bottom: 0px;
   background-color: #999999;
   border-radius: 10px;
@@ -27,12 +32,17 @@
 .nav-selection:hover::before {
   opacity: 0.2;
 }
-.nav-selection:hover img {
-  filter: brightness(150%);
-}
 
 .nav-selection:hover span {
-  color: #dadada;
+  font-weight: 600;
+}
+
+.nav-selection.selected::before {
+  opacity: 0.2;
+}
+
+.nav-selection.selected span {
+  font-weight: 600;
 }
 
 .hover\:filter-hover:hover {
@@ -43,11 +53,11 @@
 .tab {
   padding: 0.5rem 1rem;
   height: 36px;
-  background-color: black;
+  background-color: white;
   font-weight: normal;
   font-size: 14px;
-  color: #dadada;
-  border: 3px solid #484848;
+  color: #101010;
+  border: 2px solid #dadada;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   cursor: pointer;
@@ -172,12 +182,12 @@
 }
 
 .list::-webkit-scrollbar-track {
-  background: #320000;
+  background: #874f4f;
   border-radius: 10px;
 }
 
 .list::-webkit-scrollbar-thumb {
-  background: #5f0000;
+  background: #e9bbbb;
   border-radius: 10px;
 }
 
