@@ -36,6 +36,9 @@ const config: Config = {
         '10px': '10px',
         '40px': '40px',
       },
+      screens: {
+        '1270-break-point': '1270px', // Custom breakpoint
+      },
     },
   },
   plugins: [

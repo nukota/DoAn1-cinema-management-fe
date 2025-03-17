@@ -1,134 +1,143 @@
-import React, { useState } from "react"
-import Employee from "./items/Employee"
-import SearchImg from "../../assets/images/search.svg"
-import CalendarImg from "../../assets/images/calendar.svg"
-import { exampleEmployees } from "../../data"
+import React, { useState } from "react";
+import Employee from "./items/Employee";
+import SearchImg from "../../assets/images/search.svg";
+import CalendarImg from "../../assets/images/calendar.svg";
+import { exampleEmployees } from "../../data";
 
 const Employees: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("")
-  const [selectedDate, setSelectedDate] = useState<string>("")
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const itemsPerPage = 10
-  const pageRangeDisplayed = 5
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
+  const pageRangeDisplayed = 5;
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value)
-    setCurrentPage(1)
-  }
+    setSearchTerm(event.target.value);
+    setCurrentPage(1);
+  };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value)
-    setCurrentPage(1)
-  }
+    setSelectedDate(event.target.value);
+    setCurrentPage(1);
+  };
 
   const handleCalendarClick = () => {
-    const datePicker = document.getElementById("date-picker") as HTMLInputElement
-    datePicker.focus()
-  }
+    const datePicker = document.getElementById(
+      "date-picker"
+    ) as HTMLInputElement;
+    datePicker.focus();
+  };
 
   const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
+    alert("Delete Btn clicked");
+  };
 
   const handleAddNewClick = () => {
-    alert("Add New Btn clicked")
-  }
+    alert("Add New Btn clicked");
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
-    if (pageNumber !== "...") setCurrentPage(Number(pageNumber))
-  }
+    if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
+  };
 
   const uniqueEmployees = exampleEmployees.filter(
     (employee, index, self) =>
       index === self.findIndex((e) => e.employee_id === employee.employee_id)
-  )
+  );
 
   const filteredEmployees = uniqueEmployees.filter((employee) => {
-    const searchTermLower = searchTerm.toLowerCase()
+    const searchTermLower = searchTerm.toLowerCase();
     return (
-      (employee.fullname && employee.fullname.toLowerCase().includes(searchTermLower)) ||
+      (employee.fullname &&
+        employee.fullname.toLowerCase().includes(searchTermLower)) ||
       (employee.cccd && employee.cccd.toString().includes(searchTermLower)) ||
-      (employee.role && employee.role.toLowerCase().includes(searchTermLower)) ||
+      (employee.role &&
+        employee.role.toLowerCase().includes(searchTermLower)) ||
       (employee.dob && employee.dob.includes(searchTermLower))
-    )
-  })
+    );
+  });
 
-  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEmployees = filteredEmployees.slice(
     startIndex,
     startIndex + itemsPerPage
-  )
+  );
 
   const getPageNumbers = () => {
-    const pageNumbers: (number | string)[] = []
+    const pageNumbers: (number | string)[] = [];
     const startPage = Math.max(
       1,
       currentPage - Math.floor(pageRangeDisplayed / 2)
-    )
-    const endPage = Math.min(totalPages, startPage + pageRangeDisplayed - 1)
-    
+    );
+    const endPage = Math.min(totalPages, startPage + pageRangeDisplayed - 1);
+
     for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i)
+      pageNumbers.push(i);
     }
-    if (pageNumbers.length < pageRangeDisplayed && pageRangeDisplayed < totalPages) {
-      if (startPage > 1)
-        pageNumbers.unshift("...")
-      else if (endPage < totalPages)
-        pageNumbers.push("...")
+    if (
+      pageNumbers.length < pageRangeDisplayed &&
+      pageRangeDisplayed < totalPages
+    ) {
+      if (startPage > 1) pageNumbers.unshift("...");
+      else if (endPage < totalPages) pageNumbers.push("...");
     }
-    return pageNumbers
-  }
+    return pageNumbers;
+  };
 
   return (
     <div className="employees flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Employees</div>
-      <div className="flex flex-row items-center">
-        <div className="SearchBar relative w-full max-w-[240px] h-8 mt-2">
-          <input
-            type="text"
-            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <img
-            src={SearchImg}
-            alt="Search"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
+      <div className="flex flex-col 1270-break-point:flex-row">
+        <div className="flex flex-row items-center">
+          <div className="SearchBar relative w-full max-w-[240px] h-8 mt-2">
+            <input
+              type="text"
+              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <img
+              src={SearchImg}
+              alt="Search"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+            />
+          </div>
+          <div className="DateFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
+            <input
+              type="date"
+              id="date-picker"
+              className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-white border-red border-2 focus:outline-none focus:ring-1"
+              value={selectedDate}
+              onChange={handleDateChange}
+            />
+            <img
+              src={CalendarImg}
+              alt="Calendar"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer"
+              style={{
+                filter:
+                  "invert(10%) sepia(88%) saturate(6604%) hue-rotate(352deg) brightness(73%) contrast(105%)",
+              }}
+              onClick={handleCalendarClick}
+            />
+          </div>
         </div>
-        <div className="DateFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
-          <input
-            type="date"
-            id="date-picker"
-            className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-white border-red border-2 focus:outline-none focus:ring-1"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-          <img
-            src={CalendarImg}
-            alt="Calendar"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer"
-            style={{
-              filter:
-                "invert(10%) sepia(88%) saturate(6604%) hue-rotate(352deg) brightness(73%) contrast(105%)",
-            }}
-            onClick={handleCalendarClick}
-          />
+        <div className="flex flex-row items-center 1270-break-point:ml-auto">
+          <button
+            className="DeleteBtn mt-2 w-[114px] h-8 border-2 border-red bg-white text-red rounded-md items-center justify-center font-medium tracking-widest hover:bg-transparent duration-200"
+            onClick={handleDeleteClick}
+          >
+            Delete
+          </button>
+          <button
+            className="AddNewBtn mt-2 ml-5 w-[114px] h-8 border-2 border-red bg-red text-white rounded-md items-center justify-center font-medium tracking-widest hover:bg-dark-red hover:border-dark-red duration-200"
+            onClick={handleAddNewClick}
+          >
+            Add New
+          </button>
         </div>
-        <button
-          className="DeleteBtn mt-2 ml-auto w-[114px] h-8 border-2 border-red bg-white text-red rounded-md items-center justify-center font-medium tracking-widest hover:bg-transparent duration-200"
-          onClick={handleDeleteClick}
-        >
-          Delete
-        </button>
-        <button
-          className="AddNewBtn mt-2 ml-5 w-[114px] h-8 border-2 border-red bg-red text-white rounded-md items-center justify-center font-medium tracking-widest hover:bg-dark-red hover:border-dark-red duration-200"
-          onClick={handleAddNewClick}
-        >
-          Add New
-        </button>
       </div>
       <div className="employees-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
@@ -185,7 +194,7 @@ const Employees: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Employees
+export default Employees;

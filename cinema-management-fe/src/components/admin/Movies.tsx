@@ -48,32 +48,8 @@ const Movies: React.FC = () => {
   return (
     <div className="movies flex flex-col h-[673px]">
       <div className="text-40px font-medium text-dark-gray">Movies</div>
-      <div className="movie-tabs flex mt-4 z-20 text-light-gray">
-        <button
-          className={`tab ${activeTab === "All" ? "active" : ""}`}
-          onClick={() => handleTabClick("All")}
-        >
-          <span>All</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Now Playing" ? "active" : ""}`}
-          onClick={() => handleTabClick("Now Playing")}
-        >
-          <span>Now Playing</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Coming Soon" ? "active" : ""}`}
-          onClick={() => handleTabClick("Coming Soon")}
-        >
-          <span>Coming Soon</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Stopped" ? "active" : ""}`}
-          onClick={() => handleTabClick("Stopped")}
-        >
-          <span>Stopped</span>
-        </button>
-        <div className="DateFilterBar relative ml-auto w-full max-w-[240px] h-8 -mt-2">
+      <div className="flex items-center mt-4">
+      <div className="DateFilterBar relative w-full max-w-[240px] h-8 -mt-2">
           <input
             type="date"
             id="date-picker"
@@ -106,9 +82,36 @@ const Movies: React.FC = () => {
             className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
           />
         </div>
+        </div>
+      <div className="movie-tabs flex mt-4 z-20 text-light-gray">
+        <button
+          className={`tab ${activeTab === "All" ? "active" : ""}`}
+          onClick={() => handleTabClick("All")}
+        >
+          <span>All</span>
+        </button>
+        <button
+          className={`tab ${activeTab === "Now Playing" ? "active" : ""}`}
+          onClick={() => handleTabClick("Now Playing")}
+        >
+          <span>Now Playing</span>
+        </button>
+        <button
+          className={`tab ${activeTab === "Coming Soon" ? "active" : ""}`}
+          onClick={() => handleTabClick("Coming Soon")}
+        >
+          <span>Coming Soon</span>
+        </button>
+        <button
+          className={`tab ${activeTab === "Stopped" ? "active" : ""}`}
+          onClick={() => handleTabClick("Stopped")}
+        >
+          <span>Stopped</span>
+        </button>
+        
       </div>
-      <div className="content relative -mt-[2px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
-        <div className="list flex-1 grid grid-cols-6 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
+      <div className="content relative -mt-[2px] min-w-[528px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
+        <div className="list flex-1 grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
           {filteredMovies.map((movie, index) => (
             <Movie key={index} {...movie} />
           ))}

@@ -27,13 +27,13 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ ProfileName, ProfileRole, Pro
     // alert("Arrow down clicked")
   }
   return (
-    <header className={`header fixed top-0 left-0 z-[1000] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray ${className}`}>
-      <Link to="/" className="logo pl-3 shrink-0 w-60">
+    <header className={`header fixed top-0 left-0 z-[999] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray ${className}`}>
+      <Link to="/" className="logo pl-3 shrink-0 w-60 md:block hidden">
         <img src={logo} alt="Clinic logo" />
       </Link>
-      <div className="border-l-[2px] border-light-gray absolute left-56 h-70" />
-      <div className="flex items-center ml-auto mr-6 w-[calc(100vw - 240px)] space-x-4 flex-shrink-0">
-        <div className="space-x-4">
+      <div className="md:block hidden border-l-[2px] border-light-gray absolute left-56 h-[48px]" />
+      <div className="flex items-center ml-auto mr-3 w-[calc(100vw - 240px)] space-x-2 flex-shrink-0">
+        <div className="space-x-3">
           <button className="header-calendar hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleCalendarClick}>
             <img className="size-6" src={CalendarImg} alt="Calendar" />
           </button>
