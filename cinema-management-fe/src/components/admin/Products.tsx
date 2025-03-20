@@ -38,7 +38,8 @@ const Products: React.FC = () => {
   return (
     <div className="products flex flex-col h-[673px]">
       <div className="text-40px font-medium text-dark-gray">Products</div>
-      <div className="SearchBar relative w-full max-w-[240px] h-8 mt-4">
+      <div className="flex items-center mt-2">
+        <div className="SearchBar relative w-full max-w-[240px] h-8">
           <input
             type="text"
             className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
@@ -52,6 +53,7 @@ const Products: React.FC = () => {
             className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
           />
         </div>
+      </div>
       <div className="product-tabs flex mt-4 z-20 text-light-gray">
         <button
           className={`tab ${activeTab === "All" ? "active" : ""}`}
@@ -79,17 +81,17 @@ const Products: React.FC = () => {
         </button>
         
       </div>
-      <div className="content relative -mt-[2px] min-w-[608px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-auto">
-        <div className="list grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-[510px] py-3 overflow-y-auto">
+      <div className="content relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
+        <div className="list grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
           {filteredProducts.map((product, index) => (
             <Product key={index} {...product} />
           ))}
         </div>
         <button
-          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200"
+          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200 z-20"
           onClick={handleAddNewClick}
         >
-          <img className="size-11" src={addImg} alt="Add New" />
+          <img className="size-11 invert brightness-0" src={addImg} alt="Add New" />
         </button>
       </div>
     </div>

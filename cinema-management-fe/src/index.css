@@ -51,6 +51,7 @@
 }
 
 .tab {
+  width: 152px;
   flex-shrink: 0;
   padding: 0.5rem 1rem;
   height: 36px;
@@ -64,12 +65,13 @@
   cursor: pointer;
 }
 
-.movie-tabs .tab {
-  width: 132px;
-}
-
-.product-tabs .tab {
-  width: 152px;
+@media (max-width: 640px) {
+  .tab {
+    width: 90px;
+    height: 56px;
+    font-size: 13px;
+    padding: 0;
+  }
 }
 
 .tab span {
@@ -180,21 +182,21 @@
 }
 
 .list::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
 }
 
 .list::-webkit-scrollbar-track {
-  background: #874f4f;
+  background: #dadada;
   border-radius: 10px;
 }
 
 .list::-webkit-scrollbar-thumb {
-  background: #e9bbbb;
+  background: #bababa;
   border-radius: 10px;
 }
 
 .list::-webkit-scrollbar-thumb:hover {
-  background: #7f0101;
+  background: #999999;
 }
 
 .overlay {

@@ -1,9 +1,9 @@
 import React from "react"
 import DeleteImg from "../../../assets/images/delete.svg"
 import InfoImg from "../../../assets/images/info.svg"
-import { PaymentType } from "../../../types"
+import { ReviewType } from "../../../types"
 
-const Payment: React.FC<PaymentType> = (payment) => {
+const Review: React.FC<ReviewType> = (review) => {
   const handleDeleteClick = () => {
     alert("Delete Btn clicked")
   }
@@ -12,14 +12,15 @@ const Payment: React.FC<PaymentType> = (payment) => {
   }
   return (
     <div
-      className="payment grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
-      style={{ gridTemplateColumns: "0.4fr 0.6fr 1fr 1.2fr 0.8fr 1fr" }}
+      className="review grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
+      style={{ gridTemplateColumns: "0.4fr 0.4fr 0.8fr 0.7fr 0.6fr 1.1fr 1fr" }}
     >
-      <p className="text-sm font-normal">{payment.payment_id}</p>
-      <p className="text-sm font-normal">{payment.order_id}</p>
-      <p className="text-sm font-normal">{payment.amount}</p>
-      <p className="text-sm font-normal">{payment.paid_at}</p>
-      <p className="text-sm font-normal">{payment.status}</p>
+      <p className="text-sm font-normal">{review.review_id}</p>
+      <p className="text-sm font-normal">{review.showtime_id}</p>
+      <p className="text-sm font-normal">{review.user_id}</p>
+      <p className="text-sm font-normal">{review.rating}</p>
+      <p className="text-sm font-normal">{review.comment}</p>
+      <p className="text-sm font-normal">{review.comment}</p>
       <div className="flex flex-row">
         <button className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleInfoClick}>
           <img
@@ -42,4 +43,4 @@ const Payment: React.FC<PaymentType> = (payment) => {
   )
 }
 
-export default Payment
+export default Review
