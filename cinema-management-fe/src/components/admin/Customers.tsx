@@ -4,8 +4,9 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import { exampleCustomers } from "../../data";
-import AddCustomer from "./dialogs/CreateCustomer";
+import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../types";
+import DetailCustomer from "./dialogs/DetailCustomer";
 
 const Customers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -57,6 +58,7 @@ const Customers: React.FC = () => {
   };
 
   const handleAddNewCustomer = async (newCustomer: UserType) => {};
+  const handleOnSave = async (customer: UserType) => {};
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
@@ -151,7 +153,7 @@ const Customers: React.FC = () => {
             variant="contained"
             sx={{
               mt: 2,
-              ml: {1270: 2},
+              ml: { 1270: 2 },
               width: "114px",
               height: "32px",
               backgroundColor: "#B80007",
@@ -183,8 +185,13 @@ const Customers: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
-          {currentCustomers.map((user) => (
-            <Customer key={user.user_id} {...user} />
+          {currentCustomers.map((customer) => (
+            <Customer
+              key={customer.user_id}
+              customer={customer}
+              handleInfoClick={() => handleInfoClick(customer)}
+              handleDeleteClick={() => handleCheckConfirmDelete(customer)}
+            />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -220,7 +227,14 @@ const Customers: React.FC = () => {
           )}
         </div>
       </div>
-      <AddCustomer
+      <DetailCustomer
+        open={DetailDialogOpen}
+        onClose={handleCloseDialog}
+        customer={selectedCustomer!}
+        onSave={handleOnSave}
+      />
+
+      <CreateCustomer
         open={AddDialogOpen}
         onClose={handleCloseDialog}
         onAdd={handleAddNewCustomer}

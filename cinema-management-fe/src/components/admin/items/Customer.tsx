@@ -1,15 +1,18 @@
-import React from "react"
-import DeleteImg from "../../../assets/images/delete.svg"
-import InfoImg from "../../../assets/images/info.svg"
-import { UserType } from "../../../types"
+import React from "react";
+import DeleteImg from "../../../assets/images/delete.svg";
+import InfoImg from "../../../assets/images/info.svg";
+import { UserType } from "../../../types";
+interface CustomerProps {
+  customer: UserType;
+  handleInfoClick: () => void;
+  handleDeleteClick: () => void;
+}
 
-const Customer: React.FC<UserType> = (customer) => {
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
-  const handleInfoClick = () => {
-    alert("Info Btn clicked")
-  }
+const Customer: React.FC<CustomerProps> = ({
+  customer,
+  handleInfoClick,
+  handleDeleteClick,
+}) => {
   return (
     <div
       className="customer grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
@@ -21,7 +24,10 @@ const Customer: React.FC<UserType> = (customer) => {
       <p className="text-sm font-normal">{customer.cccd}</p>
       <p className="text-sm font-normal">{customer.dob}</p>
       <div className="flex flex-row">
-        <button className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleInfoClick}>
+        <button
+          className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200"
+          onClick={handleInfoClick}
+        >
           <img
             src={InfoImg}
             alt="Info"
@@ -29,7 +35,10 @@ const Customer: React.FC<UserType> = (customer) => {
             className="w-6 h-6 hover:filter-hover"
           />
         </button>
-        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleDeleteClick}>
+        <button
+          className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200"
+          onClick={handleDeleteClick}
+        >
           <img
             src={DeleteImg}
             alt="Delete"
@@ -39,7 +48,7 @@ const Customer: React.FC<UserType> = (customer) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Customer
+export default Customer;

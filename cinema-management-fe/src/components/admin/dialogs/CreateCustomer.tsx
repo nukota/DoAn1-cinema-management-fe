@@ -27,13 +27,13 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface AddCustomerProps {
+interface CreateCustomerProps {
   open: boolean;
   onClose: () => void;
   onAdd: (newCustomer: any) => void;
 }
 
-const AddCustomer: React.FC<AddCustomerProps> = ({ open, onClose, onAdd }) => {
+const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd }) => {
   const [userId, setUserId] = useState<Number>();
   const [fullname, setFullname] = useState<String>("");
   const [email, setEmail] = useState<String>("");
@@ -156,4 +156,4 @@ const AddCustomer: React.FC<AddCustomerProps> = ({ open, onClose, onAdd }) => {
   );
 };
 
-export default AddCustomer;
+export default CreateCustomer;
