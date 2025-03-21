@@ -13,7 +13,7 @@ const Payment: React.FC<PaymentType> = (payment) => {
   return (
     <div
       className="payment grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
-      style={{ gridTemplateColumns: "0.4fr 0.6fr 1fr 1.2fr 0.8fr 1fr" }}
+      style={{ gridTemplateColumns: "0.6fr 0.6fr 1fr 1fr 0.8fr 1fr" }}
     >
       <p className="text-sm font-normal">{payment.payment_id}</p>
       <p className="text-sm font-normal">{payment.order_id}</p>

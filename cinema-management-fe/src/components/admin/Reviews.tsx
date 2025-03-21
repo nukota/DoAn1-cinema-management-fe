@@ -48,13 +48,12 @@ const Reviews: React.FC = () => {
   const filteredReviews = uniqueReviews.filter((review) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      true
-      // (review.fullname &&
-      //   review.fullname.toLowerCase().includes(searchTermLower)) ||
-      // (review.cccd && review.cccd.toString().includes(searchTermLower)) ||
-      // (review.role &&
-      //   review.role.toLowerCase().includes(searchTermLower)) ||
-      // (review.dob && review.dob.includes(searchTermLower))
+      (review.review_id &&
+        review.review_id.toString().includes(searchTermLower)) ||
+      (review.showtime_id &&
+        review.showtime_id.toString().includes(searchTermLower)) ||
+      (review.user_id && review.user_id.toString().includes(searchTermLower)) ||
+      (review.comment && review.comment.toLowerCase().includes(searchTermLower))
     );
   });
 
@@ -142,12 +141,11 @@ const Reviews: React.FC = () => {
       </div>
       <div className="Reviews-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[8%] text-base">ID</div>
-          <div className="w-[8%] text-base">Cinema</div>
-          <div className="w-[16%] text-base">Name</div>
-          <div className="w-[14%] text-base">DoB</div>
-          <div className="w-[12%] text-base">Position</div>
-          <div className="w-[22%] text-base">Shift</div>
+          <div className="w-[10%] text-base">Review ID</div>
+          <div className="w-[10%] text-base">Showtime</div>
+          <div className="w-[20%] text-base">User ID</div>
+          <div className="w-[20%] text-base">Rating</div>
+          <div className="w-[20%] text-base">Comment</div>
           <div className="w-[20%] text-base">Review Action</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />
