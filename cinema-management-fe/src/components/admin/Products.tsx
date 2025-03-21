@@ -36,7 +36,7 @@ const Products: React.FC = () => {
   })
 
   return (
-    <div className="products flex flex-col h-[673px]">
+    <div className="products flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Products</div>
       <div className="flex items-center mt-2">
         <div className="SearchBar relative w-full max-w-[240px] h-8">
@@ -81,7 +81,7 @@ const Products: React.FC = () => {
         </button>
         
       </div>
-      <div className="content relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
+      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
         <div className="list grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
           {filteredProducts.map((product, index) => (
             <Product key={index} {...product} />

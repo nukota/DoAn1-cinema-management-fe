@@ -2,12 +2,21 @@ import React, { useState } from "react";
 import Customer from "./items/Customer";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
+import { Button } from "@mui/material";
 import { exampleCustomers } from "../../data";
+import AddCustomer from "./dialogs/CreateCustomer";
+import { UserType } from "../../types";
 
 const Customers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCustomer, setSelectedCustomer] = useState<UserType | null>(
+    null
+  );
+  const [DetailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -28,13 +37,26 @@ const Customers: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
+  const handleAddNewClick = () => {
+    setAddDialogOpen(true);
   };
 
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
+  const handleInfoClick = (customer: UserType) => {
+    setSelectedCustomer(customer);
+    setDetailDialogOpen(true);
   };
+  const handleCheckConfirmDelete = (customer: UserType) => {
+    setShowDeleteConfirm(true);
+    setSelectedCustomer(customer);
+  };
+
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setAddDialogOpen(false);
+    setSelectedCustomer(null);
+  };
+
+  const handleAddNewCustomer = async (newCustomer: UserType) => {};
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
@@ -124,18 +146,25 @@ const Customers: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <button
-            className="DeleteBtn mt-2 w-[114px] h-8 border-2 border-red bg-white text-red rounded-md items-center justify-center font-medium tracking-widest hover:bg-transparent duration-200"
-            onClick={handleDeleteClick}
-          >
-            Delete
-          </button>
-          <button
-            className="AddNewBtn mt-2 ml-5 w-[114px] h-8 border-2 border-red bg-red text-white rounded-md items-center justify-center font-medium tracking-widest hover:bg-dark-red hover:border-dark-red duration-200"
+          <Button
             onClick={handleAddNewClick}
+            variant="contained"
+            sx={{
+              mt: 2,
+              ml: {1270: 2},
+              width: "114px",
+              height: "32px",
+              backgroundColor: "#B80007",
+              color: "white",
+              fontWeight: "500",
+              textTransform: "uppercase",
+              "&:hover": {
+                backgroundColor: "#b71c1c", // Darker #B80007 for hover
+              },
+            }}
           >
             Add New
-          </button>
+          </Button>
         </div>
       </div>
       <div className="mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
@@ -191,6 +220,11 @@ const Customers: React.FC = () => {
           )}
         </div>
       </div>
+      <AddCustomer
+        open={AddDialogOpen}
+        onClose={handleCloseDialog}
+        onAdd={handleAddNewCustomer}
+      />
     </div>
   );
 };

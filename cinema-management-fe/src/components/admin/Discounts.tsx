@@ -1,6 +1,7 @@
 import { useState, ChangeEvent } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
+import { Button } from "@mui/material";
 import Discount from "./items/Discount";
 import { exampleDiscounts } from "../../data";
 
@@ -135,18 +136,19 @@ const Discounts: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <button
-            className="DeleteBtn mt-2 w-[114px] h-8 border-2 border-red bg-white text-red rounded-md items-center justify-center font-medium tracking-widest hover:bg-transparent duration-200"
-            onClick={handleDeleteClick}
-          >
-            Delete
-          </button>
-          <button
-            className="AddNewBtn mt-2 ml-5 w-[114px] h-8 border-2 border-red bg-red text-white rounded-md items-center justify-center font-medium tracking-widest hover:bg-dark-red hover:border-dark-red duration-200"
+          <Button
             onClick={handleAddNewClick}
+            variant="contained"
+            color="primary"
+            sx={{
+              mt: 2,
+              ml: {1270: 2},
+              width: "114px",
+              height: "32px",
+            }}
           >
             Add New
-          </button>
+          </Button>
         </div>
       </div>
       <div className="Discounts-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">

@@ -1,7 +1,8 @@
-import React, { useState, ChangeEvent } from "react"
-import Room from "./items/Room"
+import React, { useState, ChangeEvent } from "react";
+import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
 import { exampleRooms } from "../../data";
+import { Button } from "@mui/material";
 
 const Rooms: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -44,18 +45,19 @@ const Rooms: React.FC = () => {
             className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
           />
         </div>
-        <button
-          className="DeleteBtn ml-auto w-[114px] h-8 border-2 border-red text-red rounded-md items-center justify-center font-medium tracking-widest hover:bg-[#380005] duration-200"
-          onClick={handleDeleteClick}
-        >
-          Delete
-        </button>
-        <button
-          className="AddNewBtn ml-5 w-[114px] h-8 border-2 border-red bg-red text-black rounded-md items-center justify-center font-medium tracking-widest hover:bg-dark-red hover:border-dark-red duration-200"
+        <Button
           onClick={handleAddNewClick}
+          variant="contained"
+          color="primary"
+          sx={{
+            mt: 2,
+            ml: 2,
+            width: "114px",
+            height: "32px",
+          }}
         >
           Add New
-        </button>
+        </Button>
       </div>
 
       <div className="content mt-[14px] w-full h-full bg-white border-[3px] border-light-gray rounded-xl pl-12 py-6 pr-4 overflow-auto">

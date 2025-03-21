@@ -28,7 +28,7 @@ const Cinemas: React.FC = () => {
     });
 
   return (
-    <div className="cinemas flex flex-col h-[673px] relative">
+    <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">
       <div className="text-40px font-medium text-dark-gray">Cinemas</div>
       <div className="SearchBar relative w-full max-w-[240px] h-8 mt-2">
         <input
