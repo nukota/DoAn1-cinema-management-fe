@@ -29,7 +29,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
           React.cloneElement(child as React.ReactElement, { key: index })
         )}
       </div>
-      <div className="relative flex flex-col py-2 pl-[28px] w-full box-border overflow-hidden h-[14%] min-h-[100px]">
+      <div className="relative flex flex-col py-2 pl-[20px] w-full box-border overflow-hidden h-[14%] min-h-[100px]">
         {React.Children.map(botChildren, (child, index) =>
           React.cloneElement(child as React.ReactElement, { key: index })
         )}
