@@ -793,6 +793,27 @@ export const exampleRooms: RoomType[] = [
     seat_count: 140,
     repairing: false,
   },
+  {
+    room_id: 16,
+    cinema_id: 1,
+    name: "Room N",
+    seat_count: 230,
+    repairing: true,
+  },
+  {
+    room_id: 17,
+    cinema_id: 1,
+    name: "Room N",
+    seat_count: 230,
+    repairing: true,
+  },
+  {
+    room_id: 18,
+    cinema_id: 1,
+    name: "Room N",
+    seat_count: 230,
+    repairing: true,
+  },
 ];
 
 export const exampleProducts: ProductType[] = [

@@ -15,9 +15,9 @@ const Customers: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<UserType | null>(
     null
   );
-  const [DetailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [AddDialogOpen, setAddDialogOpen] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 

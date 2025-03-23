@@ -1,31 +1,61 @@
 import React, { useState, ChangeEvent } from "react";
 import Cinema from "./items/Cinema";
 import SearchImg from "../../assets/images/search.svg";
+import { CinemaType, RoomType } from "../../types";
 import { exampleCinemas } from "../../data";
+import { exampleRooms } from "../../data";
+import DetailRooms from "./dialogs/DetailRooms";
 
 const Cinemas: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
+  const [DetailRoomsDialogOpen, setDetailRoomsDialogOpen] =
+    useState<boolean>(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  //   const handleDeleteClick = () => {
-  //     alert("Delete Btn clicked");
-  //   };
+  const handleAddNewClick = () => {
+    setAddDialogOpen(true);
+  };
 
-  //   const handleAddNewClick = () => {
-  //     alert("Add New Btn clicked");
-  //   };
+  const handleInfoClick = (cinema: CinemaType) => {
+    setSelectedCinema(cinema);
+    setDetailRoomsDialogOpen(true);
+  };
 
-    const filteredCinemas = exampleCinemas.filter((cinema) => {
-      const searchTermLower = searchTerm.toLowerCase();
-      return (
-        (cinema.cinema_id && cinema.cinema_id.toString().includes(searchTermLower)) ||
-        (cinema.address && cinema.address.toLowerCase().includes(searchTermLower)) ||
-        (cinema.name && cinema.name.toLowerCase().includes(searchTermLower))
-      );
-    });
+  const handleCloseDialog = () => {
+    setDetailRoomsDialogOpen(false);
+    setAddDialogOpen(false);
+    setSelectedCinema(null);
+  };
+
+  const handleSeeAllRooms = (cinema: CinemaType) => {
+    setSelectedCinema(cinema);
+    setDetailRoomsDialogOpen(true);
+  };
+
+  const handleAddCinema = async (newCinema: CinemaType) => {};
+  const handleUpdateCinema = async (updatedCinema: CinemaType) => {};
+  const handleDeleteCinema = async (Cinema: CinemaType) => {};
+
+  const handleAddRoom = async (newRoom: RoomType) => {};
+  const handleUpdateRoom = async (updatedRoom: RoomType) => {};
+  const handleDeleteRoom = async (room: RoomType) => {};
+
+  const filteredCinemas = exampleCinemas.filter((cinema) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      (cinema.cinema_id &&
+        cinema.cinema_id.toString().includes(searchTermLower)) ||
+      (cinema.address &&
+        cinema.address.toLowerCase().includes(searchTermLower)) ||
+      (cinema.name && cinema.name.toLowerCase().includes(searchTermLower))
+    );
+  });
 
   return (
     <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">
@@ -47,11 +77,30 @@ const Cinemas: React.FC = () => {
 
       <div className="content mt-[14px] w-full h-full">
         <div className="gap-y-8 py-3 overflow-y-auto flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3">
-          {filteredCinemas.map((cinema, index) => (
-            <Cinema key={index} {...cinema} />
-          ))}
+          {filteredCinemas.map((cinema, index) => {
+            const cinemaRooms: RoomType[] = exampleRooms.filter(
+              (room) => room.cinema_id === cinema.cinema_id
+            );
+            return (
+              <Cinema
+                key={cinema.cinema_id}
+                cinema={cinema}
+                handleSeeAllRooms={() => handleSeeAllRooms(cinema)}
+              />
+            );
+          })}
         </div>
       </div>
+      {selectedCinema && (
+        <DetailRooms
+          cinema={selectedCinema!}
+          onClose={() => setSelectedCinema(null)}
+          open={DetailRoomsDialogOpen}
+          onAddRoom={handleAddRoom}
+          onUpdateRoom={handleUpdateRoom}
+          onDeleteRoom={handleDeleteRoom}
+        />
+      )}
     </div>
   );
 };
