@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { CinemaType } from "../../../types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -27,21 +28,41 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateCustomerProps {
+interface DetailCinemaProps {
+  cinema: CinemaType;
   open: boolean;
   onClose: () => void;
-  onAdd: (newCustomer: any) => void;
+  onSave: (newCinema: any) => void;
 }
 
-const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd }) => {
-  const [fullname, setFullname] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [phone, setPhone] = useState<String>("");
-  const [dob, setDob] = useState<String>("");
-  const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+const DetailCinema: React.FC<DetailCinemaProps> = ({
+  cinema,
+  open,
+  onClose,
+  onSave,
+}) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
 
-  const handleAddClick = () => {};
+  useEffect(() => {
+    if (cinema) {
+      setName(cinema.name);
+      setAddress(cinema.address);
+    }
+    if (!open) {
+      setIsEditing(false);
+    }
+  }, [cinema, open]);
+
+  const handleModifyClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+  };
+
   return (
     <Dialog
       open={open}
@@ -61,87 +82,80 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
           padding: "16px 24px",
         }}
       >
-        Add Customer
+        Detail Cinema
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Full Name:
-          </Typography>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>ID:</Typography>
           <TextField
-            placeholder="Full Name"
+            placeholder="Auto generated"
             fullWidth
+            value={cinema.cinema_id}
+            disabled
             margin="dense"
             size="small"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            CCCD:
+            Name:
           </Typography>
           <TextField
-            placeholder="CCCD"
+            placeholder="Name"
             fullWidth
             margin="dense"
             size="small"
-            value={cccd}
-            onChange={(e) => setCccd(e.target.value)}
+            value={name}
+            disabled={!isEditing}
+            onChange={(e) => setName(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Date of birth:
+            Address:
           </Typography>
           <TextField
-            type="date"
+            placeholder="Address"
             fullWidth
             margin="dense"
             size="small"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Number:
-          </Typography>
-          <TextField
-            placeholder="Phone Number"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Email:
-          </Typography>
-          <TextField
-            placeholder="Email"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={address}
+            disabled={!isEditing}
+            onChange={(e) => setAddress(e.target.value)}
           />
         </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
-          onClick={handleAddClick}
+          onClick={onClose}
           color="primary"
-          variant="contained"
+          variant="outlined"
           sx={{ width: 130 }}
         >
-          Add
+          Cancel
         </Button>
+        {isEditing ? (
+          <Button
+            onClick={handleSaveClick}
+            color="primary"
+            variant="contained"
+            sx={{ width: 130 }}
+          >
+            Save
+          </Button>
+        ) : (
+          <Button
+            onClick={handleModifyClick}
+            color="primary"
+            variant="contained"
+            sx={{ width: 130 }}
+          >
+            Modify
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
 };
 
-export default CreateCustomer;
+export default DetailCinema;

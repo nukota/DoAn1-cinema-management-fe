@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import Employee from "./items/Employee";
+import DetailEmployee from "./dialogs/DetailEmployee";
+import CreateEmployee from "./dialogs/CreateEmployee";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import { exampleEmployees } from "../../data";
+import { EmployeeType } from "../../types";
 
 const Employees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeType | null>(
+    null
+  );
+
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -29,13 +39,27 @@ const Employees: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
+  const handleAddNewClick = () => {
+    setAddDialogOpen(true);
   };
 
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
+  const handleInfoClick = (employee: EmployeeType) => {
+    setSelectedEmployee(employee);
+    setDetailDialogOpen(true);
   };
+  const handleCheckConfirmDelete = (employee: EmployeeType) => {
+    setShowDeleteConfirm(true);
+    setSelectedEmployee(employee);
+  };
+
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setAddDialogOpen(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {};
+  const handleOnSave = async (employee: EmployeeType) => {};
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
@@ -132,9 +156,9 @@ const Employees: React.FC = () => {
             color="primary"
             sx={{
               mt: 2,
-              ml: {1270: 2},
+              ml: { 1270: 2 },
               width: "114px",
-              height: "32px"
+              height: "32px",
             }}
           >
             Add New
@@ -159,7 +183,12 @@ const Employees: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentEmployees.map((employee) => (
-            <Employee key={employee.employee_id} {...employee} />
+            <Employee
+              key={employee.user_id}
+              employee={employee}
+              handleInfoClick={() => handleInfoClick(employee)}
+              handleDeleteClick={() => handleCheckConfirmDelete(employee)}
+            />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -195,6 +224,19 @@ const Employees: React.FC = () => {
           )}
         </div>
       </div>
+      {selectedEmployee && (
+        <DetailEmployee
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+          employee={selectedEmployee!}
+          onSave={handleOnSave}
+        />
+      )}
+      <CreateEmployee
+        open={AddDialogOpen}
+        onClose={handleCloseDialog}
+        onAdd={handleAddNewEmployee}
+      />
     </div>
   );
 };

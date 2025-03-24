@@ -4,11 +4,16 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { exampleReviews } from "../../data";
 import { Button } from "@mui/material";
+import { ReviewType } from "../../types";
+import DetailReview from "./dialogs/DetailReview";
 
 const Reviews: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedReview, setSelectedReview] = useState<ReviewType | null>(null);
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -29,16 +34,21 @@ const Reviews: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
-  };
-
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
-  };
-
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
+  };
+
+  const handleInfoClick = (review: ReviewType) => {
+    setSelectedReview(review);
+    setDetailDialogOpen(true);
+  };
+  const handleCheckConfirmDelete = (review: ReviewType) => {
+    setShowDeleteConfirm(true);
+    setSelectedReview(review);
+  };
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setSelectedReview(null);
   };
 
   const uniqueReviews = exampleReviews.filter(
@@ -126,7 +136,7 @@ const Reviews: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
+          {/* <Button
             onClick={handleAddNewClick}
             variant="contained"
             color="primary"
@@ -138,7 +148,7 @@ const Reviews: React.FC = () => {
             }}
           >
             Add New
-          </Button>
+          </Button> */}
         </div>
       </div>
       <div className="Reviews-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
@@ -158,7 +168,12 @@ const Reviews: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentReviews.map((review) => (
-            <Review key={review.review_id} {...review} />
+            <Review
+              key={review.user_id}
+              review={review}
+              handleInfoClick={() => handleInfoClick(review)}
+              handleDeleteClick={() => handleCheckConfirmDelete(review)}
+            />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -194,6 +209,13 @@ const Reviews: React.FC = () => {
           )}
         </div>
       </div>
+      {selectedReview && (
+        <DetailReview
+          review={selectedReview}
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+        />
+      )}
     </div>
   );
 };

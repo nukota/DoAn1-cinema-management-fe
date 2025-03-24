@@ -54,7 +54,7 @@ const Products: React.FC = () => {
           />
         </div>
       </div>
-      <div className="product-tabs flex mt-4 z-20 text-light-gray">
+      <div className="product-tabs flex mt-4 z-20">
         <button
           className={`tab ${activeTab === "All" ? "active" : ""}`}
           onClick={() => handleTabClick("All")}

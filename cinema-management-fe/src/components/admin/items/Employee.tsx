@@ -1,15 +1,18 @@
-import React from "react"
-import DeleteImg from "../../../assets/images/delete.svg"
-import InfoImg from "../../../assets/images/info.svg"
-import { EmployeeType } from "../../../types"
+import React from "react";
+import DeleteImg from "../../../assets/images/delete.svg";
+import InfoImg from "../../../assets/images/info.svg";
+import { EmployeeType } from "../../../types";
+interface EmployeeProps {
+  employee: EmployeeType;
+  handleInfoClick: () => void;
+  handleDeleteClick: () => void;
+}
 
-const Employee: React.FC<EmployeeType> = (employee) => {
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
-  const handleInfoClick = () => {
-    alert("Info Btn clicked")
-  }
+const Employee: React.FC<EmployeeProps> = ({
+  employee,
+  handleInfoClick,
+  handleDeleteClick,
+}) => {
   return (
     <div
       className="employee grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
@@ -22,7 +25,10 @@ const Employee: React.FC<EmployeeType> = (employee) => {
       <p className="text-sm font-normal">{employee.position}</p>
       <p className="text-sm font-normal">{employee.shift}</p>
       <div className="flex flex-row">
-        <button className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleInfoClick}>
+        <button
+          className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200"
+          onClick={handleInfoClick}
+        >
           <img
             src={InfoImg}
             alt="Info"
@@ -30,7 +36,10 @@ const Employee: React.FC<EmployeeType> = (employee) => {
             className="w-6 h-6 hover:filter-hover"
           />
         </button>
-        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleDeleteClick}>
+        <button
+          className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200"
+          onClick={handleDeleteClick}
+        >
           <img
             src={DeleteImg}
             alt="Delete"
@@ -40,7 +49,7 @@ const Employee: React.FC<EmployeeType> = (employee) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Employee
+export default Employee;

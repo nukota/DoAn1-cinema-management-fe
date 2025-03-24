@@ -11,7 +11,7 @@ const Movie: React.FC<MovieProps> = ({ poster, name, releaseDate, status }) => {
   return (
     <div className="movie h-[200px] w-[140px] flex flex-col">
       <img
-        className="h-[160px] w-full rounded-xl object-cover"
+        className="h-[160px] w-full rounded-xl object-cover border-black border-1.5"
         src={poster}
         alt="movie poster"
       />

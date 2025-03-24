@@ -227,12 +227,14 @@ const Customers: React.FC = () => {
           )}
         </div>
       </div>
-      <DetailCustomer
-        open={DetailDialogOpen}
-        onClose={handleCloseDialog}
-        customer={selectedCustomer!}
-        onSave={handleOnSave}
-      />
+      {selectedCustomer && (
+        <DetailCustomer
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+          customer={selectedCustomer!}
+          onSave={handleOnSave}
+        />
+      )}
 
       <CreateCustomer
         open={AddDialogOpen}

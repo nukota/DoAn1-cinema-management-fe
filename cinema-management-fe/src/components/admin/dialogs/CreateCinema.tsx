@@ -8,7 +8,6 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 const CustomDialogContent = styled(DialogContent)({
@@ -27,19 +26,19 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateCustomerProps {
+interface CreateCinemaProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newCustomer: any) => void;
+  onAdd: (newCinema: any) => void;
 }
 
-const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd }) => {
-  const [fullname, setFullname] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [phone, setPhone] = useState<String>("");
-  const [dob, setDob] = useState<String>("");
-  const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+const CreateCinema: React.FC<CreateCinemaProps> = ({
+  open,
+  onClose,
+  onAdd,
+}) => {
+  const [name, setName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
 
   const handleAddClick = () => {};
   return (
@@ -61,7 +60,7 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
           padding: "16px 24px",
         }}
       >
-        Add Customer
+        Add Cinema
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -73,63 +72,25 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
             fullWidth
             margin="dense"
             size="small"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            CCCD:
+            Address:
           </Typography>
           <TextField
-            placeholder="CCCD"
+            placeholder="Address"
             fullWidth
             margin="dense"
             size="small"
-            value={cccd}
-            onChange={(e) => setCccd(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Date of birth:
-          </Typography>
-          <TextField
-            type="date"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Number:
-          </Typography>
-          <TextField
-            placeholder="Phone Number"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Email:
-          </Typography>
-          <TextField
-            placeholder="Email"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
         </Box>
       </CustomDialogContent>
+
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
           onClick={handleAddClick}
@@ -144,4 +105,4 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
   );
 };
 
-export default CreateCustomer;
+export default CreateCinema;

@@ -5,12 +5,15 @@ import { CinemaType, RoomType } from "../../types";
 import { exampleCinemas } from "../../data";
 import { exampleRooms } from "../../data";
 import DetailRooms from "./dialogs/DetailRooms";
+import DetailCinema from "./dialogs/DetailCinema";
+import CreateCinema from "./dialogs/CreateCinema";
 
 const Cinemas: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
   const [DetailRoomsDialogOpen, setDetailRoomsDialogOpen] =
     useState<boolean>(false);
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
@@ -24,11 +27,12 @@ const Cinemas: React.FC = () => {
 
   const handleInfoClick = (cinema: CinemaType) => {
     setSelectedCinema(cinema);
-    setDetailRoomsDialogOpen(true);
+    setDetailDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setDetailRoomsDialogOpen(false);
+    setDetailDialogOpen(false);
     setAddDialogOpen(false);
     setSelectedCinema(null);
   };
@@ -45,6 +49,9 @@ const Cinemas: React.FC = () => {
   const handleAddRoom = async (newRoom: RoomType) => {};
   const handleUpdateRoom = async (updatedRoom: RoomType) => {};
   const handleDeleteRoom = async (room: RoomType) => {};
+
+  const handleAddNewCinema = async (newCinema: CinemaType) => {};
+  const handleOnSave = async (cinema: CinemaType) => {};
 
   const filteredCinemas = exampleCinemas.filter((cinema) => {
     const searchTermLower = searchTerm.toLowerCase();
@@ -86,6 +93,7 @@ const Cinemas: React.FC = () => {
                 key={cinema.cinema_id}
                 cinema={cinema}
                 handleSeeAllRooms={() => handleSeeAllRooms(cinema)}
+                handleInfoClick={() => handleInfoClick(cinema)}
               />
             );
           })}
@@ -94,13 +102,26 @@ const Cinemas: React.FC = () => {
       {selectedCinema && (
         <DetailRooms
           cinema={selectedCinema!}
-          onClose={() => setSelectedCinema(null)}
+          onClose={handleCloseDialog}
           open={DetailRoomsDialogOpen}
           onAddRoom={handleAddRoom}
           onUpdateRoom={handleUpdateRoom}
           onDeleteRoom={handleDeleteRoom}
         />
       )}
+      {selectedCinema && (
+        <DetailCinema
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+          cinema={selectedCinema!}
+          onSave={handleOnSave}
+        />
+      )}
+      <CreateCinema
+        open={AddDialogOpen}
+        onClose={handleCloseDialog}
+        onAdd={handleAddNewCinema}
+      />
     </div>
   );
 };

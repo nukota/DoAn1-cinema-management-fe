@@ -80,14 +80,16 @@
 }
 
 .tab:hover span {
-  color: #fff;
+  color: #000;
+  font-weight: 500;
   transform: translateY(-2px);
 }
 
 .tab.active {
   border-bottom: none;
   font-weight: 500;
-  color: #fff;
+  color: #000;
+  font-weight: 600;
 }
 
 .product {

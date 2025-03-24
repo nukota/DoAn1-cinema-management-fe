@@ -11,6 +11,8 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { CinemaType } from "../../../types";
+import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -27,19 +29,27 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateCustomerProps {
+interface CreateEmployeeProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newCustomer: any) => void;
+  onAdd: (newEmployee: any) => void;
 }
+const shifts: string[] = ["Morning", "Afternoon", "Evening"];
 
-const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd }) => {
+const CreateEmployee: React.FC<CreateEmployeeProps> = ({
+  open,
+  onClose,
+  onAdd,
+}) => {
   const [fullname, setFullname] = useState<String>("");
   const [email, setEmail] = useState<String>("");
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+  const [role, setRole] = useState<String>("Employee");
+  const [cinemaId, setCinemaId] = useState<number>();
+  const [shift, setShift] = useState<string | null>(null);
+  const [position, setPosition] = useState<string>("");
 
   const handleAddClick = () => {};
   return (
@@ -61,9 +71,18 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
           padding: "16px 24px",
         }}
       >
-        Add Customer
+        Add Employee
       </DialogTitle>
       <CustomDialogContent>
+        <Typography
+          variant="h6"
+          gutterBottom
+          color="primary"
+          fontWeight={550}
+          sx={{ mt: 1 }}
+        >
+          Personal Info
+        </Typography>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
             Full Name:
@@ -129,7 +148,71 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
             onChange={(e) => setEmail(e.target.value)}
           />
         </Box>
+        <Typography
+          variant="h6"
+          gutterBottom
+          color="primary"
+          fontWeight={550}
+          sx={{ mt: 2 }}
+        >
+          Employment Info
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Cinema:
+          </Typography>
+          <Autocomplete
+            options={exampleCinemas}
+            value={exampleCinemas.find((c) => c.cinema_id === cinemaId) || null}
+            fullWidth
+            onChange={(event, newValue) => setCinemaId(newValue?.cinema_id)}
+            getOptionLabel={(option) =>
+              `(ID: ${option.cinema_id}) ${option.name}`
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Cinema"
+                margin="dense"
+                size="small"
+              />
+            )}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Position:
+          </Typography>
+          <TextField
+            placeholder="Position"
+            fullWidth
+            margin="dense"
+            size="small"
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Shift:
+          </Typography>
+          <Autocomplete
+            options={shifts}
+            value={shift}
+            fullWidth
+            onChange={(event, newValue) => setShift(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Shift"
+                margin="dense"
+                size="small"
+              />
+            )}
+          />
+        </Box>
       </CustomDialogContent>
+
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
           onClick={handleAddClick}
@@ -144,4 +227,4 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
   );
 };
 
-export default CreateCustomer;
+export default CreateEmployee;

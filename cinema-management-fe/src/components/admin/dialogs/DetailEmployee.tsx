@@ -11,7 +11,8 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { UserType } from "../../../types";
+import { EmployeeType, CinemaType } from "../../../types";
+import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -28,39 +29,43 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface DetailCustomerProps {
-  customer: UserType;
+interface DetailEmployeeProps {
+  employee: EmployeeType;
   open: boolean;
   onClose: () => void;
-  onSave: (newCustomer: any) => void;
+  onSave: (newEmployee: any) => void;
 }
+const shifts: string[] = ["Morning", "Afternoon", "Evening"];
 
-const DetailCustomer: React.FC<DetailCustomerProps> = ({
-  customer,
+const DetailEmployee: React.FC<DetailEmployeeProps> = ({
+  employee,
   open,
   onClose,
   onSave,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [fullname, setFullname] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [phone, setPhone] = useState<String>("");
-  const [dob, setDob] = useState<String>("");
-  const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+  const [fullname, setFullname] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+  const [cccd, setCccd] = useState<string>("");
+  const [role, setRole] = useState<string>("employee");
+  const [cinemaId, setCinemaId] = useState<number>();
+  const [shift, setShift] = useState<string | null>(null);
+  const [position, setPosition] = useState<string>("");
 
   useEffect(() => {
-    if (customer) {
-      setFullname(customer.fullname);
-      setEmail(customer.email);
-      setPhone(customer.phone);
-      setDob(customer.dob);
-      setCccd(customer.cccd);
+    if (employee) {
+      setFullname(employee.fullname);
+      setEmail(employee.email);
+      setPhone(employee.phone);
+      setDob(employee.dob);
+      setCccd(employee.cccd);
     }
     if (!open) {
       setIsEditing(false);
     }
-  }, [customer, open]);
+  }, [employee, open]);
 
   const handleModifyClick = () => {
     setIsEditing(true);
@@ -89,15 +94,24 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
           padding: "16px 24px",
         }}
       >
-        Detail Customer
+        Detail Employee
       </DialogTitle>
       <CustomDialogContent>
+        <Typography
+          variant="h6"
+          gutterBottom
+          color="primary"
+          fontWeight={550}
+          sx={{ mt: 1 }}
+        >
+          Personal Info
+        </Typography>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>ID:</Typography>
           <TextField
             placeholder="Auto generated"
             fullWidth
-            value={customer.user_id}
+            value={`#${employee.employee_id} (account #${employee.user_id})`}
             disabled
             margin="dense"
             size="small"
@@ -173,6 +187,72 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
             onChange={(e) => setEmail(e.target.value)}
           />
         </Box>
+        <Typography
+          variant="h6"
+          gutterBottom
+          color="primary"
+          fontWeight={550}
+          sx={{ mt: 2 }}
+        >
+          Employment Info
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Cinema:
+          </Typography>
+          <Autocomplete
+            options={exampleCinemas}
+            value={exampleCinemas.find((c) => c.cinema_id === cinemaId) || null}
+            disabled={!isEditing}
+            fullWidth
+            onChange={(event, newValue) => setCinemaId(newValue?.cinema_id)}
+            getOptionLabel={(option) =>
+              `(ID: ${option.cinema_id}) ${option.name}`
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Cinema"
+                margin="dense"
+                size="small"
+              />
+            )}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Position:
+          </Typography>
+          <TextField
+            placeholder="Position"
+            fullWidth
+            margin="dense"
+            size="small"
+            value={position}
+            disabled={!isEditing}
+            onChange={(e) => setPosition(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Shift:
+          </Typography>
+          <Autocomplete
+            options={shifts}
+            value={shift}
+            disabled={!isEditing}
+            fullWidth
+            onChange={(event, newValue) => setShift(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Shift"
+                margin="dense"
+                size="small"
+              />
+            )}
+          />
+        </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
@@ -207,4 +287,4 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
   );
 };
 
-export default DetailCustomer;
+export default DetailEmployee;
