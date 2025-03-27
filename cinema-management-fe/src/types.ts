@@ -74,9 +74,7 @@ export type TicketType = {
   ticket_id: number;
   showtime_id: string;
   seat_id: string;
-  receipt_id: number;
-  status: "booked" | "paid" | "cancelled";
-  booked_at: string;
+  order_id: number;
 };
 
 export type OrderType = {

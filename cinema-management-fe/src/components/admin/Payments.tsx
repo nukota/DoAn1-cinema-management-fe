@@ -1,14 +1,19 @@
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import addImg from "../../assets/images/add.svg";
-import { Button } from "@mui/material";
 import Payment from "./items/Payment";
 import { examplePayments } from "../../data";
+import { PaymentType } from "../../types";
+import DetailPayment from "./dialogs/DetailPayment";
 
 const Payments: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedPayment, setSelectedPayment] = useState<PaymentType | null>(
+    null
+  );
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
@@ -30,12 +35,14 @@ const Payments: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
+  const handleInfoClick = (payment: PaymentType) => {
+    setSelectedPayment(payment);
+    setDetailDialogOpen(true);
   };
 
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setSelectedPayment(null);
   };
 
   const handlePageChange = (pageNumber: number | string) => {
@@ -135,21 +142,6 @@ const Payments: React.FC = () => {
             />
           </div>
         </div>
-        <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
-            sx={{
-              mt: 2,
-              ml: {1270: 2},
-              width: "114px",
-              height: "32px",
-            }}
-          >
-            Add New
-          </Button>
-        </div>
       </div>
       <div className="Payments-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
@@ -168,7 +160,11 @@ const Payments: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentPayments.map((payment) => (
-            <Payment key={payment.payment_id} {...payment} />
+            <Payment
+              key={payment.payment_id}
+              payment={payment}
+              handleInfoClick={() => handleInfoClick(payment)}
+            />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -204,6 +200,13 @@ const Payments: React.FC = () => {
           )}
         </div>
       </div>
+      {selectedPayment && (
+        <DetailPayment
+          payment={selectedPayment}
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+        />
+      )}
     </div>
   );
 };

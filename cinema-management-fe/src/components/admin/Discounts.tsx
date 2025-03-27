@@ -3,12 +3,22 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import Discount from "./items/Discount";
+import { DiscountType } from "../../types";
 import { exampleDiscounts } from "../../data";
+import DetailDiscount from "./dialogs/DetailDiscount";
+import CreateDiscount from "./dialogs/CreateDiscount";
 
 const Discounts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedDiscount, setSelectedDiscount] = useState<DiscountType | null>(
+    null
+  );
+
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -29,13 +39,26 @@ const Discounts: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
+  const handleAddNewClick = () => {
+    setAddDialogOpen(true);
   };
 
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
+  const handleInfoClick = (discount: DiscountType) => {
+    setSelectedDiscount(discount);
+    setDetailDialogOpen(true);
   };
+  const handleCheckConfirmDelete = (discount: DiscountType) => {
+    setShowDeleteConfirm(true);
+    setSelectedDiscount(discount);
+  };
+
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setAddDialogOpen(false);
+    setSelectedDiscount(null);
+  };
+
+  const handleAddNewDiscount = async (newDiscount: DiscountType) => {};
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
@@ -142,7 +165,7 @@ const Discounts: React.FC = () => {
             color="primary"
             sx={{
               mt: 2,
-              ml: {1270: 2},
+              ml: { 1270: 2 },
               width: "114px",
               height: "32px",
             }}
@@ -205,6 +228,18 @@ const Discounts: React.FC = () => {
           )}
         </div>
       </div>
+      {selectedDiscount && (
+        <DetailDiscount
+          discount={selectedDiscount}
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+        />
+      )}
+      <CreateDiscount
+        open={AddDialogOpen}
+        onClose={handleCloseDialog}
+        onAdd={handleAddNewDiscount}
+      />
     </div>
   );
 };

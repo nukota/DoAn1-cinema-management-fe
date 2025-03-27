@@ -151,18 +151,12 @@ const Customers: React.FC = () => {
           <Button
             onClick={handleAddNewClick}
             variant="contained"
+            color="primary"
             sx={{
               mt: 2,
               ml: { 1270: 2 },
               width: "114px",
               height: "32px",
-              backgroundColor: "#B80007",
-              color: "white",
-              fontWeight: "500",
-              textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: "#b71c1c", // Darker #B80007 for hover
-              },
             }}
           >
             Add New

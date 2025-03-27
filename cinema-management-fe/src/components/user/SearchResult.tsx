@@ -4,7 +4,7 @@ import Footer from "./elements/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import { exampleMovies } from "../../data";
 
-function SearchResult() {
+const SearchResult: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get("query");
@@ -30,5 +30,5 @@ function SearchResult() {
       </div>
     </div>
   );
-}
+};
 export default SearchResult;

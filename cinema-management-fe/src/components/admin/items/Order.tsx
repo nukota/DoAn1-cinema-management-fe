@@ -1,45 +1,45 @@
-import React from "react"
-import DeleteImg from "../../../assets/images/delete.svg"
-import InfoImg from "../../../assets/images/info.svg"
-import { OrderType } from "../../../types"
+import React from "react";
+import DeleteImg from "../../../assets/images/delete.svg";
+import InfoImg from "../../../assets/images/info.svg";
+import { OrderType } from "../../../types";
+import orderBackgroundImg from "../../../assets/images/orderBackground.png";
 
-const Order: React.FC<OrderType> = (order) => {
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
-  const handleInfoClick = () => {
-    alert("Info Btn clicked")
-  }
-  return (
-    <div
-      className="order grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
-      style={{ gridTemplateColumns: "0.5fr 0.5fr 1fr 1fr 1fr 1fr" }}
-    >
-      <p className="text-sm font-normal">{order.order_id}</p>
-      <p className="text-sm font-normal">{order.user_id}</p>
-      <p className="text-sm font-normal">{order.total_price}</p>
-      <p className="text-sm font-normal">{order.status}</p>
-      <p className="text-sm font-normal">{order.created_at}</p>
-      <div className="flex flex-row">
-        <button className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleInfoClick}>
-          <img
-            src={InfoImg}
-            alt="Info"
-            style={{ filter: "brightness(1.3)" }}
-            className="w-6 h-6 hover:filter-hover"
-          />
-        </button>
-        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleDeleteClick}>
-          <img
-            src={DeleteImg}
-            alt="Delete"
-            style={{ filter: "brightness(1.3)" }}
-            className="w-6 h-6 hover:filter-hover"
-          />
-        </button>
-      </div>
-    </div>
-  )
+interface OrderProps {
+  order: OrderType;
+  ticketAmount: number;
+  productAmount: number;
+  handleInfoClick: () => void;
+  handleDeleteClick: () => void;
 }
 
-export default Order
+const Order: React.FC<OrderProps> = ({
+  order,
+  ticketAmount,
+  productAmount,
+  handleInfoClick,
+  handleDeleteClick,
+}) => {
+  return (
+    <div className="order w-full px-4 h-[160px] bg-[#f2f2f2] rounded-lg relative text-sm overflow-hidden text-black hover:bg-[#d4d4d4] transition-colors ease-in-out duration-200 group " onClick={handleInfoClick}>
+      <img
+        src={orderBackgroundImg}
+        alt="orderBackground"
+        className="absolute top-0 -left-4 h-[174px] object-cover rounded-lg opacity-[4%] transition-transform duration-200 ease-in-out group-hover:scale-[120%]"
+      />
+      <div className="order-info flex flex-col mt-1 items-start justify-between py-2 px-1">
+        <div className="flex flex-row w-full items-center justify-between text-gray mb-2">
+          <span># {order.order_id}</span>
+          <span className="text-[13px]">{order.status}</span>
+        </div>
+        <p>Date: {order.created_at} </p>
+        <p>User: {order.user_id}</p>
+        <p className="my-2">
+          {ticketAmount} tickets, {productAmount} products
+        </p>
+        <p className="text-base">Total: {order.total_price} </p>
+      </div>
+    </div>
+  );
+};
+
+export default Order;

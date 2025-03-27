@@ -2,14 +2,11 @@ import React from "react"
 import DeleteImg from "../../../assets/images/delete.svg"
 import InfoImg from "../../../assets/images/info.svg"
 import { PaymentType } from "../../../types"
-
-const Payment: React.FC<PaymentType> = (payment) => {
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
-  const handleInfoClick = () => {
-    alert("Info Btn clicked")
-  }
+interface PaymentProps {
+  payment: PaymentType
+  handleInfoClick: () => void
+}
+const Payment: React.FC<PaymentProps> = ({payment, handleInfoClick}) => {
   return (
     <div
       className="payment grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
@@ -25,14 +22,6 @@ const Payment: React.FC<PaymentType> = (payment) => {
           <img
             src={InfoImg}
             alt="Info"
-            style={{ filter: "brightness(1.3)" }}
-            className="w-6 h-6 hover:filter-hover"
-          />
-        </button>
-        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleDeleteClick}>
-          <img
-            src={DeleteImg}
-            alt="Delete"
             style={{ filter: "brightness(1.3)" }}
             className="w-6 h-6 hover:filter-hover"
           />

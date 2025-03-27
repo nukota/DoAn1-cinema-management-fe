@@ -145,7 +145,7 @@ const DetailRooms: React.FC<DetailRoomsProps> = ({
           </Typography>
         </Box>
 
-        <Box sx={{ mt: 4, overflow: "scroll", maxHeight: "50vh" }}>
+        <Box sx={{ mt: 4, overflowY: "scroll", maxHeight: "50vh" }}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>

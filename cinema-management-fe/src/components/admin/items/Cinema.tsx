@@ -46,14 +46,14 @@ const Cinema: React.FC<CinemaProps> = ({
       <div className="w-full text-[#fef5f5] text-[84px] absolute -top-10 -right-10 z-0 whitespace-nowrap text-overflow-clip">
         {cinema.name}
       </div>
-      <Button
+      {/* <Button
         color="primary"
         variant="contained"
         sx={{ width: "90%", placeSelf: "center", bottom: "10px", mt: 1 }}
         onClick={() => handleSeeAllRooms()}
       >
         See All Rooms
-      </Button>
+      </Button> */}
     </div>
   );
 };

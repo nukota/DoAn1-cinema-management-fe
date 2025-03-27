@@ -2,13 +2,25 @@ import { useState, ChangeEvent } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Order from "./items/Order";
-import { Button } from "@mui/material";
-import { exampleOrders } from "../../data";
+import {
+  exampleOrders,
+  exampleTickets,
+  exampleOrderProducts,
+} from "../../data";
+import { OrderProductType, OrderType, TicketType } from "../../types";
+import DetailOrder from "./dialogs/DetailOrder";
 
 const Orders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+  const [tickets, setTickets] = useState<TicketType[] | null>(null);
+  const [products, setProducts] = useState<OrderProductType[] | null>(null);
+
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -29,12 +41,24 @@ const Orders: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked");
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
   };
 
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
+  const handleInfoClick = (order: OrderType) => {
+    setSelectedOrder(order);
+    setTickets(exampleTickets.filter((ticket) => ticket.order_id === selectedOrder?.order_id));
+    setProducts(exampleOrderProducts.filter((product) => product.order_id === selectedOrder?.order_id));
+    setDetailDialogOpen(true);
+  };
+  const handleCheckConfirmDelete = (order: OrderType) => {
+    setShowDeleteConfirm(true);
+    setSelectedOrder(order);
+  };
+
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setSelectedOrder(null);
   };
 
   const handlePageChange = (pageNumber: number | string) => {
@@ -51,16 +75,16 @@ const Orders: React.FC = () => {
     const isDateMatch = selectedDate
       ? order.created_at && order.created_at.startsWith(selectedDate)
       : true;
-
-    return (
+    const matchesTab = activeTab === "All" || activeTab === order.status;
+    const matchesSearch =
       (order.order_id && order.order_id.toString().includes(searchTermLower)) ||
       (order.user_id && order.user_id.toString().includes(searchTermLower)) ||
       (order.total_price &&
         order.total_price.toString().includes(searchTermLower)) ||
       (order.created_at &&
         order.created_at.toString().includes(searchTermLower)) ||
-      (order.status && order.status.toLowerCase().includes(searchTermLower))
-    );
+      (order.status && order.status.toLowerCase().includes(searchTermLower));
+    return isDateMatch && matchesTab && matchesSearch;
   });
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -92,7 +116,7 @@ const Orders: React.FC = () => {
   };
 
   return (
-    <div className="Orders flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
+    <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">
       <div className="text-40px font-medium text-dark-gray">Orders</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">
@@ -130,75 +154,67 @@ const Orders: React.FC = () => {
             />
           </div>
         </div>
-        <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
-            sx={{
-              mt: 2,
-              ml: {1270: 2},
-              width: "114px",
-              height: "32px",
-            }}
-          >
-            Add New
-          </Button>
-        </div>
       </div>
-      <div className="orders-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
-        <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[10%] text-base">Order ID</div>
-          <div className="w-[10%] text-base">User ID</div>
-          <div className="w-[20%] text-base">Total Price</div>
-          <div className="w-[20%] text-base">Status</div>
-          <div className="w-[20%] text-base">Created At</div>
-          <div className="w-[20%] text-base">Order Action</div>
-        </div>
-        <div className="border-b border-light-gray border-1.5" />
-        <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
-        <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
-        <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
-        <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
-        <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
-        <div className="-mt-[450px] text-base">
-          {currentOrders.map((order) => (
-            <Order key={order.order_id} {...order} />
+      <div className="product-tabs flex mt-4 z-20">
+        <button
+          className={`tab ${activeTab === "All" ? "active" : ""}`}
+          onClick={() => handleTabClick("All")}
+        >
+          <span>All</span>
+        </button>
+
+        <button
+          className={`tab ${activeTab === "Completed" ? "active" : ""}`}
+          onClick={() => handleTabClick("completed")}
+        >
+          <span>Completed</span>
+        </button>
+        <button
+          className={`tab ${activeTab === "Pending" ? "active" : ""}`}
+          onClick={() => handleTabClick("pending")}
+        >
+          <span>Pending</span>
+        </button>
+        <button
+          className={`tab ${activeTab === "Cancelled" ? "active" : ""}`}
+          onClick={() => handleTabClick("cancelled")}
+        >
+          <span>Cancelled</span>
+        </button>
+      </div>
+      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
+        <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
+          {filteredOrders.map((order, index) => (
+            <Order
+              key={order.order_id}
+              order={order}
+              ticketAmount={1}
+              productAmount={1}
+              handleInfoClick={() => handleInfoClick(order)}
+              handleDeleteClick={() => handleCheckConfirmDelete(order)}
+            />
           ))}
         </div>
-        <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
-          {currentPage > 1 && (
-            <button
-              className="pagination-btn right-56"
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              Previous
-            </button>
-          )}
-          <div className="absolute right-14 flex">
-            {getPageNumbers().map((pageNumber) => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`page-number-btn ${
-                  currentPage === pageNumber ? "active" : ""
-                }`}
-              >
-                {pageNumber}
-              </button>
-            ))}
-          </div>
-
-          {currentPage < totalPages && (
-            <button
-              className="pagination-btn right-0"
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Next
-            </button>
-          )}
-        </div>
+        {/* <button
+          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200 z-20"
+          onClick={handleAddNewClick}
+        >
+          <img
+            className="size-11 invert brightness-0"
+            src={addImg}
+            alt="Add New"
+          />
+        </button> */}
       </div>
+      {selectedOrder && (
+        <DetailOrder
+          order={selectedOrder}
+          tickets={tickets!}
+          products={products!}
+          open={DetailDialogOpen}
+          onClose={handleCloseDialog}
+        />
+      )}
     </div>
   );
 };

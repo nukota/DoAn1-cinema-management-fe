@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   Button,
@@ -8,9 +7,9 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { PaymentType } from "../../../types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -27,20 +26,17 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateReviewProps {
+interface DetailPaymentProps {
+  payment: PaymentType;
   open: boolean;
   onClose: () => void;
-  onAdd: (newReview: any) => void;
 }
 
-const CreateReview: React.FC<CreateReviewProps> = ({ open, onClose, onAdd }) => {
-  const [fullname, setFullname] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [phone, setPhone] = useState<String>("");
-  const [dob, setDob] = useState<String>("");
-  const [cccd, setCccd] = useState<String>("");
-
-  const handleAddClick = () => {};
+const DetailPayment: React.FC<DetailPaymentProps> = ({
+  payment,
+  open,
+  onClose,
+}) => {
   return (
     <Dialog
       open={open}
@@ -60,87 +56,122 @@ const CreateReview: React.FC<CreateReviewProps> = ({ open, onClose, onAdd }) => 
           padding: "16px 24px",
         }}
       >
-        Add Customer
+        Detail Payment
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Full Name:
+            Payment ID:
           </Typography>
           <TextField
-            placeholder="Full Name"
             fullWidth
+            value={`#${payment.payment_id}`}
+            disabled
             margin="dense"
             size="small"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            CCCD:
+            Order:
           </Typography>
           <TextField
-            placeholder="CCCD"
             fullWidth
             margin="dense"
             size="small"
-            value={cccd}
-            onChange={(e) => setCccd(e.target.value)}
+            value={`#${payment.order_id}`}
+            disabled
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Date of birth:
+            Amount:
           </Typography>
           <TextField
-            type="date"
             fullWidth
             margin="dense"
             size="small"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
+            value={payment.amount}
+            disabled
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Number:
+            Discount:
           </Typography>
           <TextField
-            placeholder="Phone Number"
             fullWidth
             margin="dense"
             size="small"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={payment.discount_id}
+            disabled
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Email:
+            Status:
           </Typography>
           <TextField
-            placeholder="Email"
             fullWidth
             margin="dense"
             size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={payment.status}
+            disabled
           />
         </Box>
+        {payment.status === "completed" && (
+          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+              Method:
+            </Typography>
+            <TextField
+              fullWidth
+              margin="dense"
+              size="small"
+              value={payment.payment_method}
+              disabled
+            />
+          </Box>
+        )}
+        {payment.status === "completed" && (
+          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+              Paid at:
+            </Typography>
+            <TextField
+              fullWidth
+              margin="dense"
+              size="small"
+              value={payment.paid_at}
+              disabled
+            />
+          </Box>
+        )}
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
-        <Button
-          onClick={handleAddClick}
-          color="primary"
-          variant="contained"
-          sx={{ width: 130 }}
-        >
-          Add
-        </Button>
+        {payment.status === "pending" && (
+          <Button
+            // onClick={{}}
+            color="primary"
+            variant="contained"
+            sx={{ width: 160 }}
+          >
+            Mark as Completed
+          </Button>
+        )}
+        {payment.status === "pending" && (
+          <Button
+            // onClick={{}}
+            color="primary"
+            variant="contained"
+            sx={{ width: 160 }}
+          >
+            Mark as Canceled
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
 };
 
-export default CreateReview;
+export default DetailPayment;

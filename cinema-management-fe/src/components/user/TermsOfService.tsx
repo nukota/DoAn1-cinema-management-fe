@@ -3,7 +3,7 @@ import Footer from "./elements/Footer";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
 
-function TermsOfService() {
+const TermsOfService: React.FC = () => {
   return (
     <div className="bg-[#090909] w-full h-full flex flex-col justify-center relative">
       <UserHeader />
