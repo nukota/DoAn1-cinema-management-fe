@@ -22,7 +22,9 @@ import EmployeesImg from "./../../assets/images/employees.svg";
 import CustomersImg from "./../../assets/images/customers.svg";
 import MoviesImg from "./../../assets/images/movies.svg";
 import ProductsImg from "./../../assets/images/products.svg";
-import RoomsImg from "./../../assets/images/theaters.svg";
+import CinemasImg from "./../../assets/images/theaters.svg";
+import ShowtimesImg from "./../../assets/images/showtimes.svg";
+import RoomsImg from "./../../assets/images/rooms.svg";
 import OrdersImg from "./../../assets/images/orders.svg";
 import DiscountsImg from "./../../assets/images/discounts.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
@@ -31,6 +33,8 @@ import ReviewsImg from "./../../assets/images/customerRatings.svg";
 // import Login from "./Login";
 import { Button } from "@mui/material";
 import { UserType } from "../../types";
+import Rooms from "./Rooms";
+import Showtimes from "./Showtimes";
 
 const exampleAdmin: UserType = {
   user_id: 1,
@@ -119,10 +123,17 @@ const Admin: React.FC = () => {
               />,
               <NavSelection
                 key="cinemas"
-                icon={RoomsImg}
+                icon={CinemasImg}
                 title="Cinemas"
                 to="/admin/cinemas"
                 isSelected={location.pathname === "/admin/cinemas"}
+              />,
+              <NavSelection
+                key="rooms"
+                icon={RoomsImg}
+                title="Rooms"
+                to="/admin/rooms"
+                isSelected={location.pathname === "/admin/rooms"}
               />,
               <NavSelection
                 key="customers"
@@ -151,6 +162,13 @@ const Admin: React.FC = () => {
                 title="Products"
                 to="/admin/products"
                 isSelected={location.pathname === "/admin/products"}
+              />,
+              <NavSelection
+                key="Showtimes"
+                icon={ShowtimesImg}
+                title="Showtimes"
+                to="/admin/showtimes"
+                isSelected={location.pathname === "/admin/showtimes"}
               />,
               <NavSelection
                 key="orders"
@@ -203,10 +221,12 @@ const Admin: React.FC = () => {
           <Routes>
             <Route path="/" element={<AdminHome />} />
             <Route path="cinemas" element={<Cinemas />} />
+            <Route path="rooms" element={<Rooms />} />
             <Route path="customers" element={<Customers />} />
             <Route path="employees" element={<Employees />} />
             <Route path="movies" element={<Movies />} />
             <Route path="products" element={<Products />} />
+            <Route path="showtimes" element={<Showtimes />} />
             <Route path="orders" element={<Orders />} />
             <Route path="payments" element={<Payments />} />
             <Route path="discounts" element={<Discounts />} />

@@ -2645,39 +2645,51 @@ export const exampleReviews: ReviewType[] = [
 export const exampleTickets: TicketType[] = [
   {
     ticket_id: 1,
-    showtime_id: "1",
+    showtime_id: 1,
     seat_id: "A1",
     order_id: 1,
   },
   {
     ticket_id: 1,
-    showtime_id: "1",
+    showtime_id: 1,
     seat_id: "F1",
     order_id: 1,
   },
   {
     ticket_id: 2,
-    showtime_id: "2",
+    showtime_id: 2,
     seat_id: "A2",
     order_id: 2,
   },
   {
     ticket_id: 3,
-    showtime_id: "3",
+    showtime_id: 3,
     seat_id: "A3",
     order_id: 3,
   },
   {
     ticket_id: 4,
-    showtime_id: "4",
+    showtime_id: 4,
     seat_id: "A4",
     order_id: 4,
   },
   {
     ticket_id: 5,
-    showtime_id: "5",
+    showtime_id: 5,
     seat_id: "A5",
     order_id: 5,
+  },
+  {
+    ticket_id: 6,
+    showtime_id: 1,
+    seat_id: "A1",
+    order_id: 1,
+  },
+  {
+    ticket_id: 7,
+    showtime_id: 1,
+    seat_id: "F1",
+    order_id: 1,
   },
 ];
 

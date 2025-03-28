@@ -1,10 +1,9 @@
 import React, { useState, ChangeEvent } from "react";
-import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
-import { exampleRooms } from "../../data";
+import { exampleShowtimes } from "../../data";
 import { Button } from "@mui/material";
 
-const Rooms: React.FC = () => {
+const Showtimes: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -17,17 +16,17 @@ const Rooms: React.FC = () => {
   const handleAddNewClick = () => {
   };
 
-  const filteredRooms = exampleRooms.filter((room) => {
+  const filteredShowtimes = exampleShowtimes.filter((showtime) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (room.room_id && room.room_id.toString().includes(searchTermLower)) ||
-      (room.seat_count && room.seat_count.toString().includes(searchTermLower))
+      (showtime.showtime_id && showtime.showtime_id.toString().includes(searchTermLower)) ||
+      (showtime.movie_id && showtime.movie_id.toString().includes(searchTermLower))
     );
   });
 
   return (
-    <div className="Rooms flex flex-col h-[665px]">
-      <div className="text-40px font-medium text-dark-gray">Rooms</div>
+    <div className="Showtimes flex flex-col h-[665px]">
+      <div className="text-40px font-medium text-dark-gray">Showtimes</div>
       <div className="flex flex-row items-center mt-4">
         <div className="SearchBar relative w-full max-w-[240px] h-8">
           <input
@@ -60,13 +59,13 @@ const Rooms: React.FC = () => {
 
       <div className="content mt-[14px] w-full h-full bg-white border-[3px] border-light-gray rounded-xl pl-12 py-6 pr-4 overflow-auto">
         <div className="list grid grid-cols-5 gap-x-6 gap-y-8 max-h-[490px] py-3 overflow-y-auto">
-          {filteredRooms.map((room, index) => (
-            <Room key={index} {...room} />
-          ))}
+          {/* {filteredShowtimes.map((showtime, index) => (
+            <Showtime key={index} {...showtime} />
+          ))} */}
         </div>
       </div>
     </div>
   );
 };
 
-export default Rooms;
+export default Showtimes;

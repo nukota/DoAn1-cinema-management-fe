@@ -47,8 +47,8 @@ const Orders: React.FC = () => {
 
   const handleInfoClick = (order: OrderType) => {
     setSelectedOrder(order);
-    setTickets(exampleTickets.filter((ticket) => ticket.order_id === selectedOrder?.order_id));
-    setProducts(exampleOrderProducts.filter((product) => product.order_id === selectedOrder?.order_id));
+    setTickets(exampleTickets.filter((ticket) => ticket.order_id === order?.order_id));
+    setProducts(exampleOrderProducts.filter((product) => product.order_id === order?.order_id));
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (order: OrderType) => {
@@ -184,7 +184,7 @@ const Orders: React.FC = () => {
       </div>
       <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
         <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
-          {filteredOrders.map((order, index) => (
+          {filteredOrders.map((order) => (
             <Order
               key={order.order_id}
               order={order}

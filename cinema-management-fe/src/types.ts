@@ -72,7 +72,7 @@ export type SeatType = {
 
 export type TicketType = {
   ticket_id: number;
-  showtime_id: string;
+  showtime_id: number;
   seat_id: string;
   order_id: number;
 };
