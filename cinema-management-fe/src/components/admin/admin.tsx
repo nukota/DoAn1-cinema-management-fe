@@ -32,7 +32,7 @@ import SettingsImg from "./../../assets/images/settings.svg";
 import ReviewsImg from "./../../assets/images/customerRatings.svg";
 // import Login from "./Login";
 import { Button } from "@mui/material";
-import { UserType } from "../../types";
+import { UserType } from "../../interfaces/types";
 import Rooms from "./Rooms";
 import Showtimes from "./Showtimes";
 

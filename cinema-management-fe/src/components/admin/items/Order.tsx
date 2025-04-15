@@ -1,7 +1,7 @@
 import React from "react";
 import DeleteImg from "../../../assets/images/delete.svg";
 import InfoImg from "../../../assets/images/info.svg";
-import { OrderType } from "../../../types";
+import { OrderType } from "../../../interfaces/types";
 import orderBackgroundImg from "../../../assets/images/orderBackground.png";
 
 interface OrderProps {

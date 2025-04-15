@@ -3,7 +3,7 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
 import { examplePayments } from "../../data";
-import { PaymentType } from "../../types";
+import { PaymentType } from "../../interfaces/types";
 import DetailPayment from "./dialogs/DetailPayment";
 
 const Payments: React.FC = () => {
@@ -104,7 +104,7 @@ const Payments: React.FC = () => {
   };
 
   return (
-    <div className="payments flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
+    <div className="payments flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Payments</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">

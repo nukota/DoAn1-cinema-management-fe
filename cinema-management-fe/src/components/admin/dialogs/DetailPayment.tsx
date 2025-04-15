@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { PaymentType } from "../../../types";
+import { PaymentType } from "../../../interfaces/types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -43,8 +43,7 @@ const DetailPayment: React.FC<DetailPaymentProps> = ({
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

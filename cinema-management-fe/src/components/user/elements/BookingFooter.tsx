@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
-import { ProductType } from "../../../types"
+import { ProductType } from "../../../interfaces/types"
 
 interface BookingFooterProps {
   movie: {

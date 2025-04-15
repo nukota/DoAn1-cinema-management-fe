@@ -6,7 +6,7 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import { exampleEmployees } from "../../data";
-import { EmployeeType } from "../../types";
+import { EmployeeType } from "../../interfaces/types";
 
 const Employees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -111,7 +111,7 @@ const Employees: React.FC = () => {
   };
 
   return (
-    <div className="employees flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
+    <div className="employees flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Employees</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">
@@ -161,11 +161,11 @@ const Employees: React.FC = () => {
               height: "32px",
             }}
           >
-            Add New
+            Add New 
           </Button>
         </div>
       </div>
-      <div className="employees-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
+      <div className="mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
           <div className="w-[8%] text-base">Cinema</div>

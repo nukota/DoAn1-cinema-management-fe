@@ -4,18 +4,21 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import addImg from "../../assets/images/add.svg";
 import { exampleMovies } from "../../data";
+import { MovieType } from "../../interfaces/types";
+import DetailMovie from "./dialogs/DetailMovie";
+import CreateMovie from "./dialogs/CreateMovie";
 
 const Movies: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
+  const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-  };
-
-  const handleAddNewClick = () => {
-    alert("Add New Btn clicked");
   };
 
   const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +33,27 @@ const Movies: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleAddNewClick = () => {
+    setAddDialogOpen(true);
+  };
+
+  const handleInfoClick = (movie: MovieType) => {
+    setSelectedMovie(movie);
+    setDetailDialogOpen(true);
+  };
+  const handleCheckConfirmDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDetailDialogOpen(false);
+    setAddDialogOpen(false);
+    setSelectedMovie(null);
+  };
+
+  const handleAddNewMovie = async (newMovie: MovieType) => {};
+  const handleOnSave = async (movie: MovieType) => {};
+
   const filteredMovies = exampleMovies.filter((movie) => {
     const matchesTab = activeTab === "All" || movie.status === activeTab;
     const searchTermLower = searchTerm.toLowerCase();
@@ -38,8 +62,7 @@ const Movies: React.FC = () => {
       (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
       (movie.releaseDate && movie.releaseDate.includes(searchTermLower)) ||
       (movie.director && movie.director.includes(searchTermLower)) ||
-      (movie.cast &&
-        movie.cast.join(" ").toLowerCase().includes(searchTermLower)) ||
+      (movie.cast && movie.cast.toLowerCase().includes(searchTermLower)) ||
       (movie.genre && movie.genre.toLowerCase().includes(searchTermLower)) ||
       (movie.nation && movie.nation.toLowerCase().includes(searchTermLower)) ||
       (movie.description &&
@@ -112,18 +135,40 @@ const Movies: React.FC = () => {
         </button>
       </div>
       <div className="content relative -mt-[2px]  min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
-        <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
+        <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6  2xl:grid-cols-8 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
           {filteredMovies.map((movie, index) => (
-            <Movie key={index} {...movie} />
+            <Movie
+              key={movie.movie_id}
+              movie={movie}
+              handleInfoClick={() => handleInfoClick(movie)}
+            />
           ))}
         </div>
         <button
           className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200"
           onClick={handleAddNewClick}
         >
-          <img className="size-11 invert brightness-0" src={addImg} alt="Add New" />
+          <img
+            className="size-11 invert brightness-0"
+            src={addImg}
+            alt="Add New"
+          />
         </button>
       </div>
+      {selectedMovie && (
+        <DetailMovie
+          open={DetailDialogOpen}
+          movie={selectedMovie!}
+          onClose={handleCloseDialog}
+          onDelete={handleCheckConfirmDelete}
+          onSave={handleOnSave}
+        />
+      )}
+      <CreateMovie
+        open={AddDialogOpen}
+        onClose={handleCloseDialog}
+        onAdd={handleAddNewMovie}
+      />
     </div>
   );
 };

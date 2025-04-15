@@ -11,7 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { CinemaType } from "../../../types";
+import { CinemaType } from "../../../interfaces/types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -69,8 +69,7 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

@@ -1,40 +1,49 @@
-import React from "react"
+import React from "react";
+import { MovieType } from "../../../interfaces/types";
 
 interface MovieProps {
-  poster: string
-  name: string
-  releaseDate: string
-  status: string
+  movie: MovieType;
+  handleInfoClick: () => void;
 }
 
-const Movie: React.FC<MovieProps> = ({ poster, name, releaseDate, status }) => {
+const Movie: React.FC<MovieProps> = ({ movie, handleInfoClick }) => {
   return (
-    <div className="movie h-[200px] w-[140px] flex flex-col">
+    <div className="movie h-[216px] w-[140px] flex flex-col bg-[#eee]" onClick={handleInfoClick}>
       <img
-        className="h-[160px] w-full rounded-xl object-cover border-black border-1.5"
-        src={poster}
+        className="h-[160px] w-full rounded-xl object-cover"
+        src={movie.poster}
         alt="movie poster"
       />
-      <div className="font-medium text-[13px] text-white tracking-wide truncate">
-        {name}
+      <div className="font-medium text-[13px] text-black tracking-wide truncate mt-3">
+        {movie.name}
       </div>
       <div className="flex flex-row items-center space-x-[6px]">
-        <div className="font-bold text-[13px] text-gray">{releaseDate}</div>
-        {(status === "Now Playing" && (
-          <div className="font-light text-[11px] text-green-800">{status}</div>
+        <div className="font-bold text-[13px] text-gray">
+          {movie.releaseDate.substring(0, 4)}
+        </div>
+        {(movie.status === "Now Playing" && (
+          <div className="font-medium text-[11px] text-green-800">
+            {movie.status}
+          </div>
         )) ||
-          (status === "Coming Soon" && (
-            <div className="font-light text-[11px] text-sky-800">{status}</div>
+          (movie.status === "Coming Soon" && (
+            <div className="font-medium text-[11px] text-sky-800">
+              {movie.status}
+            </div>
           )) ||
-          (status === "Stopped" && (
-            <div className="font-light text-[11px] text-rose-800">{status}</div>
+          (movie.status === "Stopped" && (
+            <div className="font-medium text-[11px] text-rose-800">
+              {movie.status}
+            </div>
           )) ||
-          (status === "Unknown" && (
-            <div className="font-light text-[11px] text-gray">{status}</div>
+          (movie.status === "Unknown" && (
+            <div className="font-medium text-[11px] text-gray">
+              {movie.status}
+            </div>
           ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Movie
+export default Movie;

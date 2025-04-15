@@ -1,7 +1,8 @@
 import React from "react";
 import DeleteImg from "../../../assets/images/delete.svg";
 import InfoImg from "../../../assets/images/info.svg";
-import { EmployeeType } from "../../../types";
+import { EmployeeType } from "../../../interfaces/types";
+
 interface EmployeeProps {
   employee: EmployeeType;
   handleInfoClick: () => void;

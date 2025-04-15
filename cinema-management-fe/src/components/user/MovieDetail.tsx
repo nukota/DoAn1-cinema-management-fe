@@ -17,7 +17,7 @@ import {
   exampleProducts,
   exampleMovies,
 } from "../../data";
-import { MovieType, SeatType, ProductType } from "../../types";
+import { MovieType, SeatType, ProductType } from "../../interfaces/types";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();

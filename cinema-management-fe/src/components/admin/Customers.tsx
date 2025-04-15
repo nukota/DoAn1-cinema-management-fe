@@ -5,7 +5,7 @@ import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import { exampleCustomers } from "../../data";
 import CreateCustomer from "./dialogs/CreateCustomer";
-import { UserType } from "../../types";
+import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
 
 const Customers: React.FC = () => {

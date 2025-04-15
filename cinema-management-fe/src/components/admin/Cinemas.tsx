@@ -1,10 +1,9 @@
 import React, { useState, ChangeEvent } from "react";
 import Cinema from "./items/Cinema";
 import SearchImg from "../../assets/images/search.svg";
-import { CinemaType, RoomType } from "../../types";
+import { CinemaType, RoomType } from "../../interfaces/types";
 import { exampleCinemas } from "../../data";
 import { exampleRooms } from "../../data";
-import DetailRooms from "./dialogs/DetailRooms";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
 import { Button } from "@mui/material";
@@ -118,16 +117,6 @@ const Cinemas: React.FC = () => {
           })}
         </div>
       </div>
-      {selectedCinema && (
-        <DetailRooms
-          cinema={selectedCinema!}
-          onClose={handleCloseDialog}
-          open={DetailRoomsDialogOpen}
-          onAddRoom={handleAddRoom}
-          onUpdateRoom={handleUpdateRoom}
-          onDeleteRoom={handleDeleteRoom}
-        />
-      )}
       {selectedCinema && (
         <DetailCinema
           open={DetailDialogOpen}

@@ -1,10 +1,15 @@
 import React from "react"
-import { ProductType } from "../../../types"
+import { ProductType } from "../../../interfaces/types"
 import TextureImg from "../../../assets/images/texture.png"
 
-const Product: React.FC<ProductType> = (product) => {
+interface ProductProps {
+  product: ProductType,
+  handleInfoClick: () => void;
+}
+
+const Product: React.FC<ProductProps> = ({product, handleInfoClick}) => {
   return (
-    <div className="product w-[140px] h-[240px]">
+    <div className="product w-[140px] h-[240px]" onClick={handleInfoClick}>
       <div className="product-img flex w-[130px] h-[150px] border-2 border-red rounded-xl items-center justify-center bg-gradient-to-b from-white to-white p-2 relative">
         <img className="absolute size-full z-0 opacity-15" src={TextureImg} alt="texture" />
         <img className="max-h-[100px] max-w-[100px] z-10" src={product.image} alt={product.name} />

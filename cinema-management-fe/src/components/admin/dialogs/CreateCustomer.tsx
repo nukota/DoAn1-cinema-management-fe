@@ -48,8 +48,7 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

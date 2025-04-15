@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
 import ArrowDownImg from "../../../assets/images/arrowDown.svg";
-import { AuthContext, AuthContextType } from "../../../AuthContext";
+import { AuthContext, AuthContextType } from "../../../contexts/AuthContext";
 
 const UserHeader: React.FC = () => {
   const [searchPhrase, setSearchPhrase] = useState<string>('');

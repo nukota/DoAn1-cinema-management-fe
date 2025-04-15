@@ -3,9 +3,8 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import Discount from "./items/Discount";
-import { DiscountType } from "../../types";
+import { DiscountType } from "../../interfaces/types";
 import { exampleDiscounts } from "../../data";
-import DetailDiscount from "./dialogs/DetailDiscount";
 import CreateDiscount from "./dialogs/CreateDiscount";
 
 const Discounts: React.FC = () => {
@@ -16,7 +15,6 @@ const Discounts: React.FC = () => {
     null
   );
 
-  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
@@ -43,17 +41,12 @@ const Discounts: React.FC = () => {
     setAddDialogOpen(true);
   };
 
-  const handleInfoClick = (discount: DiscountType) => {
-    setSelectedDiscount(discount);
-    setDetailDialogOpen(true);
-  };
   const handleCheckConfirmDelete = (discount: DiscountType) => {
     setShowDeleteConfirm(true);
     setSelectedDiscount(discount);
   };
 
   const handleCloseDialog = () => {
-    setDetailDialogOpen(false);
     setAddDialogOpen(false);
     setSelectedDiscount(null);
   };
@@ -120,7 +113,7 @@ const Discounts: React.FC = () => {
   };
 
   return (
-    <div className="discounts flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
+    <div className="discounts flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Discounts</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">
@@ -174,7 +167,7 @@ const Discounts: React.FC = () => {
           </Button>
         </div>
       </div>
-      <div className="Discounts-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
+      <div className="discounts-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
           <div className="w-[10%] text-base">CODE</div>
@@ -228,13 +221,13 @@ const Discounts: React.FC = () => {
           )}
         </div>
       </div>
-      {selectedDiscount && (
+      {/* {selectedDiscount && (
         <DetailDiscount
           discount={selectedDiscount}
           open={DetailDialogOpen}
           onClose={handleCloseDialog}
         />
-      )}
+      )} */}
       <CreateDiscount
         open={AddDialogOpen}
         onClose={handleCloseDialog}

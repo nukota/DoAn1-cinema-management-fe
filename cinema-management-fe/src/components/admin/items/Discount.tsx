@@ -1,15 +1,8 @@
 import React from "react"
 import DeleteImg from "../../../assets/images/delete.svg"
-import InfoImg from "../../../assets/images/info.svg"
-import { DiscountType } from "../../../types"
+import { DiscountType } from "../../../interfaces/types"
 
 const Discount: React.FC<DiscountType> = (discount) => {
-  const handleDeleteClick = () => {
-    alert("Delete Btn clicked")
-  }
-  const handleInfoClick = () => {
-    alert("Info Btn clicked")
-  }
   return (
     <div
       className="discount grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
@@ -22,7 +15,7 @@ const Discount: React.FC<DiscountType> = (discount) => {
       <p className="text-sm font-normal">{discount.min_purchase}</p>
       <p className="text-sm font-normal">{discount.expiry_date}</p>
       <div className="flex flex-row">
-        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200" onClick={handleDeleteClick}>
+        <button className="delete-btn ml-2 hover:transform hover:-translate-y-1 transition-transform duration-200"/* onClick={{handleDeleteClick}}*/>
           <img
             src={DeleteImg}
             alt="Delete"

@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css"; // This is where Tailwind CSS is included
 import App from "./App.tsx";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { AuthProvider } from "./AuthContext.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 const theme = createTheme({
   palette: {

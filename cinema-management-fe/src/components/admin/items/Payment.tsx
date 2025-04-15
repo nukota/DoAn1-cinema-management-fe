@@ -1,11 +1,12 @@
 import React from "react"
-import DeleteImg from "../../../assets/images/delete.svg"
 import InfoImg from "../../../assets/images/info.svg"
-import { PaymentType } from "../../../types"
+import { PaymentType } from "../../../interfaces/types"
+
 interface PaymentProps {
   payment: PaymentType
   handleInfoClick: () => void
 }
+
 const Payment: React.FC<PaymentProps> = ({payment, handleInfoClick}) => {
   return (
     <div

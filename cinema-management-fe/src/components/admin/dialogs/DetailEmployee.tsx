@@ -11,7 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { EmployeeType, CinemaType } from "../../../types";
+import { EmployeeType, CinemaType } from "../../../interfaces/types";
 import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -81,8 +81,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

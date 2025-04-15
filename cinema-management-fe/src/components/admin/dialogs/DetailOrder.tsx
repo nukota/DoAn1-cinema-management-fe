@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-import { OrderProductType, OrderType, TicketType } from "../../../types";
+import { OrderProductType, OrderType, TicketType } from "../../../interfaces/types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -53,8 +53,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

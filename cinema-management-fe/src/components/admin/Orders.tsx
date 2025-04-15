@@ -7,7 +7,7 @@ import {
   exampleTickets,
   exampleOrderProducts,
 } from "../../data";
-import { OrderProductType, OrderType, TicketType } from "../../types";
+import { OrderProductType, OrderType, TicketType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 
 const Orders: React.FC = () => {

@@ -1,34 +1,29 @@
 import React from "react";
 import infoImg from "../../../assets/images/info.svg";
 import { exampleMovies } from "../../../data";
-import { MovieType } from "../../../types";
+import { MovieType, RoomType } from "../../../interfaces/types";
+import { Button, Typography } from "@mui/material";
 
 interface RoomProps {
-  room_id: number;
-  cinema_id: number;
-  name: string;
-  seat_count: number;
-  repairing: boolean;
+  room: RoomType;
+  handleInfoClick: () => void;
 }
 
 //get room status, playing movie using API here
 const statuses = ["Ready", "Playing", "Repairing", "Unknown"];
-const status : string = statuses[Math.floor(Math.random() * statuses.length)];
+const status: string = statuses[Math.floor(Math.random() * statuses.length)];
 const movies = exampleMovies.map((movie) => movie);
-const movie : MovieType = movies[Math.floor(Math.random() * statuses.length)];
+const movie: MovieType = movies[Math.floor(Math.random() * statuses.length)];
 
-const Room: React.FC<RoomProps> = (room) => {
-  const handleInfoClick = () => {
-    alert("Info Btn clicked");
-  };
-
-  const handleSeeShowTimeClick = () => {
-    alert("SeeShowTime Btn clicked");
-  };
+const Room: React.FC<RoomProps> = ({ room, handleInfoClick }) => {
+  const handleSeeShowTimeClick = () => {};
 
   return (
-    <div className="flex flex-col w-[170px] h-[210px] border-[3px] border-light-gray rounded-xl hover:border-light-gray duration-200">
-      <button className="info-button w-9 h-9 z-20" onClick={handleInfoClick}>
+    <div className="flex flex-col w-[170px] h-[160px] border-[3px] border-light-gray rounded-xl hover:border-light-gray duration-200">
+      <button
+        className="info-button w-9 h-9 z-20 opacity-50 hoverL"
+        onClick={handleInfoClick}
+      >
         <img className="size-7 ml-1" src={infoImg} alt="info" />
       </button>
       <div className="theater-infoflex px-2 -mt-7 w-[170px] flex-col overflow-hidden">
@@ -53,20 +48,21 @@ const Room: React.FC<RoomProps> = (room) => {
           </p>
           <p className="h-[21px]">
             <span>Capacity: </span>
-            <span className="text-white">{room.seat_count}</span>
-          </p>
-          <p className="movie-playing h-[42px] w-full">
-            <span>Playing: </span>
-            <span className="text-gray">{movie.name}</span>
+            <span className="text-black">{room.seat_count}</span>
           </p>
         </div>
       </div>
-      <button
-        className="bg-red w-[136px] h-[32px] items-center self-center mt-[10px] rounded-md hover:bg-dark-red duration-200"
-        onClick={handleSeeShowTimeClick}
-      >
-        <span className="text-[14px] font-medium">See Show Time</span>
-      </button>
+      <div className="mt-auto mb-2 mx-2">
+        <Button
+          variant="contained"
+          size="small"
+          color="primary"
+          fullWidth
+          onClick={handleSeeShowTimeClick}
+        >
+          <Typography fontSize="14px">See Show Time</Typography>
+        </Button>
+      </div>
     </div>
   );
 };

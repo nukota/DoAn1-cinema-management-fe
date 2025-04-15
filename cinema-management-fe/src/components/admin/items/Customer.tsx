@@ -1,7 +1,8 @@
 import React from "react";
 import DeleteImg from "../../../assets/images/delete.svg";
 import InfoImg from "../../../assets/images/info.svg";
-import { UserType } from "../../../types";
+import { UserType } from "../../../interfaces/types";
+
 interface CustomerProps {
   customer: UserType;
   handleInfoClick: () => void;

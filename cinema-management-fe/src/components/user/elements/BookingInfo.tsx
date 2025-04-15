@@ -7,7 +7,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
-import { ProductType, SeatType } from "../../../types";
+import { ProductType, SeatType } from "../../../interfaces/types";
 import NumberPicker from "../../utils/NumberPicker";
 import ProductItem from "../items/ProductItem";
 import SeatUnit from "../items/SeatUnit";

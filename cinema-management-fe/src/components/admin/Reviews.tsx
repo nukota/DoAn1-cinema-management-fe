@@ -4,7 +4,7 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { exampleReviews } from "../../data";
 import { Button } from "@mui/material";
-import { ReviewType } from "../../types";
+import { ReviewType } from "../../interfaces/types";
 import DetailReview from "./dialogs/DetailReview";
 
 const Reviews: React.FC = () => {
@@ -97,7 +97,7 @@ const Reviews: React.FC = () => {
   };
 
   return (
-    <div className="reviews flex flex-col w-[calc(100vw - 336px)] min-w-[1000px] max-w-[1200px] h-[100%] relative ">
+    <div className="reviews flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Reviews</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">

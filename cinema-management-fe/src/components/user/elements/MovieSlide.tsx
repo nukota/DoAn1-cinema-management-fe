@@ -1,7 +1,7 @@
 import SlideItem from "../items/SlideItem";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel, Navigation } from "swiper/modules";
-import { MovieType } from "../../../types";
+import { MovieType } from "../../../interfaces/types";
 import "swiper/swiper-bundle.css";
 
 // const exampleSlideItems = [

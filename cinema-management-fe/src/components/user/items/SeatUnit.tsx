@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material"
-import { SeatType } from "../../../types"
+import { SeatType } from "../../../interfaces/types"
 
 interface SeatUnitProps {
   seat: SeatType

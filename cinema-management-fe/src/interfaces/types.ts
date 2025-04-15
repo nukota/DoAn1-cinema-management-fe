@@ -34,7 +34,7 @@ export type MovieType = {
   ageLimit: number;
   releaseDate: string;
   director: string;
-  cast: string[];
+  cast: string;
   description: string;
   rating: number;
   trailer: string;
@@ -46,7 +46,7 @@ export type ProductType = {
   name: string;
   description?: string;
   price: number;
-  type: string;
+  category: string;
 };
 
 export type RoomType = {
@@ -66,8 +66,9 @@ export type ShowtimeType = {
 
 export type SeatType = {
   room_id: number;
-  seat_id: string;
-  column: number;
+  seat_id: number;
+  seat_column: number;
+  seat_name: string;
 };
 
 export type TicketType = {

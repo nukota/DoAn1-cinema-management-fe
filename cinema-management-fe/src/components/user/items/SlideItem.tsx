@@ -7,7 +7,7 @@ import PersonOffIcon from "@mui/icons-material/PersonOff";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@mui/material";
-import { MovieType } from "../../../types";
+import { MovieType } from "../../../interfaces/types";
 
 interface SlideItemProps {
   movie: MovieType;

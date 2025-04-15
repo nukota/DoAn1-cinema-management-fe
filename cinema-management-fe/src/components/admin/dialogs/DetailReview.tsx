@@ -12,7 +12,7 @@ import {
   Rating,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ReviewType } from "../../../types";
+import { ReviewType } from "../../../interfaces/types";
 import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -47,8 +47,7 @@ const DetailReview: React.FC<DetailReviewProps> = ({
       onClose={onClose}
       sx={{
         maxHeight: "90vh",
-        overflow: "hidden",
-        width: { xs: "100%", sm: "80%", md: "60%" },
+        overflow: "auto",
         placeSelf: "center",
       }}
     >

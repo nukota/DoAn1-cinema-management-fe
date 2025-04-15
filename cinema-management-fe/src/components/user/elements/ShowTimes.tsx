@@ -2,7 +2,7 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useTheme } from "@mui/material/styles";
-import { ShowtimeType } from "../../../types";
+import { ShowtimeType } from "../../../interfaces/types";
 
 // const theme = useTheme();
 const CustomTab = styled(Tab)(({ theme }) => ({

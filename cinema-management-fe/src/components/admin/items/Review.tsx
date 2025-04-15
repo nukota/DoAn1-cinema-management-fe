@@ -1,8 +1,9 @@
 import React from "react";
 import DeleteImg from "../../../assets/images/delete.svg";
 import InfoImg from "../../../assets/images/info.svg";
-import { ReviewType } from "../../../types";
+import { ReviewType } from "../../../interfaces/types";
 import { Rating } from "@mui/material";
+
 interface ReviewProps {
   review: ReviewType;
   handleInfoClick: () => void;

@@ -1,7 +1,11 @@
 import React, { useState, ChangeEvent } from "react";
 import SearchImg from "../../assets/images/search.svg";
-import { exampleShowtimes } from "../../data";
+import { exampleRooms, exampleShowtimes } from "../../data";
 import { Button } from "@mui/material";
+import { MovieType, ShowtimeType } from "../../interfaces/types";
+import { Swiper, SwiperSlide } from "swiper/react";
+import RoomShowtimes from "./items/RoomShowtimes";
+import { Mousewheel, Navigation } from "swiper/modules";
 
 const Showtimes: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -10,17 +14,17 @@ const Showtimes: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleDeleteClick = () => {
-  };
+  const handleDeleteClick = () => {};
 
-  const handleAddNewClick = () => {
-  };
+  const handleAddNewClick = () => {};
 
   const filteredShowtimes = exampleShowtimes.filter((showtime) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (showtime.showtime_id && showtime.showtime_id.toString().includes(searchTermLower)) ||
-      (showtime.movie_id && showtime.movie_id.toString().includes(searchTermLower))
+      (showtime.showtime_id &&
+        showtime.showtime_id.toString().includes(searchTermLower)) ||
+      (showtime.movie_id &&
+        showtime.movie_id.toString().includes(searchTermLower))
     );
   });
 
@@ -57,12 +61,40 @@ const Showtimes: React.FC = () => {
         </Button>
       </div>
 
-      <div className="content mt-[14px] w-full h-full bg-white border-[3px] border-light-gray rounded-xl pl-12 py-6 pr-4 overflow-auto">
-        <div className="list grid grid-cols-5 gap-x-6 gap-y-8 max-h-[490px] py-3 overflow-y-auto">
-          {/* {filteredShowtimes.map((showtime, index) => (
-            <Showtime key={index} {...showtime} />
-          ))} */}
-        </div>
+      <div className="content mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-visible">
+      <Swiper
+        modules={[Navigation, Mousewheel]}
+        spaceBetween={0}
+        slidesPerView={5}
+        loop={true}
+        navigation
+        breakpoints={{
+          0: {
+            slidesPerView: 1,
+          },
+          640: {
+            slidesPerView: 2,
+          },
+          768: {
+            slidesPerView: 3,
+          },
+          1024: {
+            slidesPerView: 4,
+          },
+          1280: {
+            slidesPerView: 5,
+          },
+        }}
+        className="w-full movie-slide"
+      >
+        {exampleRooms.map((item, index) => (
+          <SwiperSlide key={index}>
+            <RoomShowtimes  />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <div className="swiper-gradient-left"></div>
+      <div className="swiper-gradient-right"></div>
       </div>
     </div>
   );

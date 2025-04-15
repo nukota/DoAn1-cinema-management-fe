@@ -1,6 +1,6 @@
 import React from "react";
-import { CinemaType, RoomType } from "../../../types";
-import { IconButton, Button } from "@mui/material";
+import { CinemaType } from "../../../interfaces/types";
+import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 
 interface CinemaProps {
@@ -8,9 +8,9 @@ interface CinemaProps {
   handleSeeAllRooms: () => void;
   handleInfoClick: () => void;
 }
+
 const Cinema: React.FC<CinemaProps> = ({
   cinema,
-  handleSeeAllRooms,
   handleInfoClick,
 }) => {
   return (
