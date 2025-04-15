@@ -19,7 +19,7 @@ const Room: React.FC<RoomProps> = ({ room, handleInfoClick }) => {
   const handleSeeShowTimeClick = () => {};
 
   return (
-    <div className="flex flex-col w-[170px] h-[160px] border-[3px] border-light-gray rounded-xl hover:border-light-gray duration-200">
+    <div className="flex flex-col w-[170px] h-[180px] border-[3px] border-light-gray rounded-xl hover:border-light-gray duration-200">
       <button
         className="info-button w-9 h-9 z-20 opacity-50 hoverL"
         onClick={handleInfoClick}
@@ -30,7 +30,12 @@ const Room: React.FC<RoomProps> = ({ room, handleInfoClick }) => {
         <p className="flex justify-center text-[32px] font-medium text-dark-gray truncate mb-2">
           {room.room_id}
         </p>
+
         <div className="text-[14px] text-dark-gray truncate mx-2">
+          <p className="h-[21px]">
+            <span>Cinema: </span>
+            <span className="text-black">{room.cinema_id}</span>
+          </p>
           <p className="h-[21px]">
             <span>Status: </span>
             {(status === "Ready" && (

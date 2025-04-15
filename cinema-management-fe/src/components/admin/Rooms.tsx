@@ -12,9 +12,21 @@ const Rooms: React.FC = () => {
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
+  const [selectedCinema, setSelectedCinema] = useState<string>("");
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+  };
+
+  const uniqueCinemas = Array.from(
+    new Set(exampleRooms.map((room) => room.cinema_id))
+  ).map((cinema_id) => ({
+    cinema_id,
+    name: `Cinema ${cinema_id}`,
+  }));
+
+  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCinema(event.target.value);
   };
 
   const handleInfoClick = (room: RoomType) => {
@@ -29,9 +41,9 @@ const Rooms: React.FC = () => {
   };
 
   const handleCheckConfirmDelete = (room: RoomType) => {
-      setShowDeleteConfirm(true);
-      setSelectedRoom(room);
-    };
+    setShowDeleteConfirm(true);
+    setSelectedRoom(room);
+  };
 
   const handleDeleteClick = () => {};
 
@@ -39,10 +51,13 @@ const Rooms: React.FC = () => {
 
   const filteredRooms = exampleRooms.filter((room) => {
     const searchTermLower = searchTerm.toLowerCase();
-    return (
-      (room.room_id && room.room_id.toString().includes(searchTermLower)) ||
-      (room.seat_count && room.seat_count.toString().includes(searchTermLower))
-    );
+    const matchesSearch =
+      room.name.toLowerCase().includes(searchTermLower) ||
+      room.cinema_id.toString().includes(searchTermLower);
+    const matchesCinema = selectedCinema
+      ? room.cinema_id.toString() === selectedCinema
+      : true;
+    return matchesSearch && matchesCinema;
   });
 
   return (
@@ -60,6 +75,30 @@ const Rooms: React.FC = () => {
           <img
             src={SearchImg}
             alt="Search"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+          />
+        </div>
+        <div className="SearchBar relative w-full max-w-[240px] h-8 ml-4">
+          <select
+            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+            value={selectedCinema}
+            onChange={handleCinemaChange}
+          >
+            <option value="">All Cinemas</option>
+            {uniqueCinemas.map((cinema) => (
+              <option key={cinema.cinema_id} value={cinema.cinema_id}>
+                {cinema.name}
+              </option>
+            ))}
+          </select>
+          <img
+            src={SearchImg}
+            alt="Cinema"
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+          />
+          <img
+            src={SearchImg}
+            alt="Cinema"
             className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
           />
         </div>

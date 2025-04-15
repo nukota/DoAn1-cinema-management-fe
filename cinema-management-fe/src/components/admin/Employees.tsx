@@ -15,6 +15,7 @@ const Employees: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeType | null>(
     null
   );
+  const [selectedCinema, setSelectedCinema] = useState<string>("");
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
@@ -37,6 +38,18 @@ const Employees: React.FC = () => {
       "date-picker"
     ) as HTMLInputElement;
     datePicker.focus();
+  };
+
+  const uniqueCinemas = Array.from(
+    new Set(exampleEmployees.map((employee) => employee.cinema_id))
+  ).map((cinema_id) => ({
+    cinema_id,
+    name: `Cinema ${cinema_id}`,
+  }));
+
+  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCinema(event.target.value);
+    setCurrentPage(1);
   };
 
   const handleAddNewClick = () => {
@@ -72,14 +85,18 @@ const Employees: React.FC = () => {
 
   const filteredEmployees = uniqueEmployees.filter((employee) => {
     const searchTermLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       (employee.fullname &&
         employee.fullname.toLowerCase().includes(searchTermLower)) ||
       (employee.cccd && employee.cccd.toString().includes(searchTermLower)) ||
       (employee.role &&
         employee.role.toLowerCase().includes(searchTermLower)) ||
-      (employee.dob && employee.dob.includes(searchTermLower))
-    );
+      (employee.dob && employee.dob.includes(searchTermLower));
+  
+    const matchesCinema =
+      !selectedCinema || employee.cinema_id.toString() === selectedCinema;
+  
+    return matchesSearch && matchesCinema;
   });
 
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
@@ -148,6 +165,25 @@ const Employees: React.FC = () => {
               onClick={handleCalendarClick}
             />
           </div>
+          <div className="CinemaFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
+            <select
+              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+              value={selectedCinema}
+              onChange={handleCinemaChange}
+            >
+              <option value="">All Cinemas</option>
+              {uniqueCinemas.map((cinema) => (
+                <option key={cinema.cinema_id} value={cinema.cinema_id}>
+                  {cinema.name}
+                </option>
+              ))}
+            </select>
+            <img
+              src={SearchImg}
+              alt="Cinema"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+            />
+          </div>
         </div>
         <div className="flex flex-row items-center 1270-break-point:ml-auto">
           <Button
@@ -161,7 +197,7 @@ const Employees: React.FC = () => {
               height: "32px",
             }}
           >
-            Add New 
+            Add New
           </Button>
         </div>
       </div>
