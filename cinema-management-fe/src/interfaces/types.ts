@@ -59,9 +59,10 @@ export type RoomType = {
 
 export type ShowtimeType = {
   showtime_id: string;
-  cinema_id: number;
+  room_id: number;
   movie_id: number;
   showtime: string;
+  price: number;
 };
 
 export type SeatType = {

@@ -1,20 +1,33 @@
 import React from "react";
-import infoImg from "../../../assets/images/info.svg";
-import { exampleShowtimes } from "../../../data";
 import { RoomType, ShowtimeType } from "../../../interfaces/types";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import Showtime from "./Showtime";
 
-// interface RoomShowtimesProps {
-//   showtimes: ShowtimeType[];
-// }
+interface RoomShowtimesProps {
+  room: RoomType;
+  showtimes: ShowtimeType[];
+}
 
-// const Room: React.FC<RoomShowtimesProps> = (showtimes) => {
-const RoomShowtimes: React.FC = () => {
+const RoomShowtimes: React.FC<RoomShowtimesProps> = ({ room, showtimes }) => {
+  console.log("RoomShowtimes", room, showtimes);
   return (
-    <Box className="w-[240px] h-full bg-[#eee]">
-        <Box className="w-full h-[360px] bg-[#ddd]">
+    <Box className="w-[280px] h-[484px] bg-[#f2f2f2] rounded-xl flex flex-col p-4">
+      {/* Room Information */}
+      <Box className="mb-4">
+        <Typography variant="body2" className="text-dark-gray">
+          Cinema: {room.cinema_id}
+        </Typography>
+        <Typography variant="body2" className="text-gray">
+          Room: #{room.room_id} {room.name}
+        </Typography>
+      </Box>
 
-        </Box>
+      {/* List of Showtimes */}
+      <Box className="flex flex-col gap-2 overflow-y-auto">
+        {showtimes.map((showtime) => (
+          <Showtime key={showtime.showtime_id} {...showtime} />
+        ))}
+      </Box>
     </Box>
   );
 };

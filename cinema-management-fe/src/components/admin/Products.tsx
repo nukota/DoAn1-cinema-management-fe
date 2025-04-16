@@ -128,7 +128,7 @@ const Products: React.FC = () => {
             alt="Add New"
           />
         </button>
-      </div>
+      </div>         
       {selectedProduct && (
         <DetailProduct
           product={selectedProduct}
