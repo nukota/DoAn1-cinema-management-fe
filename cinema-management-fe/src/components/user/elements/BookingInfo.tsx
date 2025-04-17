@@ -134,20 +134,50 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
   const rows = "ABCDEFGHIJKLMN".split("");
   const columnOffset = 9;
 
-  const grid = Array.from({ length: 13 }, () => Array(19).fill(null));
-  seats.forEach((seat) => {
-    const rowIndex = rows.indexOf(seat.seat_id[0]);
-    const columnIndex = seat.column + columnOffset;
-    grid[rowIndex][columnIndex] = seat;
-  });
+  const grid = [];
+  for (let row = 1; row <= 14; row++) {
+    for (let col = -8; col <= 8; col++) {
+      const seat = seats.find(
+        (s) => rows.indexOf(s.seat_name[0]) + 1 === row && s.seat_column === col
+      );
+      grid.push(
+        <Box
+          key={`${row}-${col}`}
+          sx={{
+            width: "40px",
+            height: "24px",
+            display: "inline-block",
+            textAlign: "center",
+            borderRadius: "6px",
+          }}
+        >
+          {seat ? (
+            <SeatUnit
+              seat={seat}
+              status="available"
+              onSelect={() => handleSeatClick(seat)}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "40px",
+                height: "24px",
+              }}
+            />
+          )}
+        </Box>
+      );
+    }
+  }
 
   const handleSeatClick = (seat: SeatType) => {
     setSelectedSeats((prevSelectedSeats) => {
       if (prevSelectedSeats.some((s) => s.seat_id === seat.seat_id)) {
         return prevSelectedSeats.filter((s) => s.seat_id !== seat.seat_id);
-      } else {
+      } else if (prevSelectedSeats.length < ticketCount) {
         return [...prevSelectedSeats, seat];
       }
+      return prevSelectedSeats;
     });
   };
 
@@ -313,35 +343,7 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
             marginTop: 6,
           }}
         >
-          {grid.map((row, rowIndex) =>
-            row.map((seat, columnIndex) => (
-              <Box
-                key={`${rowIndex}-${columnIndex}`}
-                sx={{
-                  gridRow: rowIndex + 1,
-                  gridColumn: columnIndex + 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {seat ? (
-                  <SeatUnit
-                    seat={seat}
-                    isSelected={selectedSeats.includes(seat.seat_id)}
-                    onClick={handleSeatClick}
-                  />
-                ) : (
-                  <Box
-                    sx={{
-                      width: 42,
-                      height: 26,
-                    }}
-                  />
-                )}
-              </Box>
-            ))
-          )}
+          {grid}
         </Box>
       </Box>
     </Box>

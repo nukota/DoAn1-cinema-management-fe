@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
   Box,
@@ -16,10 +16,13 @@ import Footer from "./elements/Footer";
 import wallPaperImg from "./../../assets/images/wallpaper.jpg";
 import UseHeader from "./elements/Header";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Login: React.FC = () => {
+  const { handleLogin } = useAuth();
   const navigate = useNavigate();
   const [value, setValue] = useState<string>("1");
+  const [error, setError] = useState<string>("");
   const [signInData, setSignInData] = useState({ email: "", password: "" });
   const [signUpData, setSignUpData] = useState({
     name: "",
@@ -32,16 +35,25 @@ const Login: React.FC = () => {
   const [acceptPolicy, setAcceptPolicy] = useState(false);
   const [containerHeight, setContainerHeight] = useState("auto");
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (e: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
-  const handleSignInChange = (e) => {
+  const handleSignInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSignInData({ ...signInData, [name]: value });
   };
 
-  const handleSignUpChange = (e) => {
+  const handleLoginClick = async () => {
+    try {
+      await handleLogin(signInData.email, signInData.password);
+      navigate("/"); // Redirect to the home page after login
+    } catch (err) {
+      setError("Invalid email or password");
+    }
+  };
+
+  const handleSignUpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
@@ -55,16 +67,16 @@ const Login: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  const handleMouseDownPassword = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
   };
 
-  const handleRememberMeChange = (event) => {
-    setRememberMe(event.target.checked);
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRememberMe(e.target.checked);
   };
 
-  const handleAcceptPolicyChange = (event) => {
-    setAcceptPolicy(event.target.checked);
+  const handleAcceptPolicyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAcceptPolicy(e.target.checked);
   };
 
   const handleForgotPasswordClick = () => {
@@ -73,9 +85,9 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (value === "1") {
-      setContainerHeight("420px"); // Adjust height for Sign In tab
+      setContainerHeight("420px");
     } else if (value === "2") {
-      setContainerHeight("700px"); // Adjust height for Sign Up tab
+      setContainerHeight("700px");
     }
   }, [value]);
 
@@ -208,13 +220,13 @@ const Login: React.FC = () => {
               <Button
                 variant="contained"
                 sx={{ marginTop: "40px" }}
-                onClick={handleLogin}
+                onClick={handleLoginClick}
               >
                 Login
               </Button>
             </Box>
           </TabPanel>
-          <TabPanel value="2">
+          {/* <TabPanel value="2">
             <Box
               component="form"
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
@@ -346,7 +358,7 @@ const Login: React.FC = () => {
                 Sign Up
               </Button>
             </Box>
-          </TabPanel>
+          </TabPanel> */}
         </TabContext>
       </Box>
       <div className="z-10 bg-black">

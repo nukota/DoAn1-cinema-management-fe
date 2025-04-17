@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
           </Button>
         </div>
 
-        <div className="flex flex-col my-10 gap-3 mb-4 text-[13px] text-gray font-thin items-start">
+        <div className="flex flex-col my-10 gap-3 mb-4 text-[15px] text-white font-thin items-start">
         <Link to="/user/privacy-policy" className="hover:underline">
             Privacy policy
           </Link>
@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
           </Link>
         </div>
         <div className="flex flex-col items-start space-y-4">
-        <div className="text-gray text-sm">Connect with us on:</div>
+        <div className="text-gray text-md">Connect with us on:</div>
         <div className="flex space-x-2 -ml-2">
             <IconButton
               component="a"
@@ -120,9 +120,9 @@ const Footer: React.FC = () => {
       </div>
       
       <p className="mt-4 text-light-gray place-self-center">
-          &copy {new Date().getFullYear()} Movie Trailer Web.
+          &copy {new Date().getFullYear()} Ticket Booking Web App.
         </p>
-        <p className="my-2 text-gray text-xs font-light place-self-center">
+        <p className="my-2 text-gray text-md font-light place-self-center">
           developed by group 7
         </p>
     </footer>

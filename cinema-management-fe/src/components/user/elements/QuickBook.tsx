@@ -52,7 +52,7 @@ const QuickBook: React.FC = () => {
   `;
 
   return (
-    <div className="w-full px-[8%] h-[100px] absolute top-[2500px] z-30">
+    <div className="w-full px-[8%] h-[100px] z-30">
       <Box
         sx={{
           animation: allSelected ? `${shake} 0.5s ease-in-out` : "none",
@@ -69,7 +69,7 @@ const QuickBook: React.FC = () => {
           transition: "all 0.5s ease-in-out",
         }}
       >
-        <div className="text-white text-3xl ml-2 mr-8 font-semibold font-['Roboto']">
+        <div className="text-white text-3xl ml-2 mr-8 font-semibold font-['Poppins']">
           QUICK BOOK
         </div>
         <FormControl variant="outlined" sx={{ width: 214 }}>

@@ -55,10 +55,10 @@ const MovieDetail: React.FC = () => {
         <div className="px-[16%]">
           <MovieInfo movie={movie} />
           <div className="flex flex-col mt-24">
-            <div className="text-white text-4xl font-bold self-center">
+            {/* <div className="text-white text-4xl font-bold self-center">
               SHOWTIMES
             </div>
-            <ShowTimes showtimes={exampleShowtimes} />
+            <ShowTimes showtimes={exampleShowtimes} /> */}
           </div>
           <div className="flex flex-col mt-24">
             <div className="text-white text-4xl font-bold self-center">
@@ -176,7 +176,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                 <strong>Director:</strong> {movie.director}
               </div>
               <div className="text-sm mt-2">
-                <strong>Cast:</strong> {movie.cast.join(", ")}
+                <strong>Cast:</strong> {movie.cast}
               </div>
               <div className="text-sm mt-2">
                 <strong>Release Date:</strong> {movie.releaseDate}

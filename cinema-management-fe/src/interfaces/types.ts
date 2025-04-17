@@ -58,7 +58,7 @@ export type RoomType = {
 };
 
 export type ShowtimeType = {
-  showtime_id: string;
+  showtime_id: number;
   room_id: number;
   movie_id: number;
   showtime: string;

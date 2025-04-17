@@ -120,13 +120,13 @@ const Contact: React.FC = () => {
               Contact Information
             </h2>
             <p className="mb-2">
-              <strong>Address:</strong> Ki tuc xa khu B, Ho Chi Minh, VietNam
+              <strong>Address:</strong> Long Thanh My, TP.Thu Duc, Ho Chi Minh, VietNam
             </p>
             <p className="mb-2">
               <strong>Phone:</strong> IDK
             </p>
             <p className="mb-4">
-              <strong>Email:</strong> 22520663@gm.uit.edu.vn
+              <strong>Email:</strong> 22521351@gm.uit.edu.vn
             </p>
           </div>
         </div>

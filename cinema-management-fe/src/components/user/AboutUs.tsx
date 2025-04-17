@@ -6,9 +6,9 @@ import wallPaperImg from "../../assets/images/wallpaper.jpg";
 
 const AboutUs: React.FC = () => {
   return (
-    <div className="bg-black w-full h-full flex flex-col justify-center relative">
+    <div className="bg-black w-full flex flex-col justify-center relative">
       <img
-        className="absolute w-full h-[820px] top-[60px] z-0 opacity-10"
+        className="absolute w-full h-full top-0 z-0 opacity-10"
         src={wallPaperImg}
       />
       <UserHeader />
