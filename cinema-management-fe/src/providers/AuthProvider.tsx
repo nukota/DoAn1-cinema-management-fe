@@ -10,10 +10,10 @@ import axios from "axios";
 interface UserProfile {
   email: string;
   name: string;
-  phone?: string;
-  dateOfBirth?: string;
-  cccd?: string;
-  role?: string;
+  phone: string;
+  dateOfBirth: string;
+  cccd: string;
+  role: string;
 }
 
 export interface AuthContextType {

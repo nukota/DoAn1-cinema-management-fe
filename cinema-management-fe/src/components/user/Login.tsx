@@ -78,23 +78,6 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleLoginClick = async () => {
-    try {
-      await handleLogin(signInData.email, signInData.password);
-  
-      // Check the role of the logged-in user
-      if (userProfile?.role === "admin") {
-        navigate("/admin"); // Navigate to admin page
-      } else if (userProfile?.role === "employee") {
-        navigate("/employee"); // Navigate to employee page
-      } else {
-        navigate("/"); // Default to user page for customers or null roles
-      }
-    } catch (err) {
-      setError("Invalid email or password");
-    }
-  };
-
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -115,13 +98,27 @@ const Login: React.FC = () => {
     navigate("/user/reset-password");
   };
 
-  useEffect(() => {
-    if (value === "1") {
-      setContainerHeight("420px");
-    } else if (value === "2") {
-      setContainerHeight("700px");
+  const handleLoginClick = async () => {
+    try {
+      await handleLogin(signInData.email, signInData.password);
+      // No need to navigate here; navigation will be handled in useEffect
+    } catch (err) {
+      setError("Invalid email or password");
     }
-  }, [value]);
+  };
+
+  useEffect(() => {
+    if (userProfile?.role) {
+      // Navigate based on the user's role
+      if (userProfile.role === "admin") {
+        navigate("/admin");
+      } else if (userProfile.role === "employee") {
+        navigate("/employee");
+      } else {
+        navigate("/"); // Default to user page for customers or null roles
+      }
+    }
+  }, [userProfile, navigate]);
 
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col justify-center relative">

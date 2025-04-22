@@ -11,6 +11,8 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { ShowtimeType } from "../../../interfaces/types";
+
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -27,35 +29,23 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateDiscountProps {
+interface CreateShowtimeProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newDiscount: any) => void;
+  onAdd: (newShowtime: ShowtimeType) => void;
 }
-const types: String[] = ["percentage", "fixed"];
 
-const CreateDiscount: React.FC<CreateDiscountProps> = ({
+const CreateShowtime: React.FC<CreateShowtimeProps> = ({
   open,
   onClose,
   onAdd,
 }) => {
-  const [code, setCode] = useState<String>("");
-  const [type, setType] = useState<String>("");
-  const [expiryDate, setExpiryDate] = useState<String>("");
-  const [value, setValue] = useState<Number>(0);
-  const [minPurchase, setMinPurchase] = useState<Number>(0);
+  const [roomId, setRoomId] = useState<number | null>(null);
+  const [movieId, setMovieId] = useState<number | null>(null);
+  const [showtime, setShowtime] = useState<string>("");
+  const [price, setPrice] = useState<number | null>(null);
 
-  const handleAddClick = () => {
-    const newDiscount = {
-      code,
-      type,
-      minPurchase,
-      value,
-      expiryDate,
-    };
-    onAdd(newDiscount);
-    onClose();
-  };
+  const handleAddClick = () => {};
 
   return (
     <Dialog
@@ -75,80 +65,74 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           padding: "16px 24px",
         }}
       >
-        Create Discount
+        Create Showtime
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            CODE:
-          </Typography>
-          <TextField
-            fullWidth
-            margin="dense"
-            size="small"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Type:
-          </Typography>
-          <Autocomplete
-            options={types}
-            value={type}
-            fullWidth
-            onChange={(event, newValue) => setType(newValue!)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="type"
-                margin="dense"
-                size="small"
-              />
-            )}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Minium purchase:
+            Room ID:
           </Typography>
           <TextField
             type="number"
             fullWidth
             margin="dense"
             size="small"
-            value={minPurchase}
+            value={roomId || ""}
+            onChange={(e) => setRoomId(Number(e.target.value))}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Value:
+            Movie ID:
           </Typography>
           <TextField
             type="number"
             fullWidth
             margin="dense"
             size="small"
-            value={value}
-            onChange={(e) => setValue(Number(e.target.value))}
+            value={movieId || ""}
+            onChange={(e) => setMovieId(Number(e.target.value))}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Expiry Date:
+            Showtime:
           </Typography>
           <TextField
-            type="date"
+            type="datetime-local"
             fullWidth
             margin="dense"
             size="small"
-            value={expiryDate}
-            onChange={(e) => setExpiryDate(e.target.value)}
+            value={showtime}
+            onChange={(e) => setShowtime(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Price:
+          </Typography>
+          <TextField
+            type="number"
+            fullWidth
+            margin="dense"
+            size="small"
+            value={price || ""}
+            onChange={(e) => setPrice(Number(e.target.value))}
           />
         </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
+        <Button
+          onClick={onClose}
+          color="primary"
+          variant="outlined"
+          sx={{ width: 130 }}
+        >
+          Close
+        </Button>
         <Button
           onClick={handleAddClick}
           color="primary"
@@ -162,4 +146,4 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   );
 };
 
-export default CreateDiscount;
+export default CreateShowtime;

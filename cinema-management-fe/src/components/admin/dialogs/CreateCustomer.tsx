@@ -9,8 +9,10 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -33,13 +35,29 @@ interface CreateCustomerProps {
   onAdd: (newCustomer: any) => void;
 }
 
-const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd }) => {
+const CreateCustomer: React.FC<CreateCustomerProps> = ({
+  open,
+  onClose,
+  onAdd,
+}) => {
   const [fullname, setFullname] = useState<String>("");
   const [email, setEmail] = useState<String>("");
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
   const [role, setRole] = useState<String>("Customer");
+  const [password, setPassword] = useState<String>("");
+  const [confirmPassword, setConfirmPassword] = useState<String>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
 
   const handleAddClick = () => {};
   return (
@@ -104,7 +122,7 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Number:
+            Phone Num:
           </Typography>
           <TextField
             placeholder="Phone Number"
@@ -126,6 +144,51 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({ open, onClose, onAdd })
             size="small"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Password:
+          </Typography>
+          <TextField
+            placeholder="Password"
+            fullWidth
+            margin="dense"
+            size="small"
+            type={showPassword ? "text" : "password"} // Toggle between text and password
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={togglePasswordVisibility} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
+            }}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Confirm Password:
+          </Typography>
+          <TextField
+            placeholder="Confirm Password"
+            fullWidth
+            margin="dense"
+            size="small"
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={toggleConfirmPasswordVisibility}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
+            }}
           />
         </Box>
       </CustomDialogContent>

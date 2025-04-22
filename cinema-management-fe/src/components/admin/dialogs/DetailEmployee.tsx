@@ -9,10 +9,12 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { EmployeeType, CinemaType } from "../../../interfaces/types";
 import { exampleCinemas } from "../../../data";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -53,6 +55,8 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   const [cinemaId, setCinemaId] = useState<number>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
+  const [password, setPassword] = useState<String>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (employee) {
@@ -73,6 +77,10 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
 
   const handleSaveClick = () => {
     setIsEditing(false);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
   return (
@@ -160,7 +168,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Number:
+            Phone Num:
           </Typography>
           <TextField
             placeholder="Phone Number"
@@ -184,6 +192,32 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
             value={email}
             disabled={!isEditing}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Password:
+          </Typography>
+          <TextField
+            placeholder="Password"
+            fullWidth
+            margin="dense"
+            size="small"
+            type={showPassword ? "text" : "password"} // Toggle between text and password
+            value={password}
+            disabled={!isEditing}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={togglePasswordVisibility}
+                  edge="end"
+                  disabled={!isEditing} // Disable toggle when not editing
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
+            }}
           />
         </Box>
         <Typography
