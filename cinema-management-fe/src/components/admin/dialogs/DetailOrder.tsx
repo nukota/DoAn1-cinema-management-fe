@@ -1,0 +1,229 @@
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Box,
+} from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
+import { OrderProductType, OrderType, TicketType } from "../../../interfaces/types";
+const CustomDialogContent = styled(DialogContent)({
+  "&::-webkit-scrollbar": {
+    width: "8px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: "#f1f1f1",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: "#999",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#666",
+  },
+});
+
+interface DetailOrderProps {
+  order: OrderType;
+  tickets: TicketType[];
+  products: OrderProductType[];
+  open: boolean;
+  onClose: () => void;
+}
+
+const DetailOrder: React.FC<DetailOrderProps> = ({
+  order,
+  tickets,
+  products,
+  open,
+  onClose,
+}) => {
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      sx={{
+        maxHeight: "90vh",
+        overflow: "auto",
+        placeSelf: "center",
+      }}
+    >
+      <DialogTitle
+        sx={{
+          fontSize: 20,
+          fontWeight: "medium",
+          fontFamily: "inherit",
+          padding: "4px 24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #999",
+        }}
+      >
+        <Typography color="gray" sx={{ fontWeight: "medium" }}>
+          #{order.order_id}
+        </Typography>
+        <Typography
+          sx={{
+            fontSize: 16,
+            fontWeight: "regular",
+            opacity: 0.5,
+            color:
+              order.status === "completed"
+                ? "green"
+                : order.status === "pending"
+                ? "gray"
+                : "red",
+          }}
+        >
+          {order.status.toUpperCase()}
+        </Typography>
+      </DialogTitle>
+      <CustomDialogContent
+        sx={{
+          fontSize: 14,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography sx={{ mr: 2, mt: 2 }} color="gray">
+          User: {`(ID: ${order.user_id}) Nguyen Van A`}
+        </Typography>
+        <Typography sx={{ mr: 2 }} color="gray">Date: {order.created_at}</Typography>
+
+        <TableContainer
+          component={Paper}
+          sx={{
+            backgroundColor: "#fff",
+            marginTop: 2,
+            overflow: "auto",
+            maxHeight: "60vh",
+            minWidth: { xs: 360, md: 400, lg: 480 },
+          }}
+        >
+          <Table sx={{}} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  sx={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    p: 1,
+                    backgroundColor: "#eee",
+                  }}
+                  padding="none"
+                >
+                  Tickets
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ width: "10%" }}>ID</TableCell>
+                <TableCell sx={{ width: "30%" }}>Movie</TableCell>
+                <TableCell sx={{ width: "30%" }}>Showtime</TableCell>
+                <TableCell sx={{ width: "30%" }}>Seat</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tickets.map((ticket) => (
+                <TableRow
+                  key={ticket.ticket_id}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                  }}
+                >
+                  <TableCell sx={{ width: "10%" }}>
+                    {ticket.ticket_id}
+                  </TableCell>
+                  <TableCell sx={{ width: "30%" }}>No info</TableCell>
+                  <TableCell sx={{ width: "30%" }}>No info</TableCell>
+                  <TableCell sx={{ width: "30%" }}>{ticket.seat_id}</TableCell>
+                </TableRow>
+              ))}
+              <TableCell colSpan={4} sx={{ display: "flex", p: 1 }} padding="none">
+                <Typography>Total:</Typography>
+                <Typography sx={{ pl: 2 }} padding="none">
+                  {order.total_price}
+                </Typography>
+              </TableCell>
+            </TableBody>
+          </Table>
+          <Table sx={{}} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  sx={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    p: 1,
+                    backgroundColor: "#eee",
+                  }}
+                  padding="none"
+                >
+                  Products
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ width: "8%" }}>ID</TableCell>
+                <TableCell sx={{ width: "30%" }}>Name</TableCell>
+                <TableCell sx={{ width: "18%" }}>Quantity</TableCell>
+                <TableCell sx={{ width: "22%" }}>Price</TableCell>
+                <TableCell sx={{ width: "22%" }}>Total</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow
+                  key={product.product_id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell sx={{ width: "8%" }}>
+                    {product.product_id}
+                  </TableCell>
+                  <TableCell sx={{ width: "30%" }}>Very Long Name</TableCell>
+                  <TableCell sx={{ width: "18%" }}>
+                    {product.quantity}
+                  </TableCell>
+                  <TableCell sx={{ width: "22%" }}>{}</TableCell>
+                  <TableCell sx={{ width: "22%" }}>{}</TableCell>
+                </TableRow>
+              ))}
+              <TableCell colSpan={5} sx={{ display: "flex", p: 1 }} padding="none">
+                <Typography>Total:</Typography>
+                <Typography sx={{ pl: 2 }}>
+                  {order.total_price}
+                </Typography>
+              </TableCell>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Typography sx={{ mr: 2, marginTop: 3, fontWeight: 600 }}>
+          Total: {order.total_price}
+        </Typography>
+      </CustomDialogContent>
+      <DialogActions>
+        <Button
+          onClick={onClose}
+          color="primary"
+          variant="text"
+          sx={{ width: 130 }}
+        >
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default DetailOrder;
