@@ -1,5 +1,3 @@
-import UserHeader from "./elements/Header";
-import Footer from "./elements/Footer";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
@@ -11,7 +9,6 @@ const AboutUs: React.FC = () => {
         className="absolute w-full h-full top-0 z-0 opacity-10"
         src={wallPaperImg}
       />
-      <UserHeader />
       <Box
         sx={{
           width: "84%",
@@ -33,7 +30,6 @@ const AboutUs: React.FC = () => {
         </Typography>
       </Box>
       <div className="w-full bg-black z-20">
-        <Footer />
       </div>
     </div>
   );

@@ -7,6 +7,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 
 const theme = createTheme({
+  typography: {
+    fontFamily: "Poppins, sans-serif",
+  },
   palette: {
     primary: {
       main: "#b80007",

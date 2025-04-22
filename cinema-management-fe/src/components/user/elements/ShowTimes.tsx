@@ -1,8 +1,8 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "@emotion/styled";
-import { useTheme } from "@mui/material/styles";
 import { ShowtimeType } from "../../../interfaces/types";
+import { exampleShowtimes } from "../../../data";
 
 // const theme = useTheme();
 const CustomTab = styled(Tab)(({ theme }) => ({
@@ -12,14 +12,18 @@ const CustomTab = styled(Tab)(({ theme }) => ({
   borderRadius: 6,
 }));
 
-const ShowTimes: React.FC<ShowtimeType[]> = (showtimes) => {
+interface ShowtimesProps {
+  showtimes: ShowtimeType[];
+}
+
+const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
   const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const getFormattedDate = (offset) => {
+  const getFormattedDate = (offset: number) => {
     const date = new Date();
     date.setDate(date.getDate() + offset);
     const fullDate = date.toLocaleDateString("en-GB", {
@@ -38,26 +42,20 @@ const ShowTimes: React.FC<ShowtimeType[]> = (showtimes) => {
   const selectedDate = getFormattedDate(value).fullDate;
 
   const sortedShowtimes = [...showtimes].sort((a, b) => {
-    const dateA = new Date(
-      a.date.split("/").reverse().join("-") + "T" + a.time
-    );
-    const dateB = new Date(
-      b.date.split("/").reverse().join("-") + "T" + b.time
-    );
+    const dateA = new Date(a.showtime);
+    const dateB = new Date(b.showtime);
     return Number(dateA) - Number(dateB);
   });
 
-  const showtimes2D = sortedShowtimes.filter(
-    (showtime) => showtime.date === selectedDate && showtime.type === "2D"
-  );
-  const showtimes3D = sortedShowtimes.filter(
-    (showtime) => showtime.date === selectedDate && showtime.type === "3D"
-  );
-
-  const isPastShowtime = (date, time) => {
-    const showtimeDate = new Date(
-      `${date.split("/").reverse().join("-")}T${time}`
+  const showtimesForSelectedDate = sortedShowtimes.filter((showtime) => {
+    const showtimeDate = new Date(showtime.showtime).toLocaleDateString(
+      "en-GB"
     );
+    return showtimeDate === selectedDate;
+  });
+
+  const isPastShowtime = (showtime: string) => {
+    const showtimeDate = new Date(showtime);
     return showtimeDate < new Date();
   };
 
@@ -145,25 +143,25 @@ const ShowTimes: React.FC<ShowtimeType[]> = (showtimes) => {
             letterSpacing: "0.1em",
           }}
         >
-          Standard 2D
+          Showtimes
         </Typography>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {showtimes2D.map((showtime) => (
+          {showtimesForSelectedDate.map((showtime) => (
             <Box
               key={showtime.showtime_id}
               sx={{
                 border: "1px solid",
-                borderColor: isPastShowtime(showtime.showtime, showtime.showtime)
+                borderColor: isPastShowtime(showtime.showtime)
                   ? "gray"
                   : (theme) => theme.palette.secondary.main,
                 padding: 1,
                 borderRadius: 1,
                 transition: "transform 0.1s",
-                cursor: isPastShowtime(showtime.showtime, showtime.showtime)
+                cursor: isPastShowtime(showtime.showtime)
                   ? "default"
                   : "pointer",
                 "&:hover": {
-                  transform: isPastShowtime(showtime.showtime, showtime.showtime)
+                  transform: isPastShowtime(showtime.showtime)
                     ? "none"
                     : "translateY(-4px)",
                 },
@@ -173,12 +171,23 @@ const ShowTimes: React.FC<ShowtimeType[]> = (showtimes) => {
                 sx={{
                   // color: "gray",
                   fontSize: 14,
-                  color: isPastShowtime(showtime.date, showtime.time)
+                  color: isPastShowtime(showtime.showtime)
                     ? "gray"
                     : (theme) => theme.palette.secondary.main,
                 }}
               >
-                {showtime.time}
+                {new Date(showtime.showtime).toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  color: "lightgray",
+                }}
+              >
+                ${showtime.price.toFixed(2)}
               </Typography>
             </Box>
           ))}
@@ -188,11 +197,12 @@ const ShowTimes: React.FC<ShowtimeType[]> = (showtimes) => {
   );
 };
 
-const CustomTabLabel = ({ displayDate, weekday }) => (
+const CustomTabLabel: React.FC<{ displayDate: string; weekday: string }> = ({
+  displayDate,
+  weekday,
+}) => (
   <Box>
-    <Typography sx={{ fontWeight: "bold", fontSize: 18 }}>
-      {displayDate}
-    </Typography>
+    <Typography sx={{ fontWeight: "bold", fontSize: 18 }}>{displayDate}</Typography>
     <Typography sx={{ fontWeight: "normal", fontSize: 12, marginTop: 1 }}>
       {weekday}
     </Typography>

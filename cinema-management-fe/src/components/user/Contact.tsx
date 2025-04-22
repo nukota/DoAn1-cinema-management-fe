@@ -1,5 +1,3 @@
-import UserHeader from "./elements/Header";
-import Footer from "./elements/Footer";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import { Box } from "@mui/system";
 import { TextField, Typography, Button } from "@mui/material";
@@ -11,7 +9,6 @@ const Contact: React.FC = () => {
         className="absolute w-full h-[820px] top-[60px] z-0 opacity-20"
         src={wallPaperImg}
       />
-      <UserHeader />
       <Box
         sx={{
           width: "72%",
@@ -132,7 +129,6 @@ const Contact: React.FC = () => {
         </div>
       </Box>
       <div className="w-full bg-black z-20">
-        <Footer />
       </div>
     </div>
   );

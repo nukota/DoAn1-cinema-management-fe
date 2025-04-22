@@ -1,14 +1,8 @@
 import React, { useState, useRef } from "react";
-import UserHeader from "./elements/Header";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import MovieSlide from "./elements/MovieSlide";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import Footer from "./elements/Footer";
 import {
-  Card,
-  CardActions,
-  CardContent,
-  Button,
   Typography,
   Box,
 } from "@mui/material";
@@ -34,7 +28,6 @@ const UserHome: React.FC = () => {
   const demoMovie: MovieType = exampleMovies[0];
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col relative">
-      <UserHeader />
       <img
         className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
         src={wallPaperImg}
@@ -106,7 +99,6 @@ const UserHome: React.FC = () => {
       </div>
       <QuickBook />
       <div className="w-full bg-black z-20">
-        <Footer />
       </div>
     </div>
   );

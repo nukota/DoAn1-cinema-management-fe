@@ -5,8 +5,6 @@ import StyleIcon from "@mui/icons-material/Style";
 import PublicIcon from "@mui/icons-material/Public";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
-import UserHeader from "./elements/Header";
-import Footer from "./elements/Footer";
 import { Button, Dialog, DialogContent } from "@mui/material";
 import ShowTimes from "./elements/ShowTimes";
 import BookingInfo from "./elements/BookingInfo";
@@ -17,7 +15,7 @@ import {
   exampleProducts,
   exampleMovies,
 } from "../../data";
-import { MovieType, SeatType, ProductType } from "../../interfaces/types";
+import { MovieType, SeatType, ProductType, ShowtimeType } from "../../interfaces/types";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
@@ -41,7 +39,6 @@ const MovieDetail: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen w-full flex flex-col">
-      <UserHeader />
       <img
         className="absolute top-0 w-full object-cover z-0 overflow-hidden"
         src={movie.poster}
@@ -55,10 +52,10 @@ const MovieDetail: React.FC = () => {
         <div className="px-[16%]">
           <MovieInfo movie={movie} />
           <div className="flex flex-col mt-24">
-            {/* <div className="text-white text-4xl font-bold self-center">
+            <div className="text-white text-4xl font-bold self-center">
               SHOWTIMES
             </div>
-            <ShowTimes showtimes={exampleShowtimes} /> */}
+            <ShowTimes showtimes={exampleShowtimes} />
           </div>
           <div className="flex flex-col mt-24">
             <div className="text-white text-4xl font-bold self-center">
@@ -78,7 +75,6 @@ const MovieDetail: React.FC = () => {
         </div>
       </div>
       <div className="w-full bg-black z-20 mt-32">
-        <Footer />
       </div>
       //see if the footer is in the right place
       <BookingFooter movie={movie} selectedProducts={selectedProducts} />
@@ -168,7 +164,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
             <div className="pt-6">
               <div
                 className="text-white text-xl font-semibold"
-                style={{ fontFamily: "Roboto" }}
+                style={{ fontFamily: "Poppins" }}
               >
                 MORE INFORMATION:
               </div>

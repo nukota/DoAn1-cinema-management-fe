@@ -110,7 +110,7 @@ const UserHeader: React.FC = () => {
             </span>
             <img
               className="profile-pic size-8 rounded-[6px]"
-              src={userProfile?.picture}
+              // src={userProfile?.profilePicture || logo}
               alt="Profile"
             />
           </div>

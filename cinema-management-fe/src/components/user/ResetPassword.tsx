@@ -8,8 +8,6 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import UserHeader from "./elements/Header";
-import Footer from "./elements/Footer";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import LockResetIcon from "@mui/icons-material/LockReset";
 
@@ -48,7 +46,6 @@ const ResetPassword: React.FC = () => {
         src={wallPaperImg}
         alt="wallpaper"
       />
-      <UserHeader />
       <Box
         sx={{
           width: "60%",
@@ -213,7 +210,6 @@ const ResetPassword: React.FC = () => {
         </Box>
       </Box>
       <div className="w-full bg-black z-20">
-        <Footer />
       </div>
     </div>
   );

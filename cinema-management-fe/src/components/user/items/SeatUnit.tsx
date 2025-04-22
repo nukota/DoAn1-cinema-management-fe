@@ -28,6 +28,17 @@ const SeatUnit: React.FC<SeatUnitProps> = ({ seat, status, onSelect }) => {
     }
   };
 
+  const getTextColor = () => {
+    switch (currentStatus) {
+      case "available":
+        return "#000000"; // Black for available
+      case "selected":
+        return "#ffffff"; // White for selected
+      default:
+        return "#ffffff"; // Default text color
+    }
+  }
+
   return (
     <Box
       onClick={handleClick}
@@ -39,7 +50,7 @@ const SeatUnit: React.FC<SeatUnitProps> = ({ seat, status, onSelect }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white",
+        color: getTextColor(),
         fontSize: "12px",
         fontWeight: "bold",
         textAlign: "center",

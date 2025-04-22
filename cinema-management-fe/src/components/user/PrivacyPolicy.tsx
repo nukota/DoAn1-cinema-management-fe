@@ -1,12 +1,9 @@
-import UserHeader from "./elements/Header";
-import Footer from "./elements/Footer";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
 
 const PrivacyPolicy: React.FC = () => {
   return (
     <div className="bg-[#090909] w-full h-full flex flex-col justify-center relative">
-      <UserHeader />
       <Box
         sx={{
           width: "84%",
@@ -34,7 +31,6 @@ const PrivacyPolicy: React.FC = () => {
         </Typography>
       </Box>
       <div className="w-full bg-black z-20">
-        <Footer />
       </div>
     </div>
   );

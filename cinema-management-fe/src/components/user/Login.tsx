@@ -12,9 +12,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import Footer from "./elements/Footer";
 import wallPaperImg from "./../../assets/images/wallpaper.jpg";
-import UseHeader from "./elements/Header";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -97,7 +95,6 @@ const Login: React.FC = () => {
         className="absolute w-full h-[820px] top-[60px] z-0 opacity-20"
         src={wallPaperImg}
       />
-      <UseHeader />
       <Box
         sx={{
           width: "36%",
@@ -226,7 +223,7 @@ const Login: React.FC = () => {
               </Button>
             </Box>
           </TabPanel>
-          {/* <TabPanel value="2">
+          <TabPanel value="2">
             <Box
               component="form"
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
@@ -275,7 +272,7 @@ const Login: React.FC = () => {
                 placeholder="Phone Number"
                 name="phone"
                 size="small"
-                value={signUpData.phone}
+                // value={signUpData.phone}
                 onChange={handleSignUpChange}
                 fullWidth
               />
@@ -292,7 +289,7 @@ const Login: React.FC = () => {
                 name="dob"
                 type="date"
                 size="small"
-                value={signUpData.dob}
+                // value={signUpData.dob}
                 onChange={handleSignUpChange}
                 fullWidth
                 InputLabelProps={{
@@ -312,7 +309,7 @@ const Login: React.FC = () => {
                 name="password1"
                 type="password"
                 size="small"
-                value={signUpData.password}
+                // value={signUpData.password}
                 onChange={handleSignUpChange}
                 fullWidth
               />
@@ -329,7 +326,7 @@ const Login: React.FC = () => {
                 name="password2"
                 type="password"
                 size="small"
-                value={signUpData.password}
+                // value={signUpData.password}
                 // onChange={handleSignUpChange}
                 fullWidth
               />
@@ -358,11 +355,10 @@ const Login: React.FC = () => {
                 Sign Up
               </Button>
             </Box>
-          </TabPanel> */}
+          </TabPanel>
         </TabContext>
       </Box>
       <div className="z-10 bg-black">
-        <Footer />
       </div>
     </div>
   );
