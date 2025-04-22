@@ -14,19 +14,23 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import wallPaperImg from "./../../assets/images/wallpaper.jpg";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../providers/AuthProvider";
 
 const Login: React.FC = () => {
-  const { handleLogin } = useAuth();
+  const { handleLogin, handleSignUp, userProfile } = useAuth();
   const navigate = useNavigate();
   const [value, setValue] = useState<string>("1");
   const [error, setError] = useState<string>("");
   const [signInData, setSignInData] = useState({ email: "", password: "" });
   const [signUpData, setSignUpData] = useState({
-    name: "",
+    full_name: "",
     email: "",
+    phone: "",
     password1: "",
     password2: "",
+    dateOfBirth: "",
+    cccd: "",
+    role: "customer", // Default role for sign-up
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -42,23 +46,53 @@ const Login: React.FC = () => {
     setSignInData({ ...signInData, [name]: value });
   };
 
-  const handleLoginClick = async () => {
-    try {
-      await handleLogin(signInData.email, signInData.password);
-      navigate("/"); // Redirect to the home page after login
-    } catch (err) {
-      setError("Invalid email or password");
-    }
-  };
-
   const handleSignUpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   };
 
-  const handleSignUp = () => {
-    // Simulate sign-up
-    // onLogin({ name: "Jane Doe", picture: "path/to/profile.jpg" })
+  const handleSignUpClick = async () => {
+    if (signUpData.password1 !== signUpData.password2) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!acceptPolicy) {
+      setError("You must accept the policy to sign up");
+      return;
+    }
+
+    try {
+      await handleSignUp({
+        full_name: signUpData.full_name,
+        email: signUpData.email,
+        phone: signUpData.phone,
+        password: signUpData.password1,
+        dateOfBirth: signUpData.dateOfBirth,
+        cccd: signUpData.cccd,
+        role: signUpData.role,
+      });
+      navigate("/"); // Redirect to the home page after successful sign-up
+    } catch (err) {
+      setError("Sign-up failed. Please check your input.");
+    }
+  };
+
+  const handleLoginClick = async () => {
+    try {
+      await handleLogin(signInData.email, signInData.password);
+  
+      // Check the role of the logged-in user
+      if (userProfile?.role === "admin") {
+        navigate("/admin"); // Navigate to admin page
+      } else if (userProfile?.role === "employee") {
+        navigate("/employee"); // Navigate to employee page
+      } else {
+        navigate("/"); // Default to user page for customers or null roles
+      }
+    } catch (err) {
+      setError("Invalid email or password");
+    }
   };
 
   const handleClickShowPassword = () => {
@@ -140,10 +174,10 @@ const Login: React.FC = () => {
                 fontSize="14px"
                 fontWeight="bold"
               >
-                Email, Username or Phone Number
+                Email
               </Typography>
               <TextField
-                placeholder="Email, Username or Phone Number"
+                placeholder="Email"
                 name="email"
                 size="small"
                 value={signInData.email}
@@ -240,7 +274,7 @@ const Login: React.FC = () => {
                 placeholder="Name"
                 name="name"
                 size="small"
-                value={signUpData.name}
+                value={signUpData.full_name}
                 onChange={handleSignUpChange}
                 fullWidth
               />
@@ -272,7 +306,7 @@ const Login: React.FC = () => {
                 placeholder="Phone Number"
                 name="phone"
                 size="small"
-                // value={signUpData.phone}
+                value={signUpData.phone}
                 onChange={handleSignUpChange}
                 fullWidth
               />
@@ -289,12 +323,28 @@ const Login: React.FC = () => {
                 name="dob"
                 type="date"
                 size="small"
-                // value={signUpData.dob}
+                value={signUpData.dateOfBirth}
                 onChange={handleSignUpChange}
                 fullWidth
                 InputLabelProps={{
                   shrink: true,
                 }}
+              />
+              <Typography
+                variant="body1"
+                marginTop="4px"
+                fontSize="14px"
+                fontWeight="bold"
+              >
+                CCCD
+              </Typography>
+              <TextField
+                placeholder="CCCD"
+                name="cccd"
+                size="small"
+                value={signUpData.cccd}
+                onChange={handleSignUpChange}
+                fullWidth
               />
               <Typography
                 variant="body1"
@@ -309,7 +359,7 @@ const Login: React.FC = () => {
                 name="password1"
                 type="password"
                 size="small"
-                // value={signUpData.password}
+                value={signUpData.password1}
                 onChange={handleSignUpChange}
                 fullWidth
               />
@@ -326,8 +376,8 @@ const Login: React.FC = () => {
                 name="password2"
                 type="password"
                 size="small"
-                // value={signUpData.password}
-                // onChange={handleSignUpChange}
+                value={signUpData.password2}
+                onChange={handleSignUpChange}
                 fullWidth
               />
               <FormControlLabel
@@ -350,7 +400,7 @@ const Login: React.FC = () => {
               <Button
                 variant="contained"
                 sx={{ marginTop: "20px" }}
-                onClick={handleSignUp}
+                onClick={handleSignUpClick}
               >
                 Sign Up
               </Button>

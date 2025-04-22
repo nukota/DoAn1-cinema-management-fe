@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/images/logo.svg";
-import NotificationImg from "../../assets/images/notification.svg";
-import MessageImg from "../../assets/images/messageQuestion.svg";
-import CalendarImg from "../../assets/images/calendar.svg";
-import ArrowDownImg from "../../assets/images/arrowDown.svg";
+import logo from "../../../assets/images/logo.svg";
+import NotificationImg from "../../../assets/images/notification.svg";
+import MessageImg from "../../../assets/images/messageQuestion.svg";
+import CalendarImg from "../../../assets/images/calendar.svg";
+import ArrowDownImg from "../../../assets/images/arrowDown.svg";
 
 interface AdminHeaderProps {
   ProfileName: string;

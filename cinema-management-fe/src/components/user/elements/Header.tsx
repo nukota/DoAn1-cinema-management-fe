@@ -5,11 +5,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
 import ArrowDownImg from "../../../assets/images/arrowDown.svg";
-import { AuthContext, AuthContextType } from "../../../contexts/AuthContext";
+import profileImg from "../../../assets/images/profile.png";
+import { AuthContext, AuthContextType } from "../../../providers/AuthProvider";
+import ProfileDialog from "../dialogs/ProfileDialog";
 
 const UserHeader: React.FC = () => {
   const [searchPhrase, setSearchPhrase] = useState<string>('');
   const { isLoggedIn, userProfile } = useContext(AuthContext) as AuthContextType;
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
@@ -36,6 +39,14 @@ const UserHeader: React.FC = () => {
 
   const handleBuyTicketClicked = () => {
     navigate("/user/movie-list");
+  };
+
+  const handleProfileClick = () => {
+    setIsProfileDialogOpen(true);
+  };
+
+  const handleProfileDialogClose = () => {
+    setIsProfileDialogOpen(false);
   };
 
   return (
@@ -110,8 +121,9 @@ const UserHeader: React.FC = () => {
             </span>
             <img
               className="profile-pic size-8 rounded-[6px]"
-              // src={userProfile?.profilePicture || logo}
+              src={profileImg}
               alt="Profile"
+              onClick={handleProfileClick}
             />
           </div>
         ) : (
@@ -139,6 +151,7 @@ const UserHeader: React.FC = () => {
           />
         </button>
       </div>
+      <ProfileDialog open={isProfileDialogOpen} onClose={handleProfileDialogClose} />
     </header>
   );
 };

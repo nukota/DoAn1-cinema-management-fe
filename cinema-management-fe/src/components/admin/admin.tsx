@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import AdminHeader from "./Header";
-import NavBar from "./NavBar";
+import Header from "./elements/Header";
+import NavBar from "./elements/NavBar";
 import AdminHome from "./Home";
 import Cinemas from "./Cinemas";
 import Discounts from "./Discounts";
@@ -15,7 +15,7 @@ import Movies from "./Movies";
 import Reviews from "./Reviews";
 import Settings from "./Settings";
 import Profile from "./Profile";
-import NavSelection from "./NavSelection";
+import NavSelection from "./elements/NavSelection";
 import ProfileImg from "./../../assets/images/profile.png";
 import HomeImg from "./../../assets/images/home.svg";
 import EmployeesImg from "./../../assets/images/employees.svg";
@@ -44,7 +44,7 @@ const exampleAdmin: UserType = {
   password_hash: "hashedpassword1",
   dob: "1990-01-01",
   cccd: "123456789",
-  role: "customer",
+  role: "admin",
   created_at: "2023-01-01T10:00:00",
 };
 
@@ -76,7 +76,7 @@ const Admin: React.FC = () => {
 
   return (
     <div className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] overflow-auto">
-      <AdminHeader
+      <Header
         ProfileName={exampleAdmin.fullname}
         ProfileRole={exampleAdmin.role}
         ProfilePic={ProfileImg}
