@@ -1,5 +1,5 @@
 export type UserType = {
-  user_id: number;
+  _id: string;
   fullname: string;
   email: string;
   phone: string;
@@ -11,100 +11,99 @@ export type UserType = {
 };
 
 export type EmployeeType = UserType & {
-  employee_id: number;
-  cinema_id: number;
+  employee_id: string;
+  cinema_id: string;
   position: string;
   shift: string;
 };
 
 export type CinemaType = {
-  cinema_id: number;
+  _id: string;
   name: string;
   address: string;
 };
 
 export type MovieType = {
-  movie_id: number;
+  _id: string;
   status: "Stopped" | "Unknown" | "Now Playing" | "Coming Soon";
-  name: string;
-  poster: string;
+  title: string;
+  poster_url: string;
   genre: string;
   duration: string;
   nation: string;
   ageLimit: number;
-  releaseDate: string;
+  release_date: string;
   director: string;
-  cast: string;
+  actors: string;
   description: string;
   rating: number;
-  trailer: string;
+  trailer_url: string;
 };
 
 export type ProductType = {
-  product_id: number;
+  _id: string;
   image: string;
   name: string;
-  description?: string;
   price: number;
   category: string;
 };
 
 export type RoomType = {
-  room_id: number;
-  cinema_id: number;
+  _id: string;
+  cinema_id: string;
   name: string;
   seat_count: number;
   repairing: boolean;
 };
 
 export type ShowtimeType = {
-  showtime_id: number;
-  room_id: number;
-  movie_id: number;
+  showtime_id: string;
+  room_id: string;
+  movie_id: string;
   showtime: string;
   price: number;
 };
 
 export type SeatType = {
-  room_id: number;
-  seat_id: number;
+  room_id: string;
+  _id: string;
   seat_column: number;
   seat_name: string;
 };
 
 export type TicketType = {
-  ticket_id: number;
-  showtime_id: number;
+  _id: string;
+  showtime_id: string;
   seat_id: string;
-  order_id: number;
+  order_id: string;
 };
 
 export type OrderType = {
-  order_id: number;
-  user_id: number;
+  _id: string;
+  user_id: string;
   total_price: number;
   status: "pending" | "completed" | "cancelled";
   created_at: string;
 };
 
 export type PaymentType = {
-  payment_id: number;
-  order_id: number;
+  _id: string;
+  order_id: string;
   amount: number;
   payment_method: string;
   status: "pending" | "completed" | "cancelled";
-  discount_id: number;
+  discount_id: string;
   paid_at: string;
 };
 
 export type OrderProductType = {
-  order_id: number;
-  product_id: number;
+  order_id: string;
+  product_id: string;
   quantity: number;
 };
 
 export type DiscountType = {
-  discount_id: number;
+  _id: string;
   code: string;
   discount_type: "percentage" | "fixed";
   value: number;
@@ -113,9 +112,9 @@ export type DiscountType = {
 };
 
 export type ReviewType = {
-  review_id: number;
-  user_id: number;
-  showtime_id: number;
+  _id: string;
+  user_id: string;
+  showtime_id: string;
   rating: number;
   comment: string;
   created_at: string;

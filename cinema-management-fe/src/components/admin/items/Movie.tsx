@@ -11,15 +11,15 @@ const Movie: React.FC<MovieProps> = ({ movie, handleInfoClick }) => {
     <div className="movie h-[216px] w-[140px] flex flex-col bg-[#eee]" onClick={handleInfoClick}>
       <img
         className="h-[160px] w-full rounded-xl object-cover"
-        src={movie.poster}
+        src={movie.poster_url}
         alt="movie poster"
       />
       <div className="font-medium text-[13px] text-black tracking-wide truncate mt-3">
-        {movie.name}
+        {movie.title}
       </div>
       <div className="flex flex-row items-center space-x-[6px]">
         <div className="font-bold text-[13px] text-gray">
-          {movie.releaseDate.substring(0, 4)}
+          {movie.release_date}
         </div>
         {(movie.status === "Now Playing" && (
           <div className="font-medium text-[11px] text-green-800">

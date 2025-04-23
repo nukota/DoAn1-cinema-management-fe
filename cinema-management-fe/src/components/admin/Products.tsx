@@ -1,13 +1,14 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import Product from "./items/Product";
 import SearchImg from "../../assets/images/search.svg";
 import addImg from "../../assets/images/add.svg";
-import { exampleProducts } from "../../data";
 import { ProductType } from "../../interfaces/types";
 import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
+import { useProducts } from "../../providers/ProductsProvider";
 
 const Products: React.FC = () => {
+  const { products, fetchProductsData, createProduct, updateProduct, deleteProduct, loading } = useProducts();
   const [activeTab, setActiveTab] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
@@ -16,6 +17,11 @@ const Products: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchProductsData();
+  }
+  , []);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -43,9 +49,39 @@ const Products: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const handleAddNewProduct = async (newProduct: ProductType) => {};
-  const handleOnSave = async (product: ProductType) => {};
-  const filteredProducts = exampleProducts.filter((product) => {
+  const handleAddNewProduct = async (newProduct: ProductType) => {
+    try {
+      await createProduct(newProduct);
+      await fetchProductsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new product:", error);
+      alert("An error occurred while adding the product. Please try again.");
+    }
+  };
+  
+  const handleOnSave = async (updatedProduct: ProductType) => {
+    try {
+      await updateProduct(updatedProduct);
+      await fetchProductsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save product:", error);
+      alert("An error occurred while saving the product. Please try again.");
+    }
+  };
+  
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      await deleteProduct(productId);
+      await fetchProductsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+      alert("An error occurred while deleting the product. Please try again.");
+    }
+  };
+  const filteredProducts = products.filter((product) => {
     const matchesTab =
       activeTab === "All" ||
       (activeTab === "Others"
@@ -55,8 +91,6 @@ const Products: React.FC = () => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       (product.name && product.name.toLowerCase().includes(searchTermLower)) ||
-      (product.description &&
-        product.description.toLowerCase().includes(searchTermLower)) ||
       (product.category &&
         product.category.toLowerCase().includes(searchTermLower)) ||
       (product.price && product.price.toString().includes(searchTermLower));
@@ -110,9 +144,9 @@ const Products: React.FC = () => {
       </div>
       <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 overflow-y-scroll">
         <div className="list grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-2 py-3 overflow-y-visible overflow-x-clip">
-          {filteredProducts.map((product, index) => (
+          {filteredProducts.map((product) => (
             <Product
-              key={product.product_id}
+              key={product._id}
               product={product}
               handleInfoClick={() => handleInfoClick(product)}
             />
@@ -134,7 +168,7 @@ const Products: React.FC = () => {
           product={selectedProduct}
           open={detailDialogOpen}
           onClose={handleCloseDialog}
-          onDelete={handleCheckConfirmDelete}
+          onDelete={() => handleDeleteProduct(selectedProduct._id)}
           onSave={handleOnSave}
         />
       )}

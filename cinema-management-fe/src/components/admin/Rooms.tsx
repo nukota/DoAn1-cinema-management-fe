@@ -121,7 +121,7 @@ const Rooms: React.FC = () => {
         <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip">
           {filteredRooms.map((room, index) => (
             <Room
-              key={room.room_id}
+              key={room._id}
               room={room}
               handleInfoClick={() => handleInfoClick(room)}
             />

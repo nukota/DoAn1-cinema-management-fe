@@ -52,35 +52,35 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   onSave,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [poster, setPoster] = useState<string>("");
+  const [posterURL, setPosterURL] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
-  const [nation, setNation] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
   const [ageLimit, setAgeLimit] = useState<number>(0);
   const [releaseDate, setReleaseDate] = useState<string>("");
   const [director, setDirector] = useState<string>("");
-  const [cast, setCast] = useState<string>("");
+  const [actors, setActors] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
-  const [trailer, setTrailer] = useState<string>("");
+  const [trailerURL, setTrailerURL] = useState<string>("");
 
   useEffect(() => {
     if (movie) {
-      setName(movie.name);
+      setTitle(movie.title);
       setStatus(movie.status);
-      setPoster(movie.poster);
+      setPosterURL(movie.poster_url);
       setGenre(movie.genre);
       setDuration(movie.duration);
-      setNation(movie.nation);
+      setCountry(movie.nation);
       setAgeLimit(movie.ageLimit);
-      setReleaseDate(movie.releaseDate);
+      setReleaseDate(movie.release_date);
       setDirector(movie.director);
-      setCast(movie.cast);
+      setActors(movie.actors);
       setDescription(movie.description);
       setRating(movie.rating);
-      setTrailer(movie.trailer);
+      setTrailerURL(movie.trailer_url);
     }
     if (!open) {
       setIsEditing(false);
@@ -92,6 +92,22 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   };
 
   const handleSaveClick = () => {
+    onSave({
+      ...movie,
+      title,
+      status,
+      poster_url: posterURL,
+      genre,
+      duration,
+      nation: country,
+      ageLimit,
+      release_date: releaseDate,
+      director,
+      actors,
+      description,
+      rating,
+      trailer_url: trailerURL,
+    });
     setIsEditing(false);
   };
 
@@ -121,31 +137,30 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       <CustomDialogContent>
         <Box display={"flex"} flexDirection={"row"} gap={4}>
           <Box>
-          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
                 Movie ID:
               </Typography>
               <TextField
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={movie.movie_id}
+                value={movie._id}
                 disabled
-                onChange={(e) => setName(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Name:
+                Title:
               </Typography>
               <TextField
-                placeholder="Name"
-                sx={{ width: 250 }}
+                placeholder="Title"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={name}
+                value={title}
                 disabled={!isEditing}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -153,12 +168,12 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 Poster:
               </Typography>
               <TextField
-                placeholder="Poster"
-                sx={{ width: 250 }}
+                placeholder="Poster URL"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={poster}
-                onChange={(e) => setPoster(e.target.value)}
+                value={posterURL}
+                onChange={(e) => setPosterURL(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -169,7 +184,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 options={statusOptions}
                 value={status}
                 disabled={!isEditing}
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 onChange={(event, newValue) => setStatus(newValue!)}
                 renderInput={(params) => (
                   <TextField
@@ -187,7 +202,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               </Typography>
               <TextField
                 placeholder="Genre"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={genre}
@@ -201,7 +216,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               </Typography>
               <TextField
                 placeholder="Duration"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={duration}
@@ -215,12 +230,12 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               </Typography>
               <TextField
                 placeholder="Nation"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={nation}
+                value={country}
                 disabled={!isEditing}
-                onChange={(e) => setNation(e.target.value)}
+                onChange={(e) => setCountry(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -230,7 +245,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               <TextField
                 placeholder="Age Limit"
                 type="number"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={ageLimit}
@@ -244,7 +259,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               </Typography>
               <TextField
                 type="date"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={releaseDate}
@@ -257,7 +272,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 Director:
               </Typography>
               <Box
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 display={"flex"}
                 flexDirection={"column"}
                 gap={1}
@@ -285,18 +300,18 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 Cast:
               </Typography>
               <Box
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 display={"flex"}
                 flexDirection={"column"}
                 gap={1}
               >
                 <TextField
                   placeholder="Cast"
-                  sx={{ width: 250 }}
+                  sx={{ width: 280 }}
                   margin="dense"
                   size="small"
-                  value={cast}
-                  onChange={(e) => setCast(e.target.value)}
+                  value={actors}
+                  onChange={(e) => setActors(e.target.value)}
                 />
                 <Typography
                   color="#999999"
@@ -314,7 +329,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               </Typography>
               <TextField
                 placeholder="Description"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={description}
@@ -329,7 +344,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               <TextField
                 placeholder="Rating"
                 type="number"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={rating}
@@ -342,19 +357,19 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 Trailer:
               </Typography>
               <TextField
-                placeholder="Trailer"
-                sx={{ width: 250 }}
+                placeholder="Trailer URL"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={trailer}
+                value={trailerURL}
                 disabled={!isEditing}
-                onChange={(e) => setTrailer(e.target.value)}
+                onChange={(e) => setTrailerURL(e.target.value)}
               />
             </Box>
           </Box>
           <Box display="flex" flexDirection="column" alignItems="center">
             <img
-              src={poster}
+              src={posterURL}
               alt="Movie Poster"
               style={{
                 width: 140,
@@ -393,14 +408,6 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
         ) : (
           <Box display="flex" gap={2}>
             <Button
-              onClick={onDelete}
-              color="primary"
-              variant="outlined"
-              sx={{ width: 130 }}
-            >
-              Delete
-            </Button>
-            <Button
               onClick={onClose}
               color="primary"
               variant="outlined"
@@ -408,6 +415,15 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
             >
               Close
             </Button>
+            <Button
+              onClick={onDelete}
+              color="primary"
+              variant="outlined"
+              sx={{ width: 130 }}
+            >
+              Delete
+            </Button>
+
             <Button
               onClick={handleModifyClick}
               color="primary"

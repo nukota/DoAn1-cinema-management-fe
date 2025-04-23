@@ -1,23 +1,39 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { CinemaType } from "../interfaces/types";
 
 interface CinemasContextType {
   cinemas: CinemaType[];
   fetchCinemasData: () => Promise<void>;
+  createCinema: (cinema: CinemaType) => Promise<void>;
+  updateCinema: (cinema: CinemaType) => Promise<void>;
+  deleteCinema: (_id: string) => Promise<void>;
   loading: boolean;
 }
 
 const CinemasContext = createContext<CinemasContextType | undefined>(undefined);
 
-export const CinemasProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [cinemas, setCinemas] = useState<CinemaType[]>([]);
   const [loading, setLoading] = useState(false);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchCinemasData = async () => {
+  const fetchCinemasData = useCallback(async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${apiUrl}/cinemas`);
+      const token = localStorage.getItem("accessToken"); // Retrieve the token from localStorage
+      const response = await fetch(`${baseURL}/cinema`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the Authorization header
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -28,10 +44,85 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({ children })
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const createCinema = useCallback(async (newCinema: CinemaType) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/cinema`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newCinema),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const createdCinema = await response.json();
+      setCinemas((prevCinemas) => [...prevCinemas, createdCinema]);
+    } catch (error) {
+      console.error("Failed to create cinema:", error);
+    }
+  }, []);
+
+  const updateCinema = useCallback(async (updatedCinema: CinemaType) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/cinema/${updatedCinema._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedCinema),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const updatedData = await response.json();
+      setCinemas((prevCinemas) =>
+        prevCinemas.map((cinema) =>
+          cinema._id === updatedData.cinema_id ? updatedData : cinema
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update cinema:", error);
+    }
+  }, []);
+
+  const deleteCinema = useCallback(async (_id: string) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/cinema/${_id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      setCinemas((prevCinemas) =>
+        prevCinemas.filter((cinema) => cinema._id !== _id)
+      );
+    } catch (error) {
+      console.error("Failed to delete cinema:", error);
+    }
+  }, []);
 
   return (
-    <CinemasContext.Provider value={{ cinemas, fetchCinemasData, loading }}>
+    <CinemasContext.Provider
+      value={{
+        cinemas,
+        fetchCinemasData,
+        loading,
+        createCinema,
+        updateCinema,
+        deleteCinema,
+      }}
+    >
       {children}
     </CinemasContext.Provider>
   );

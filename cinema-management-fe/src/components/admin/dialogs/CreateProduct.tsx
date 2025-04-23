@@ -11,8 +11,6 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ProductType } from "../../../interfaces/types";
-import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -28,14 +26,6 @@ const CustomDialogContent = styled(DialogContent)({
     background: "#666",
   },
 });
-// export type ProductType = {
-//     product_id: number;
-//     image: string;
-//     name: string;
-//     description?: string;
-//     price: number;
-//     type: string;
-//   };
 
 interface CreateProductProps {
   open: boolean;
@@ -51,11 +41,23 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 }) => {
   const [image, setImage] = useState<string>("");
   const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [type, setType] = useState<string>("");
 
-  const handleAddClick = () => {};
+  const handleSubmit = () => {
+    if (!name || !image || !price || !type) {
+      console.error("All fields are required");
+      return;
+    }
+    const productData = {
+      name,
+      image,
+      price,
+      type,
+    };
+    onAdd(productData);
+    onClose();
+  };
   return (
     <Dialog
       open={open}
@@ -85,24 +87,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
               </Typography>
               <TextField
                 placeholder="Name"
-                sx={{width: 240}}
+                sx={{ width: 240 }}
                 margin="dense"
                 size="small"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
-                Description:
-              </Typography>
-              <TextField
-                placeholder="Description"
-                sx={{width: 240}}
-                margin="dense"
-                size="small"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -112,7 +101,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
               <TextField
                 placeholder="Image"
                 type="number"
-                sx={{width: 240}}
+                sx={{ width: 240 }}
                 margin="dense"
                 size="small"
                 value={image}
@@ -126,7 +115,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
               <TextField
                 placeholder="Price"
                 type="number"
-                sx={{width: 240}}
+                sx={{ width: 240 }}
                 margin="dense"
                 size="small"
                 value={price}
@@ -140,7 +129,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
               <Autocomplete
                 options={types}
                 value={type}
-                sx={{width: 240}}
+                sx={{ width: 240 }}
                 onChange={(event, newValue) => setType(newValue!)}
                 renderInput={(params) => (
                   <TextField
@@ -173,7 +162,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
-          onClick={handleAddClick}
+          onClick={handleSubmit}
           color="primary"
           variant="contained"
           sx={{ width: 130 }}

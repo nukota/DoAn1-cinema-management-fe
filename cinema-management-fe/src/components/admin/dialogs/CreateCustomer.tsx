@@ -117,9 +117,9 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
             margin="dense"
             size="small"
             value={dob}
-            onChange={(e) => setDob(e.target.value)}
+            onChange={(e) => setDob(e.target.value)} 
           />
-        </Box>
+        </Box> 
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
             Phone Num:

@@ -28,7 +28,7 @@ const MovieDetail: React.FC = () => {
 
   useEffect(() => {
     const foundMovie = exampleMovies.find(
-      (m) => m.movie_id === parseInt(movieId || "", 10)
+      (m) => m._id === movieId || ""
     );
     setMovie(foundMovie);
   }, [movieId]);
@@ -41,12 +41,12 @@ const MovieDetail: React.FC = () => {
     <div className="bg-black min-h-screen w-full flex flex-col">
       <img
         className="absolute top-0 w-full object-cover z-0 overflow-hidden"
-        src={movie.poster}
+        src={movie.poster_url}
         style={{
           filter: "blur(10px)",
           opacity: 0.2,
         }}
-        alt={`${movie.name} poster`}
+        alt={`${movie.title} poster`}
       />
       <div className="flex flex-col w-full py-32 h-[100%]">
         <div className="px-[16%]">
@@ -112,13 +112,13 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
     <div className="flex flex-row z-10">
       <img
         className="w-[400px] h-[600px] z-10 object-cover border border-light-gray rounded-md"
-        src={movie.poster}
-        alt={`${movie.name} poster`}
+        src={movie.poster_url}
+        alt={`${movie.title} poster`}
       />
       <div>
         <div className="text-sm text-gray flex flex-col py-4 pl-6">
           <div className="text-sm text-gray pl-2 flex flex-col space-y-6">
-            <div className="text-white text-4xl font-bold">{movie.name}</div>
+            <div className="text-white text-4xl font-bold">{movie.title}</div>
             <div className="text-white text-lg tracking-wide space-y-2 pl-4">
               <div>
                 <StyleIcon
@@ -172,10 +172,10 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                 <strong>Director:</strong> {movie.director}
               </div>
               <div className="text-sm mt-2">
-                <strong>Cast:</strong> {movie.cast}
+                <strong>Cast:</strong> {movie.actors}
               </div>
               <div className="text-sm mt-2">
-                <strong>Release Date:</strong> {movie.releaseDate}
+                <strong>Release Date:</strong> {movie.release_date}
               </div>
               <div className="text-sm mt-2">
                 <strong>Rating:</strong> {movie.rating}
@@ -210,7 +210,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                 <iframe
                   width="1000"
                   height="562.5"
-                  src={getEmbedUrl(movie.trailer)}
+                  src={getEmbedUrl(movie.trailer_url)}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   title="Trailer"

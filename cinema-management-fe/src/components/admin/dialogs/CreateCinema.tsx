@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { CinemaType } from "../../../interfaces/types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -37,10 +38,21 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
   onClose,
   onAdd,
 }) => {
-  const [name, setName] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
+  const [formValues, setFormValues] = useState({ name: "", address: "" });
 
-  const handleAddClick = () => {};
+  const handleSubmit = () => {
+    if (!formValues.name || !formValues.address) {
+      console.error("Name and address are required");
+      return;
+    }
+    const cinemaData = {
+      name: formValues.name,
+      address: formValues.address,
+    };
+    onAdd(cinemaData as CinemaType); // Pass the cleaned object to the parent
+    onClose(); // Close the dialog after submission
+  };
+
   return (
     <Dialog
       open={open}
@@ -71,8 +83,8 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
             fullWidth
             margin="dense"
             size="small"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formValues.name}
+            onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -84,15 +96,15 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
             fullWidth
             margin="dense"
             size="small"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            value={formValues.address}
+            onChange={(e) => setFormValues({ ...formValues, address: e.target.value })}
           />
         </Box>
       </CustomDialogContent>
 
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
-          onClick={handleAddClick}
+          onClick={handleSubmit}
           color="primary"
           variant="contained"
           sx={{ width: 130 }}

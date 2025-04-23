@@ -70,7 +70,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
         }}
       >
         <Typography color="gray" sx={{ fontWeight: "medium" }}>
-          #{order.order_id}
+          #{order._id}
         </Typography>
         <Typography
           sx={{
@@ -136,13 +136,13 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
             <TableBody>
               {tickets.map((ticket) => (
                 <TableRow
-                  key={ticket.ticket_id}
+                  key={ticket._id}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
                 >
                   <TableCell sx={{ width: "10%" }}>
-                    {ticket.ticket_id}
+                    {ticket._id}
                   </TableCell>
                   <TableCell sx={{ width: "30%" }}>No info</TableCell>
                   <TableCell sx={{ width: "30%" }}>No info</TableCell>

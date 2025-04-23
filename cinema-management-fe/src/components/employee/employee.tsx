@@ -4,8 +4,6 @@ import Header from "../admin/elements/Header";
 import NavBar from "../admin/elements/NavBar";
 import NavSelection from "../admin/elements/NavSelection";
 import HomeImg from "../../assets/images/home.svg";
-import CustomersImg from "../../assets/images/customers.svg";
-import RoomsImg from "../../assets/images/rooms.svg";
 import ShowtimesImg from "../../assets/images/showtimes.svg";
 import OrdersImg from "../../assets/images/orders.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
@@ -14,7 +12,7 @@ import ProfileImg from "./../../assets/images/profile.png";
 import { UserType } from "../../interfaces/types";
 
 const exampleEmployee: UserType = {
-  user_id: 1,
+  _id: "1",
   fullname: "John Doe",
   email: "john.doe@example.com",
   phone: "123-456-7890",
@@ -51,20 +49,6 @@ const Employee: React.FC = () => {
               title="Home"
               to="/employee"
               isSelected={location.pathname === "/employee"}
-            />,
-            <NavSelection
-              key="rooms"
-              icon={RoomsImg}
-              title="Rooms"
-              to="/employee/rooms"
-              isSelected={location.pathname === "/employee/rooms"}
-            />,
-            <NavSelection
-              key="customers"
-              icon={CustomersImg}
-              title="Customers"
-              to="/employee/customers"
-              isSelected={location.pathname === "/employee/customers"}
             />,
             <NavSelection
               key="showtimes"
@@ -114,7 +98,6 @@ const Employee: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<div />} />
-            <Route path="/rooms" element={<div />} />
             <Route path="/customers" element={<div />} />
             <Route path="/showtimes" element={<div />} />
             <Route path="/orders" element={<div />} />

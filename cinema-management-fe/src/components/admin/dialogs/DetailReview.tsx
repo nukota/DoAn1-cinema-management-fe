@@ -66,7 +66,7 @@ const DetailReview: React.FC<DetailReviewProps> = ({
           <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>ID:</Typography>
           <TextField
             fullWidth
-            value={review.review_id}
+            value={review._id}
             disabled
             margin="dense"
             size="small"

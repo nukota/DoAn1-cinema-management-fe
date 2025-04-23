@@ -51,7 +51,7 @@ const Payments: React.FC = () => {
 
   const uniquePayments = examplePayments.filter(
     (payment, index, self) =>
-      index === self.findIndex((e) => e.payment_id === payment.payment_id)
+      index === self.findIndex((e) => e._id === payment._id)
   );
 
   const filteredPayments = uniquePayments.filter((payment) => {
@@ -62,8 +62,8 @@ const Payments: React.FC = () => {
 
     return (
       (isDateMatch && // Filter by selectedDate
-        payment.payment_id &&
-        payment.payment_id.toString().includes(searchTermLower)) ||
+        payment._id &&
+        payment._id.toString().includes(searchTermLower)) ||
       (payment.order_id &&
         payment.order_id.toString().includes(searchTermLower)) ||
       (payment.payment_method &&
@@ -161,7 +161,7 @@ const Payments: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentPayments.map((payment) => (
             <Payment
-              key={payment.payment_id}
+              key={payment._id}
               payment={payment}
               handleInfoClick={() => handleInfoClick(payment)}
             />

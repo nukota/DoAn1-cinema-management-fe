@@ -1,9 +1,18 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { MovieType } from "../interfaces/types";
 
 interface MoviesContextType {
   movies: MovieType[];
   fetchMoviesData: () => Promise<void>;
+  createMovie: (newMovie: MovieType) => Promise<void>;
+  updateMovie: (updatedMovie: MovieType) => Promise<void>;
+  deleteMovie: (movieId: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -12,14 +21,18 @@ const MoviesContext = createContext<MoviesContextType | undefined>(undefined);
 export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<MovieType[]>([]);
   const [loading, setLoading] = useState(false);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchMoviesData = async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${apiUrl}/movies`);
+      const response = await fetch(`${baseURL}/movie`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -32,8 +45,80 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const createMovie = useCallback(async (newMovie: MovieType) => {
+    try {
+      const response = await fetch(`${baseURL}/movie`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(newMovie),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const createdMovie = await response.json();
+      setMovies((prevMovies) => [...prevMovies, createdMovie]);
+    } catch (error) {
+      console.error("Failed to create movie:", error);
+    }
+  }, []);
+
+  const updateMovie = useCallback(async (updatedMovie: MovieType) => {
+    try {
+      const response = await fetch(`${baseURL}/movie/${updatedMovie._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(updatedMovie),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const updatedData = await response.json();
+      setMovies((prevMovies) =>
+        prevMovies.map((movie) =>
+          movie._id === updatedData._id ? updatedData : movie
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update movie:", error);
+    }
+  }, []);
+
+  const deleteMovie = useCallback(async (movieId: string) => {
+    try {
+      const response = await fetch(`${baseURL}/movie/${movieId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      setMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId)
+      );
+    } catch (error) {
+      console.error("Failed to delete movie:", error);
+    }
+  }, []);
+
   return (
-    <MoviesContext.Provider value={{ movies, fetchMoviesData, loading }}>
+    <MoviesContext.Provider
+      value={{
+        movies,
+        fetchMoviesData,
+        createMovie,
+        updateMovie,
+        deleteMovie,
+        loading,
+      }}
+    >
       {children}
     </MoviesContext.Provider>
   );

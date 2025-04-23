@@ -78,7 +78,7 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
     setIsEditing(false);
   };
 
-  const renderSeatGrid = (roomId: number) => {
+  const renderSeatGrid = (roomId: string) => {
     const seats = exampleSeats.filter((seat) => seat.room_id === roomId);
 
     const grid = [];
@@ -176,7 +176,7 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
               gap: "4px",
             }}
           >
-            {renderSeatGrid(room.room_id)}
+            {renderSeatGrid(room._id)}
           </Grid2>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45, mt: 4 }}>
@@ -198,7 +198,7 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
             sx={{ width: 240 }}
             margin="dense"
             size="small"
-            value={room.room_id}
+            value={room._id}
             disabled
           />
         </Box>

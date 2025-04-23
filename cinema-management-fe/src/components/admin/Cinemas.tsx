@@ -1,21 +1,23 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import Cinema from "./items/Cinema";
 import SearchImg from "../../assets/images/search.svg";
-import { CinemaType, RoomType } from "../../interfaces/types";
-import { exampleCinemas } from "../../data";
-import { exampleRooms } from "../../data";
+import { CinemaType } from "../../interfaces/types";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
 import { Button } from "@mui/material";
+import { useCinemas } from "../../providers/CinemasProvider"; // Import the useCinemas hook
 
 const Cinemas: React.FC = () => {
+  const { cinemas, fetchCinemasData, createCinema, updateCinema, deleteCinema, loading } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
-  const [DetailRoomsDialogOpen, setDetailRoomsDialogOpen] =
-    useState<boolean>(false);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+
+  // Fetch cinemas data on component mount
+  useEffect(() => {
+    fetchCinemasData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -31,38 +33,61 @@ const Cinemas: React.FC = () => {
   };
 
   const handleCloseDialog = () => {
-    setDetailRoomsDialogOpen(false);
     setDetailDialogOpen(false);
     setAddDialogOpen(false);
     setSelectedCinema(null);
   };
 
-  const handleSeeAllRooms = (cinema: CinemaType) => {
-    setSelectedCinema(cinema);
-    setDetailRoomsDialogOpen(true);
+  const handleAddNewCinema = async (newCinema: CinemaType) => {
+    try {
+      const cinemaData = {
+        name: newCinema.name,
+        address: newCinema.address,
+      };
+      await createCinema(cinemaData as CinemaType);
+      await fetchCinemasData();
+    } catch (error) {
+      console.error("Failed to add new cinema:", error);
+      alert("An error occurred while adding the cinema. Please try again.");
+    }
+  };
+  
+  const handleOnSave = async (updatedCinema: CinemaType) => {
+    try {
+      await updateCinema(updatedCinema);
+      await fetchCinemasData();
+      handleCloseDialog(); 
+    } catch (error) {
+      console.error("Failed to save cinema:", error);
+      alert("An error occurred while saving the cinema. Please try again.");
+    }
+  };
+  
+  const handleDeleteCinema = async (cinemaId: string) => {
+    try {
+      await deleteCinema(cinemaId);
+      await fetchCinemasData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete cinema:", error);
+      alert("An error occurred while deleting the cinema. Please try again.");
+    }
   };
 
-  const handleAddCinema = async (newCinema: CinemaType) => {};
-  const handleUpdateCinema = async (updatedCinema: CinemaType) => {};
-  const handleDeleteCinema = async (Cinema: CinemaType) => {};
-
-  const handleAddRoom = async (newRoom: RoomType) => {};
-  const handleUpdateRoom = async (updatedRoom: RoomType) => {};
-  const handleDeleteRoom = async (room: RoomType) => {};
-
-  const handleAddNewCinema = async (newCinema: CinemaType) => {};
-  const handleOnSave = async (cinema: CinemaType) => {};
-
-  const filteredCinemas = exampleCinemas.filter((cinema) => {
+  const filteredCinemas = cinemas.filter((cinema) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (cinema.cinema_id &&
-        cinema.cinema_id.toString().includes(searchTermLower)) ||
+      (cinema._id &&
+        cinema._id.toString().includes(searchTermLower)) ||
       (cinema.address &&
         cinema.address.toLowerCase().includes(searchTermLower)) ||
       (cinema.name && cinema.name.toLowerCase().includes(searchTermLower))
     );
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading cinemas...</div>;
+  }
 
   return (
     <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">
@@ -102,19 +127,13 @@ const Cinemas: React.FC = () => {
       </div>
       <div className="content mt-[14px] w-full h-full">
         <div className="gap-y-8 py-3 overflow-y-auto flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3">
-          {filteredCinemas.map((cinema, index) => {
-            const cinemaRooms: RoomType[] = exampleRooms.filter(
-              (room) => room.cinema_id === cinema.cinema_id
-            );
-            return (
-              <Cinema
-                key={cinema.cinema_id}
-                cinema={cinema}
-                handleSeeAllRooms={() => handleSeeAllRooms(cinema)}
-                handleInfoClick={() => handleInfoClick(cinema)}
-              />
-            );
-          })}
+          {filteredCinemas.map((cinema) => (
+            <Cinema
+              key={cinema._id}
+              cinema={cinema}
+              handleInfoClick={() => handleInfoClick(cinema)}
+            />
+          ))}
         </div>
       </div>
       {selectedCinema && (
@@ -123,6 +142,7 @@ const Cinemas: React.FC = () => {
           onClose={handleCloseDialog}
           cinema={selectedCinema!}
           onSave={handleOnSave}
+          onDelete={() => handleDeleteCinema(selectedCinema!._id)}
         />
       )}
       <CreateCinema

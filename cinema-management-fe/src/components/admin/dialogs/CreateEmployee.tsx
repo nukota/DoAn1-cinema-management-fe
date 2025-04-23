@@ -49,7 +49,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
   const [role, setRole] = useState<String>("Employee");
-  const [cinemaId, setCinemaId] = useState<number>();
+  const [cinemaId, setCinemaId] = useState<string>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
   const [password, setPassword] = useState<String>("");
@@ -225,11 +225,11 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           </Typography>
           <Autocomplete
             options={exampleCinemas}
-            value={exampleCinemas.find((c) => c.cinema_id === cinemaId) || null}
+            value={exampleCinemas.find((c) => c._id === cinemaId) || null}
             fullWidth
-            onChange={(event, newValue) => setCinemaId(newValue?.cinema_id)}
+            onChange={(event, newValue) => setCinemaId(newValue?._id)}
             getOptionLabel={(option) =>
-              `(ID: ${option.cinema_id}) ${option.name}`
+              `(ID: ${option._id}) ${option.name}`
             }
             renderInput={(params) => (
               <TextField

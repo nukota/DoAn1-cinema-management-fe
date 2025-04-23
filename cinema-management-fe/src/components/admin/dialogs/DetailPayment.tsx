@@ -64,7 +64,7 @@ const DetailPayment: React.FC<DetailPaymentProps> = ({
           </Typography>
           <TextField
             fullWidth
-            value={`#${payment.payment_id}`}
+            value={`#${payment._id}`}
             disabled
             margin="dense"
             size="small"

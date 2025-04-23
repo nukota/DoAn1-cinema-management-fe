@@ -105,7 +105,7 @@ const Profile: React.FC<ProfileProps> = ({ user, open, onClose }) => {
           <Typography sx={{ color: "#595959", mr: 2, width: 100 }}>
             ID
           </Typography>
-          <Typography>{user.user_id}</Typography>
+          <Typography>{user._id}</Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 32 }}>
           <Typography sx={{ color: "#595959", mr: 2, width: 100 }}>

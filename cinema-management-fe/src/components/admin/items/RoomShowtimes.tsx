@@ -8,7 +8,7 @@ import CreateShowtime from "../dialogs/CreateShowtime";
 interface RoomShowtimesProps {
   room: RoomType;
   showtimes: ShowtimeType[];
-  onAddShowtime: (newShowtime: ShowtimeType) => void; // Callback to handle adding a new showtime
+  onAddShowtime: (roomId: ShowtimeType) => void; // Callback to handle adding a new showtime
 }
 
 const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
@@ -39,7 +39,7 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
           Cinema: {room.cinema_id}
         </Typography>
         <Typography variant="body2" className="text-gray">
-          Room: #{room.room_id} {room.name}
+          Room: #{room._id} {room.name}
         </Typography>
       </Box>
 

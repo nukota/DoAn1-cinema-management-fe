@@ -53,14 +53,14 @@ const Reviews: React.FC = () => {
 
   const uniqueReviews = exampleReviews.filter(
     (review, index, self) =>
-      index === self.findIndex((e) => e.review_id === review.review_id)
+      index === self.findIndex((e) => e._id === review._id)
   );
 
   const filteredReviews = uniqueReviews.filter((review) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (review.review_id &&
-        review.review_id.toString().includes(searchTermLower)) ||
+      (review._id &&
+        review._id.toString().includes(searchTermLower)) ||
       (review.showtime_id &&
         review.showtime_id.toString().includes(searchTermLower)) ||
       (review.user_id && review.user_id.toString().includes(searchTermLower)) ||

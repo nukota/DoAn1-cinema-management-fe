@@ -42,21 +42,43 @@ interface CreateMovieProps {
 }
 
 const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
-  const [name, setName] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [poster, setPoster] = useState<string>("");
+  const [posterURL, setPosterURL] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
-  const [nation, setNation] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
   const [ageLimit, setAgeLimit] = useState<number>(0);
   const [releaseDate, setReleaseDate] = useState<string>("");
   const [director, setDirector] = useState<string>("");
-  const [cast, setCast] = useState<string>("");
+  const [actors, setActors] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [rating, setRating] = useState<number>(0);
-  const [trailer, setTrailer] = useState<string>("");
+  const [trailerURL, setTrailerURL] = useState<string>("");
 
-  const handleAddClick = () => {};
+  const handleSubmit = () => {
+    if (!title || !posterURL || !status || !genre || !duration || !country) {
+      console.error("All fields are required");
+      return;
+    }
+    const movieData = {
+      title,
+      status,
+      posterURL,
+      genre,
+      duration,
+      country,
+      ageLimit,
+      releaseDate,
+      director: director.split(",").map((name) => name.trim()),
+      actors: actors.split(",").map((name) => name.trim()),
+      description,
+      rating,
+      trailerURL,
+    };
+    onAdd(movieData);
+    onClose();
+  };
   return (
     <Dialog
       open={open}
@@ -82,15 +104,15 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
           <Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-                Name:
+                Title:
               </Typography>
               <TextField
-                placeholder="Name"
-                sx={{ width: 250 }}
+                placeholder="Title"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -98,12 +120,12 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 Poster:
               </Typography>
               <TextField
-                placeholder="Poster"
-                sx={{ width: 250 }}
+                placeholder="Poster URL"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={poster}
-                onChange={(e) => setPoster(e.target.value)}
+                value={posterURL}
+                onChange={(e) => setPosterURL(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -113,7 +135,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               <Autocomplete
                 options={statusOptions}
                 value={status}
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 onChange={(event, newValue) => setStatus(newValue!)}
                 renderInput={(params) => (
                   <TextField
@@ -131,7 +153,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               </Typography>
               <TextField
                 placeholder="Genre"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={genre}
@@ -144,7 +166,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               </Typography>
               <TextField
                 placeholder="Duration"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={duration}
@@ -157,11 +179,11 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               </Typography>
               <TextField
                 placeholder="Nation"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={nation}
-                onChange={(e) => setNation(e.target.value)}
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -171,7 +193,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               <TextField
                 placeholder="Age Limit"
                 type="number"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={ageLimit}
@@ -184,7 +206,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               </Typography>
               <TextField
                 type="date"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={releaseDate}
@@ -196,7 +218,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 Director:
               </Typography>
               <Box
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 display={"flex"}
                 flexDirection={"column"}
                 gap={1}
@@ -208,7 +230,12 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                   value={director}
                   onChange={(e) => setDirector(e.target.value)}
                 />
-                <Typography color="#999999" fontSize={12} fontStyle={"italic"} sx={{mt: -1, mb: 1}}>
+                <Typography
+                  color="#999999"
+                  fontSize={12}
+                  fontStyle={"italic"}
+                  sx={{ mt: -1, mb: 1 }}
+                >
                   Fill in each name seperated by a comma (,)
                 </Typography>
               </Box>
@@ -218,36 +245,28 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 Cast:
               </Typography>
               <Box
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 display={"flex"}
                 flexDirection={"column"}
                 gap={1}
               >
                 <TextField
                   placeholder="Cast"
-                  sx={{ width: 250 }}
+                  sx={{ width: 280 }}
                   margin="dense"
                   size="small"
-                  value={cast}
-                  onChange={(e) => setCast(e.target.value)}
+                  value={actors}
+                  onChange={(e) => setActors(e.target.value)}
                 />
-                <Typography color="#999999" fontSize={12} fontStyle={"italic"} sx={{mt: -1, mb: 1}}>
+                <Typography
+                  color="#999999"
+                  fontSize={12}
+                  fontStyle={"italic"}
+                  sx={{ mt: -1, mb: 1 }}
+                >
                   Fill in each name seperated by a comma (,)
                 </Typography>
               </Box>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-                Description:
-              </Typography>
-              <TextField
-                placeholder="Description"
-                sx={{ width: 250 }}
-                margin="dense"
-                size="small"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
@@ -256,7 +275,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               <TextField
                 placeholder="Rating"
                 type="number"
-                sx={{ width: 250 }}
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
                 value={rating}
@@ -268,18 +287,18 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 Trailer:
               </Typography>
               <TextField
-                placeholder="Trailer"
-                sx={{ width: 250 }}
+                placeholder="Trailer URL"
+                sx={{ width: 280 }}
                 margin="dense"
                 size="small"
-                value={trailer}
-                onChange={(e) => setTrailer(e.target.value)}
+                value={trailerURL}
+                onChange={(e) => setTrailerURL(e.target.value)}
               />
             </Box>
           </Box>
           <Box display="flex" flexDirection="column" alignItems="center">
             <img
-              src={poster}
+              src={posterURL}
               alt="Movie Poster"
               style={{
                 width: 160,
@@ -295,7 +314,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
-          onClick={handleAddClick}
+          onClick={handleSubmit}
           color="primary"
           variant="contained"
           sx={{ width: 130 }}

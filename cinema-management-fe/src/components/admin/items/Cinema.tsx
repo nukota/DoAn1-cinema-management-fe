@@ -5,7 +5,6 @@ import InfoIcon from "@mui/icons-material/Info";
 
 interface CinemaProps {
   cinema: CinemaType;
-  handleSeeAllRooms: () => void;
   handleInfoClick: () => void;
 }
 
@@ -16,10 +15,6 @@ const Cinema: React.FC<CinemaProps> = ({
   return (
     <div className="cinema w-full min-w-[300px] h-[200px] lg:w-[340px] xl:w-[320px] lg:h-[200px] flex-shrink-0 flex-grow-0 rounded-xl bg-white border-red border-2 flex flex-col items-start justify-start relative overflow-clip">
       <div className="w-full flex items-start justify-between p-3 mt-3 z-10 relative">
-        <>
-          <span className="font-medium text-2xl ml-1">ID: </span>
-          <span className="font-medium text-2xl ml-1">{cinema.cinema_id}</span>
-        </>
         <span className="mr-auto text-2xl font-medium ml-3 self-center z-10">
           {cinema.name}
         </span>
@@ -33,7 +28,7 @@ const Cinema: React.FC<CinemaProps> = ({
         </IconButton>
       </div>
       <div className="w-full flex flex-col items-start justify-between p-3 -mt-2 z-10">
-        <p className="text-light-gray mt-0">Address: {cinema.address}</p>
+        <div className="text-gray mt-0 truncate overflow-ellipsis">Address: {cinema.address}</div>
         <div className="textx-black text-lg mt-2">
           <span>Rooms: </span>
           <span className="font-medium">10</span>

@@ -59,7 +59,7 @@ const Discounts: React.FC = () => {
 
   const uniqueDiscounts = exampleDiscounts.filter(
     (discount, index, self) =>
-      index === self.findIndex((e) => e.discount_id === discount.discount_id)
+      index === self.findIndex((e) => e._id === discount._id)
   );
 
   const filteredDiscounts = uniqueDiscounts.filter((discount) => {
@@ -70,8 +70,8 @@ const Discounts: React.FC = () => {
 
     return (
       (isDateMatch && // Filter by selectedDate
-        discount.discount_id &&
-        discount.discount_id.toString().includes(searchTermLower)) ||
+        discount._id &&
+        discount._id.toString().includes(searchTermLower)) ||
       (discount.code &&
         discount.code.toLowerCase().includes(searchTermLower)) ||
       (discount.discount_type &&
@@ -185,7 +185,7 @@ const Discounts: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentDiscounts.map((discount) => (
-            <Discount key={discount.discount_id} {...discount} />
+            <Discount key={discount._id} {...discount} />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">

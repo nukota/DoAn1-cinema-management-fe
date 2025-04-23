@@ -220,7 +220,7 @@ const Employees: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentEmployees.map((employee) => (
             <Employee
-              key={employee.user_id}
+              key={employee._id}
               employee={employee}
               handleInfoClick={() => handleInfoClick(employee)}
               handleDeleteClick={() => handleCheckConfirmDelete(employee)}

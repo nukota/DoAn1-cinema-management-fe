@@ -104,7 +104,7 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
           <TextField
             placeholder="Auto generated"
             fullWidth
-            value={customer.user_id}
+            value={customer._id}
             disabled
             margin="dense"
             size="small"

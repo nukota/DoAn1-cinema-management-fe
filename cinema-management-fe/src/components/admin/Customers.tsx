@@ -66,7 +66,7 @@ const Customers: React.FC = () => {
 
   const uniqueEmployees = exampleCustomers.filter(
     (user, index, self) =>
-      index === self.findIndex((e) => e.user_id === user.user_id)
+      index === self.findIndex((e) => e._id === user._id)
   );
 
   const filteredCustomers = uniqueEmployees.filter((user) => {
@@ -181,7 +181,7 @@ const Customers: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentCustomers.map((customer) => (
             <Customer
-              key={customer.user_id}
+              key={customer._id}
               customer={customer}
               handleInfoClick={() => handleInfoClick(customer)}
               handleDeleteClick={() => handleCheckConfirmDelete(customer)}

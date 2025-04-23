@@ -52,7 +52,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   const [dob, setDob] = useState<string>("");
   const [cccd, setCccd] = useState<string>("");
   const [role, setRole] = useState<string>("employee");
-  const [cinemaId, setCinemaId] = useState<number>();
+  const [cinemaId, setCinemaId] = useState<string>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
   const [password, setPassword] = useState<String>("");
@@ -118,7 +118,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
           <TextField
             placeholder="Auto generated"
             fullWidth
-            value={`#${employee.employee_id} (account #${employee.user_id})`}
+            value={`#${employee.employee_id} (account #${employee._id})`}
             disabled
             margin="dense"
             size="small"
@@ -235,12 +235,12 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
           </Typography>
           <Autocomplete
             options={exampleCinemas}
-            value={exampleCinemas.find((c) => c.cinema_id === cinemaId) || null}
+            value={exampleCinemas.find((c) => c._id === cinemaId) || null}
             disabled={!isEditing}
             fullWidth
-            onChange={(event, newValue) => setCinemaId(newValue?.cinema_id)}
+            onChange={(event, newValue) => setCinemaId(newValue?._id)}
             getOptionLabel={(option) =>
-              `(ID: ${option.cinema_id}) ${option.name}`
+              `(ID: ${option._id}) ${option.name}`
             }
             renderInput={(params) => (
               <TextField

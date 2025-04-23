@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { ProductType } from "../../../interfaces/types";
+import { MovieType, ProductType } from "../../../interfaces/types";
 
 interface BookingFooterProps {
-  movie: {
-    name: string;
-  };
+  movie: MovieType;
   selectedProducts: {
     product: ProductType;
     amount: number;
@@ -77,7 +75,7 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
         }}
       >
         <Typography sx={{ color: "white", fontSize: 22, fontWeight: 500 }}>
-          {movie.name}
+          {movie.title}
         </Typography>
         <Typography
           variant="body1"

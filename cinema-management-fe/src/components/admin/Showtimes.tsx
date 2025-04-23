@@ -1,13 +1,13 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { exampleRooms, exampleShowtimes } from "../../data";
 import { Box, Button } from "@mui/material";
-import { MovieType, ShowtimeType } from "../../interfaces/types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RoomShowtimes from "./items/RoomShowtimes";
 import { Mousewheel, Navigation } from "swiper/modules";
 import theme from "../../main";
+import { ShowtimeType } from "../../interfaces/types";
 
 const Showtimes: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -15,30 +15,34 @@ const Showtimes: React.FC = () => {
   const [selectedCinema, setSelectedCinema] = useState<string>("");
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(event.target.value);
-    };
-  
-    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSelectedDate(event.target.value);
-    };
-  
-    const handleCalendarClick = () => {
-      const datePicker = document.getElementById(
-        "date-picker"
-      ) as HTMLInputElement;
-      datePicker.focus();
-    };
-  
-    const uniqueCinemas = Array.from(
-      new Set(exampleRooms.map((room) => room.cinema_id))
-    ).map((cinema_id) => ({
-      cinema_id,
-      name: `Cinema ${cinema_id}`,
-    }));
-  
-    const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedCinema(event.target.value);
-    };
+    setSearchTerm(event.target.value);
+  };
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const handleCalendarClick = () => {
+    const datePicker = document.getElementById(
+      "date-picker"
+    ) as HTMLInputElement;
+    datePicker.focus();
+  };
+
+  const uniqueCinemas = Array.from(
+    new Set(exampleRooms.map((room) => room.cinema_id))
+  ).map((cinema_id) => ({
+    cinema_id,
+    name: `Cinema ${cinema_id}`,
+  }));
+
+  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCinema(event.target.value);
+  };
+
+  const handleAddShowtime = (nweShowtime: ShowtimeType) => {
+    // Add logic to handle adding a showtime for the specified room
+  };
 
   const handleDeleteClick = () => {};
   const handleAddNewClick = () => {};
@@ -59,14 +63,16 @@ const Showtimes: React.FC = () => {
 
   // Group filtered showtimes by room
   const roomsWithShowtimes = exampleRooms
-    .filter((room) => !selectedCinema || room.cinema_id.toString() === selectedCinema)
+    .filter(
+      (room) => !selectedCinema || room.cinema_id.toString() === selectedCinema
+    )
     .map((room) => ({
       ...room,
       showtimes: filteredShowtimes.filter(
-        (showtime) => showtime.room_id === room.room_id
+        (showtime) => showtime.room_id === room._id
       ),
     }));
-    console.log("Rooms with Showtimes:", roomsWithShowtimes);
+  console.log("Rooms with Showtimes:", roomsWithShowtimes);
   return (
     <div className="showtimes flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Showtimes</div>
@@ -204,8 +210,8 @@ const Showtimes: React.FC = () => {
     `}
           </style>
           {roomsWithShowtimes.map((room) => (
-            <SwiperSlide key={room.room_id}>
-              <RoomShowtimes room={room} showtimes={room.showtimes} />
+            <SwiperSlide key={room._id}>
+              <RoomShowtimes room={room} showtimes={room.showtimes} onAddShowtime={handleAddShowtime}/>
             </SwiperSlide>
           ))}
         </Swiper>
