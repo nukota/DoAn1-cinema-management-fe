@@ -56,7 +56,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   const [status, setStatus] = useState<string>("");
   const [posterURL, setPosterURL] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
-  const [duration, setDuration] = useState<string>("");
+  const [duration, setDuration] = useState<number>(0);
   const [country, setCountry] = useState<string>("");
   const [ageLimit, setAgeLimit] = useState<number>(0);
   const [releaseDate, setReleaseDate] = useState<string>("");
@@ -67,17 +67,18 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   const [trailerURL, setTrailerURL] = useState<string>("");
 
   useEffect(() => {
+    console.log("Movie: ", movie);
     if (movie) {
       setTitle(movie.title);
       setStatus(movie.status);
       setPosterURL(movie.poster_url);
-      setGenre(movie.genre);
+      setGenre(movie.genre.join(", "));
       setDuration(movie.duration);
-      setCountry(movie.nation);
-      setAgeLimit(movie.ageLimit);
-      setReleaseDate(movie.release_date);
+      setCountry(movie.country);
+      setAgeLimit(movie.age_limit);
+      setReleaseDate(new Date(movie.release_date).toISOString().slice(0, 10));
       setDirector(movie.director);
-      setActors(movie.actors);
+      setActors(movie.actors.join(", "));
       setDescription(movie.description);
       setRating(movie.rating);
       setTrailerURL(movie.trailer_url);
@@ -100,10 +101,10 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       genre,
       duration,
       nation: country,
-      ageLimit,
+      age_limit: ageLimit,
       release_date: releaseDate,
       director,
-      actors,
+      actors: actors.split(",").map((actor) => actor.trim()),
       description,
       rating,
       trailer_url: trailerURL,
@@ -221,7 +222,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 size="small"
                 value={duration}
                 disabled={!isEditing}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => setDuration(Number(e.target.value))}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

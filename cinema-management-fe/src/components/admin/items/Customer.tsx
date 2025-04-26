@@ -19,7 +19,7 @@ const Customer: React.FC<CustomerProps> = ({
       className="customer grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
       style={{ gridTemplateColumns: "0.4fr 1.2fr 0.7fr 0.6fr 1.1fr 1fr" }}
     >
-      <p className="text-sm font-normal">{customer.user_id}</p>
+      <p className="text-sm font-normal">{customer._id}</p>
       <p className="text-sm font-normal">{customer.fullname}</p>
       <p className="text-sm font-normal">{customer.phone}</p>
       <p className="text-sm font-normal">{customer.cccd}</p>

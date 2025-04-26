@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -8,15 +7,10 @@ import {
   DialogContent,
   DialogTitle,
   Grid2,
-  Switch,
   TextField,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-// import AddIcon from "@mui/icons-material/Add";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import EditIcon from "@mui/icons-material/Edit";
-// import SaveIcon from "@mui/icons-material/Save";
 import { RoomType } from "../../../interfaces/types";
 import { exampleSeats } from "../../../data";
 import Seat from "../items/Seat";
@@ -40,6 +34,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface DetailRoomsProps {
   room: RoomType;
   open: boolean;
+  onSave: (updatedRoom: RoomType) => void;
   onDelete: () => void;
   onClose: () => void;
 }
@@ -49,17 +44,17 @@ const getSeatRow = (seatName: string): number | null => {
   return match ? match[0].charCodeAt(0) - 64 : null;
 };
 
-const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose }) => {
+const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onSave, onDelete, onClose }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
-  const [repairing, setRepairing] = useState<boolean>(false);
   const [seatCount, setSeatCount] = useState<number>(0);
+  const [cinemaName, setCinemaName] = useState<string>("");
 
   useEffect(() => {
     if (room) {
       setName(room.name);
-      setRepairing(room.repairing);
       setSeatCount(room.seat_count);
+      setCinemaName(room.cinema.name);
     }
     if (!open) {
       setIsEditing(false);
@@ -71,6 +66,12 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
   };
 
   const handleSaveClick = () => {
+    const updatedRoom: RoomType = {
+      ...room,
+      name,
+      seat_count: seatCount,
+    };
+    onSave(updatedRoom); // Call onSave to update the room
     setIsEditing(false);
   };
 
@@ -181,13 +182,13 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45, mt: 4 }}>
           <Typography sx={{ ml: 2, marginTop: 1, width: 100 }}>
-            Cinema ID:
+            Cinema:
           </Typography>
           <TextField
             sx={{ width: 240 }}
             margin="dense"
             size="small"
-            value={room.cinema_id}
+            value={cinemaName}
             disabled
           />
           <Typography sx={{ ml: 4, marginTop: 1, width: 100 }}>
@@ -227,17 +228,6 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onDelete, onClose 
             value={seatCount}
             disabled={!isEditing}
             onChange={(e) => setSeatCount(Number(e.target.value))}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ ml: 2, marginTop: 1, width: 100 }}>
-            Repairing:
-          </Typography>
-          <Switch
-            checked={repairing}
-            disabled={!isEditing}
-            onChange={(e) => setRepairing(e.target.checked)}
-            color="primary"
           />
         </Box>
       </CustomDialogContent>

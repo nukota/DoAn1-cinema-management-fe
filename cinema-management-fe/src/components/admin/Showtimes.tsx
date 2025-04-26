@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { exampleRooms, exampleShowtimes } from "../../data";
 import { Box, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RoomShowtimes from "./items/RoomShowtimes";
 import { Mousewheel, Navigation } from "swiper/modules";
 import theme from "../../main";
 import { ShowtimeType } from "../../interfaces/types";
+import { useRooms } from "../../providers/RoomsProvider";
+import { useShowtimes } from "../../providers/ShowtimesProvider";
 
 const Showtimes: React.FC = () => {
+  const { rooms, fetchRoomsData } = useRooms();
+  const { showtimes, fetchShowtimesData } = useShowtimes();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
+
+  useEffect(() => {
+    fetchRoomsData();
+    fetchShowtimesData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -30,7 +38,7 @@ const Showtimes: React.FC = () => {
   };
 
   const uniqueCinemas = Array.from(
-    new Set(exampleRooms.map((room) => room.cinema_id))
+    new Set(rooms.map((room) => room.cinema.cinema_id))
   ).map((cinema_id) => ({
     cinema_id,
     name: `Cinema ${cinema_id}`,
@@ -40,18 +48,17 @@ const Showtimes: React.FC = () => {
     setSelectedCinema(event.target.value);
   };
 
-  const handleAddShowtime = (nweShowtime: ShowtimeType) => {
+  const handleAddShowtime = (newShowtime: ShowtimeType) => {
     // Add logic to handle adding a showtime for the specified room
   };
 
   const handleDeleteClick = () => {};
   const handleAddNewClick = () => {};
 
-  const filteredShowtimes = exampleShowtimes.filter((showtime) => {
+  const filteredShowtimes = showtimes.filter((showtime) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearchTerm =
-      (showtime.showtime_id &&
-        showtime.showtime_id.toString().includes(searchTermLower)) ||
+      (showtime._id && showtime._id.toString().includes(searchTermLower)) ||
       (showtime.movie_id &&
         showtime.movie_id.toString().includes(searchTermLower));
 
@@ -62,9 +69,10 @@ const Showtimes: React.FC = () => {
   });
 
   // Group filtered showtimes by room
-  const roomsWithShowtimes = exampleRooms
+  const roomsWithShowtimes = rooms
     .filter(
-      (room) => !selectedCinema || room.cinema_id.toString() === selectedCinema
+      (room) =>
+        !selectedCinema || room.cinema.cinema_id.toString() === selectedCinema
     )
     .map((room) => ({
       ...room,
@@ -211,7 +219,11 @@ const Showtimes: React.FC = () => {
           </style>
           {roomsWithShowtimes.map((room) => (
             <SwiperSlide key={room._id}>
-              <RoomShowtimes room={room} showtimes={room.showtimes} onAddShowtime={handleAddShowtime}/>
+              <RoomShowtimes
+                room={room}
+                showtimes={room.showtimes}
+                onAddShowtime={handleAddShowtime}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

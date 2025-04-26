@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Employee from "./items/Employee";
 import DetailEmployee from "./dialogs/DetailEmployee";
 import CreateEmployee from "./dialogs/CreateEmployee";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
-import { exampleEmployees } from "../../data";
 import { EmployeeType } from "../../interfaces/types";
+import { useEmployees } from "../../providers/EmployeesProvider";
 
 const Employees: React.FC = () => {
+  const { employees, fetchEmployeesData, loading } = useEmployees();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -22,6 +23,10 @@ const Employees: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchEmployeesData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -41,7 +46,7 @@ const Employees: React.FC = () => {
   };
 
   const uniqueCinemas = Array.from(
-    new Set(exampleEmployees.map((employee) => employee.cinema_id))
+    new Set(employees.map((employee) => employee.cinema_id))
   ).map((cinema_id) => ({
     cinema_id,
     name: `Cinema ${cinema_id}`,
@@ -78,7 +83,7 @@ const Employees: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueEmployees = exampleEmployees.filter(
+  const uniqueEmployees = employees.filter(
     (employee, index, self) =>
       index === self.findIndex((e) => e.employee_id === employee.employee_id)
   );

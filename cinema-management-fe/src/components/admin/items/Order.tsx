@@ -28,7 +28,7 @@ const Order: React.FC<OrderProps> = ({
       />
       <div className="order-info flex flex-col mt-1 items-start justify-between py-2 px-1">
         <div className="flex flex-row w-full items-center justify-between text-gray mb-2">
-          <span># {order.order_id}</span>
+          <span># {order._id}</span>
           <span className="text-[13px]">{order.status}</span>
         </div>
         <p>Date: {order.created_at} </p>

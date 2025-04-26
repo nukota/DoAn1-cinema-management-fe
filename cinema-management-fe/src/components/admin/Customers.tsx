@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Customer from "./items/Customer";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
-import { exampleCustomers } from "../../data";
+import { useCustomers } from "../../providers/CustomersProvider";
 import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
 
 const Customers: React.FC = () => {
+  const { customers, fetchCustomersData, loading } = useCustomers();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -20,6 +21,10 @@ const Customers: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchCustomersData();
+  },  []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -57,14 +62,16 @@ const Customers: React.FC = () => {
     setSelectedCustomer(null);
   };
 
-  const handleAddNewCustomer = async (newCustomer: UserType) => {};
+  const handleAddNewCustomer = async (newCustomer: UserType) => {
+    
+  };
   const handleOnSave = async (customer: UserType) => {};
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueEmployees = exampleCustomers.filter(
+  const uniqueEmployees = customers.filter(
     (user, index, self) =>
       index === self.findIndex((e) => e._id === user._id)
   );

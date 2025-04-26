@@ -1,9 +1,12 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
 import { UserType } from "../interfaces/types";
 
 interface CustomersContextType {
   customers: UserType[];
   fetchCustomersData: () => Promise<void>;
+  createCustomer: (newCustomer: UserType) => Promise<void>;
+  updateCustomer: (updatedCustomer: UserType) => Promise<void>;
+  deleteCustomer: (customerId: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -13,11 +16,18 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [customers, setCustomers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+  // Fetch all customers
   const fetchCustomersData = async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${apiUrl}/customers`);
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -30,8 +40,95 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
+  // Create a new customer
+  const createCustomer = useCallback(async (newCustomer: UserType) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newCustomer),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const createdCustomer = await response.json();
+      setCustomers((prevCustomers) => [...prevCustomers, createdCustomer]);
+    } catch (error) {
+      console.error("Failed to create customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Update an existing customer
+  const updateCustomer = useCallback(async (updatedCustomer: UserType) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user/${updatedCustomer._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedCustomer),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const updatedData = await response.json();
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((customer) =>
+          customer._id === updatedData._id ? updatedData : customer
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Delete a customer
+  const deleteCustomer = useCallback(async (customerId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user/${customerId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      setCustomers((prevCustomers) =>
+        prevCustomers.filter((customer) => customer._id !== customerId)
+      );
+    } catch (error) {
+      console.error("Failed to delete customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return (
-    <CustomersContext.Provider value={{ customers, fetchCustomersData, loading }}>
+    <CustomersContext.Provider
+      value={{
+        customers,
+        fetchCustomersData,
+        createCustomer,
+        updateCustomer,
+        deleteCustomer,
+        loading,
+      }}
+    >
       {children}
     </CustomersContext.Provider>
   );

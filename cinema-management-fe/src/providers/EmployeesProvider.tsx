@@ -6,7 +6,7 @@ interface EmployeesContextType {
   fetchEmployeesData: () => Promise<void>;
   createEmployee: (newEmployee: EmployeeType) => Promise<void>;
   updateEmployee: (updatedEmployee: EmployeeType) => Promise<void>;
-  deleteEmployee: (employeeId: string) => Promise<void>;
+  deleteEmployee: (EmployeeId: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -15,30 +15,41 @@ const EmployeesContext = createContext<EmployeesContextType | undefined>(undefin
 export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [employees, setEmployees] = useState<EmployeeType[]>([]);
   const [loading, setLoading] = useState(false);
+
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
+  // Fetch all Employees
   const fetchEmployeesData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/employees`);
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       setEmployees(data);
     } catch (error) {
-      console.error("Failed to fetch employees:", error);
+      console.error("Failed to fetch Employees:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Create a new Employee
   const createEmployee = useCallback(async (newEmployee: EmployeeType) => {
+    setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/employees`, {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newEmployee),
       });
@@ -48,16 +59,22 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
       const createdEmployee = await response.json();
       setEmployees((prevEmployees) => [...prevEmployees, createdEmployee]);
     } catch (error) {
-      console.error("Failed to create employee:", error);
+      console.error("Failed to create Employee:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
+  // Update an existing Employee
   const updateEmployee = useCallback(async (updatedEmployee: EmployeeType) => {
+    setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/employees/${updatedEmployee._id}`, {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user/${updatedEmployee._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedEmployee),
       });
@@ -66,28 +83,38 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
       }
       const updatedData = await response.json();
       setEmployees((prevEmployees) =>
-        prevEmployees.map((employee) =>
-          employee._id === updatedData._id ? updatedData : employee
+        prevEmployees.map((Employee) =>
+          Employee._id === updatedData._id ? updatedData : Employee
         )
       );
     } catch (error) {
-      console.error("Failed to update employee:", error);
+      console.error("Failed to update Employee:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  const deleteEmployee = useCallback(async (employeeId: string) => {
+  // Delete a Employee
+  const deleteEmployee = useCallback(async (EmployeeId: string) => {
+    setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/employees/${employeeId}`, {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/user/${EmployeeId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       setEmployees((prevEmployees) =>
-        prevEmployees.filter((employee) => employee._id !== employeeId)
+        prevEmployees.filter((Employee) => Employee._id !== EmployeeId)
       );
     } catch (error) {
-      console.error("Failed to delete employee:", error);
+      console.error("Failed to delete Employee:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -110,7 +137,7 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
 export const useEmployees = () => {
   const context = useContext(EmployeesContext);
   if (!context) {
-    throw new Error("useEmployees must be used within an EmployeesProvider");
+    throw new Error("useEmployees must be used within a EmployeesProvider");
   }
   return context;
 };

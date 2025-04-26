@@ -10,6 +10,7 @@ import { CinemaType } from "../interfaces/types";
 interface CinemasContextType {
   cinemas: CinemaType[];
   fetchCinemasData: () => Promise<void>;
+  fetchCinemaDetails: (cinemaId: string) => Promise<any>;
   createCinema: (cinema: CinemaType) => Promise<void>;
   updateCinema: (cinema: CinemaType) => Promise<void>;
   deleteCinema: (_id: string) => Promise<void>;
@@ -43,6 +44,25 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
       console.error("Failed to fetch cinemas:", error);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const fetchCinemaDetails = useCallback(async (cinemaId: string) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/cinema/employeeandroom/${cinemaId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch cinema details:", error);
+      throw error;
     }
   }, []);
 
@@ -117,6 +137,7 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         cinemas,
         fetchCinemasData,
+        fetchCinemaDetails,
         loading,
         createCinema,
         updateCinema,

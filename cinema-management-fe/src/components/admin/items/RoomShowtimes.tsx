@@ -36,7 +36,7 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
       {/* Room Information */}
       <Box className="mb-4">
         <Typography variant="body2" className="text-dark-gray">
-          Cinema: {room.cinema_id}
+          Cinema: {room.cinema.cinema_id}
         </Typography>
         <Typography variant="body2" className="text-gray">
           Room: #{room._id} {room.name}

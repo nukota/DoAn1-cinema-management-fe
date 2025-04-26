@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
-import { examplePayments } from "../../data";
 import { PaymentType } from "../../interfaces/types";
 import DetailPayment from "./dialogs/DetailPayment";
+import { usePayments } from "../../providers/PaymentsProvider";
 
 const Payments: React.FC = () => {
+  const { payments, fetchPaymentsData, loading } = usePayments();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedPayment, setSelectedPayment] = useState<PaymentType | null>(
@@ -17,6 +18,10 @@ const Payments: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchPaymentsData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -49,7 +54,7 @@ const Payments: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniquePayments = examplePayments.filter(
+  const uniquePayments = payments.filter(
     (payment, index, self) =>
       index === self.findIndex((e) => e._id === payment._id)
   );

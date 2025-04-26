@@ -19,9 +19,17 @@ import { useAuth } from "../../providers/AuthProvider";
 const Login: React.FC = () => {
   const { handleLogin, handleSignUp, userProfile } = useAuth();
   const navigate = useNavigate();
+
+  // Pre-fill email and password from environment variables
+  const defaultEmail = import.meta.env.VITE_USERNAME || "";
+  const defaultPassword = import.meta.env.VITE_PASSWORD || "";
+
   const [value, setValue] = useState<string>("1");
   const [error, setError] = useState<string>("");
-  const [signInData, setSignInData] = useState({ email: "", password: "" });
+  const [signInData, setSignInData] = useState({
+    email: defaultEmail,
+    password: defaultPassword,
+  });
   const [signUpData, setSignUpData] = useState({
     full_name: "",
     email: "",

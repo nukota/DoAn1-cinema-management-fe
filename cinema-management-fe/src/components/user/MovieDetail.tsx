@@ -148,7 +148,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                     marginRight: 1.5,
                   }}
                 />
-                {movie.nation}
+                {movie.country}
               </div>
               <div>
                 <PersonOffIcon
@@ -158,7 +158,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                     marginRight: 1.5,
                   }}
                 />
-                T{movie.ageLimit}
+                T{movie.age_limit}
               </div>
             </div>
             <div className="pt-6">

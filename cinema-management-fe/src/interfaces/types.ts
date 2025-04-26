@@ -28,13 +28,13 @@ export type MovieType = {
   status: "Stopped" | "Unknown" | "Now Playing" | "Coming Soon";
   title: string;
   poster_url: string;
-  genre: string;
-  duration: string;
-  nation: string;
-  ageLimit: number;
+  genre: string[];
+  duration: number;
+  country: string;
+  age_limit: number;
   release_date: string;
   director: string;
-  actors: string;
+  actors: string[];
   description: string;
   rating: number;
   trailer_url: string;
@@ -50,14 +50,16 @@ export type ProductType = {
 
 export type RoomType = {
   _id: string;
-  cinema_id: string;
   name: string;
   seat_count: number;
-  repairing: boolean;
+  cinema: {
+    cinema_id: string;
+    name: string;
+  };
 };
 
 export type ShowtimeType = {
-  showtime_id: string;
+  _id: string;
   room_id: string;
   movie_id: string;
   showtime: string;

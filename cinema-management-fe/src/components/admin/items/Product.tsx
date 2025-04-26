@@ -15,17 +15,9 @@ const Product: React.FC<ProductProps> = ({product, handleInfoClick}) => {
         <img className="max-h-[100px] max-w-[100px] z-10" src={product.image} alt={product.name} />
       </div>
       <div className="product-info flex flex-col mt-1">
-        <span className="text-[13px] font-normal text-red">
-          ID: {product.product_id}
-        </span>
-        <p className="text-[13px] font-normal text-black tracking-wider truncate">
+        <p className="text-[13px] font-normal text-black tracking-wider line-clamp-2">
           {product.name}
         </p>
-        {product.description && (
-          <p className="text-[13px] font-normal text-black tracking-wider truncate">
-            {product.description}
-          </p>
-        )}
         <p className="text-[13px] font-light text-black tracking-wider truncate">
           ${product.price}
         </p>

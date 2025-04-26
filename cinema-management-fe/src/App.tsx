@@ -7,12 +7,19 @@ import {
 import "./index.css";
 import User from "./components/user/user";
 import Employee from "./components/employee/employee";
-import { EmployeesProvider } from "./providers/EmployeesProvider";
 import Admin from "./components/admin/admin";
+import { EmployeesProvider } from "./providers/EmployeesProvider";
+import { ReviewsProvider } from "./providers/ReviewsProvider";
 import { CinemasProvider } from "./providers/CinemasProvider";
 import { MoviesProvider } from "./providers/MoviesProvider";
 import { ProductsProvider } from "./providers/ProductsProvider";
 import { CustomersProvider } from "./providers/CustomersProvider";
+import { TicketsProvider } from "./providers/TicketsProviders";
+import { ShowtimesProvider } from "./providers/ShowtimesProvider";
+import { OrdersProvider } from "./providers/OrdersProvider";
+import { PaymentsProvider } from "./providers/PaymentsProvider";
+import { DiscountsProvider } from "./providers/DiscountsProviders";
+import { RoomsProvider } from "./providers/RoomsProvider";
 
 const App: React.FC = () => {
   return (
@@ -27,7 +34,21 @@ const App: React.FC = () => {
                 <ProductsProvider>
                   <CustomersProvider>
                     <EmployeesProvider>
-                      <Admin />
+                      <ReviewsProvider>
+                        <TicketsProvider>
+                          <ShowtimesProvider>
+                            <OrdersProvider>
+                              <PaymentsProvider>
+                                <DiscountsProvider>
+                                  <RoomsProvider>
+                                    <Admin />
+                                  </RoomsProvider>
+                                </DiscountsProvider>
+                              </PaymentsProvider>
+                            </OrdersProvider>
+                          </ShowtimesProvider>
+                        </TicketsProvider>
+                      </ReviewsProvider>
                     </EmployeesProvider>
                   </CustomersProvider>
                 </ProductsProvider>

@@ -98,9 +98,9 @@ const Movies: React.FC = () => {
       (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
       (movie.release_date && movie.release_date.includes(searchTermLower)) ||
       (movie.director && movie.director.includes(searchTermLower)) ||
-      (movie.actors && movie.actors.toLowerCase().includes(searchTermLower)) ||
-      (movie.genre && movie.genre.toLowerCase().includes(searchTermLower)) ||
-      (movie.nation && movie.nation.toLowerCase().includes(searchTermLower)) ||
+      (movie.actors && movie.actors.some((actor) => actor.toLowerCase().includes(searchTermLower))) ||
+      (movie.genre && movie.genre.some((genre) => genre.toLowerCase().includes(searchTermLower))) ||
+      (movie.country && movie.country.toLowerCase().includes(searchTermLower)) ||
       (movie.description &&
         movie.description.toLowerCase().includes(searchTermLower));
     return matchesTab && matchesSearch;

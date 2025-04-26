@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CinemaType } from "../../../interfaces/types";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 
 interface CinemaProps {
   cinema: CinemaType;
+  details?: { employeeCount: number; roomCount: number };
+  fetchDetails: () => void;
   handleInfoClick: () => void;
 }
 
 const Cinema: React.FC<CinemaProps> = ({
   cinema,
+  details,
+  fetchDetails,
   handleInfoClick,
 }) => {
+  useEffect(() => {
+    if (!details) {
+      fetchDetails();
+    }
+  }, [details, fetchDetails]);
   return (
     <div className="cinema w-full min-w-[300px] h-[200px] lg:w-[340px] xl:w-[320px] lg:h-[200px] flex-shrink-0 flex-grow-0 rounded-xl bg-white border-red border-2 flex flex-col items-start justify-start relative overflow-clip">
       <div className="w-full flex items-start justify-between p-3 mt-3 z-10 relative">
@@ -28,14 +37,20 @@ const Cinema: React.FC<CinemaProps> = ({
         </IconButton>
       </div>
       <div className="w-full flex flex-col items-start justify-between p-3 -mt-2 z-10">
-        <div className="text-gray mt-0 truncate overflow-ellipsis">Address: {cinema.address}</div>
-        <div className="textx-black text-lg mt-2">
-          <span>Rooms: </span>
-          <span className="font-medium">10</span>
+        <div className="text-gray mt-0 truncate overflow-ellipsis">
+          Address: {cinema.address}
         </div>
         <div className="textx-black text-lg mt-2">
-          <span>Employee: </span>
-          <span className="font-medium">100</span>
+          <span>Rooms: </span>
+          <span className="font-medium">
+            {details ? details.roomCount : "Loading..."}
+          </span>
+        </div>
+        <div className="textx-black text-lg mt-2">
+          <span>Employees: </span>
+          <span className="font-medium">
+            {details ? details.employeeCount : "Loading..."}
+          </span>
         </div>
       </div>
       <div className="w-full text-[#fef5f5] text-[84px] absolute -top-10 -right-10 z-0 whitespace-nowrap text-overflow-clip">

@@ -5,19 +5,33 @@ import { CinemaType } from "../../interfaces/types";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
 import { Button } from "@mui/material";
-import { useCinemas } from "../../providers/CinemasProvider"; // Import the useCinemas hook
+import { useCinemas } from "../../providers/CinemasProvider";
 
 const Cinemas: React.FC = () => {
-  const { cinemas, fetchCinemasData, createCinema, updateCinema, deleteCinema, loading } = useCinemas();
+  const { cinemas, fetchCinemasData, fetchCinemaDetails, createCinema, updateCinema, deleteCinema, loading } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-
-  // Fetch cinemas data on component mount
+  const [cinemaDetails, setCinemaDetails] = useState<{
+    [key: string]: { employeeCount: number; roomCount: number };
+  }>({});
+  
   useEffect(() => {
     fetchCinemasData();
   }, []);
+
+  const fetchDetails = async (cinemaId: string) => {
+    try {
+      const details = await fetchCinemaDetails(cinemaId);
+      setCinemaDetails((prevDetails) => ({
+        ...prevDetails,
+        [cinemaId]: details,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch cinema details:", error);
+    }
+  }
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -131,6 +145,8 @@ const Cinemas: React.FC = () => {
             <Cinema
               key={cinema._id}
               cinema={cinema}
+              details={cinemaDetails[cinema._id]}
+              fetchDetails={() => fetchDetails(cinema._id)}
               handleInfoClick={() => handleInfoClick(cinema)}
             />
           ))}

@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Review from "./items/Review";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { exampleReviews } from "../../data";
-import { Button } from "@mui/material";
 import { ReviewType } from "../../interfaces/types";
 import DetailReview from "./dialogs/DetailReview";
+import { useReviews } from "../../providers/ReviewsProvider";
 
 const Reviews: React.FC = () => {
+  const { reviews, fetchReviewsData, loading } = useReviews();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -16,6 +17,10 @@ const Reviews: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchReviewsData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -51,16 +56,10 @@ const Reviews: React.FC = () => {
     setSelectedReview(null);
   };
 
-  const uniqueReviews = exampleReviews.filter(
-    (review, index, self) =>
-      index === self.findIndex((e) => e._id === review._id)
-  );
-
-  const filteredReviews = uniqueReviews.filter((review) => {
+  const filteredReviews = reviews.filter((review) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (review._id &&
-        review._id.toString().includes(searchTermLower)) ||
+      (review._id && review._id.toString().includes(searchTermLower)) ||
       (review.showtime_id &&
         review.showtime_id.toString().includes(searchTermLower)) ||
       (review.user_id && review.user_id.toString().includes(searchTermLower)) ||
