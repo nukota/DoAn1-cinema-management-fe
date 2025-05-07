@@ -60,10 +60,10 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
 
   useEffect(() => {
     if (employee) {
-      setFullname(employee.fullname);
+      setFullname(employee.full_name);
       setEmail(employee.email);
       setPhone(employee.phone);
-      setDob(employee.dob);
+      setDob(employee.dateOfBirth);
       setCccd(employee.cccd);
     }
     if (!open) {

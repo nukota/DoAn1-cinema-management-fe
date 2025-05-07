@@ -1,10 +1,10 @@
 export type UserType = {
   _id: string;
-  fullname: string;
+  full_name: string;
   email: string;
   phone: string;
   password_hash: string;
-  dob: string;
+  dateOfBirth: string;
   cccd: string;
   role: "employee" | "admin" | "customer";
   created_at: string;

@@ -79,11 +79,11 @@ const Customers: React.FC = () => {
   const filteredCustomers = uniqueEmployees.filter((user) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (user.fullname &&
-        user.fullname.toLowerCase().includes(searchTermLower)) ||
+      (user.full_name &&
+        user.full_name.toLowerCase().includes(searchTermLower)) ||
       (user.cccd && user.cccd.toString().includes(searchTermLower)) ||
       (user.role && user.role.toLowerCase().includes(searchTermLower)) ||
-      (user.dob && user.dob.includes(searchTermLower))
+      (user.dateOfBirth && user.dateOfBirth.includes(searchTermLower))
     );
   });
 

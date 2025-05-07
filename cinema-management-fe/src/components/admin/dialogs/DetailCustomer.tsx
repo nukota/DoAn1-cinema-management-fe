@@ -55,10 +55,10 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
 
   useEffect(() => {
     if (customer) {
-      setFullname(customer.fullname);
+      setFullname(customer.full_name);
       setEmail(customer.email);
       setPhone(customer.phone);
-      setDob(customer.dob);
+      setDob(customer.dateOfBirth);
       setCccd(customer.cccd);
     }
     if (!open) {

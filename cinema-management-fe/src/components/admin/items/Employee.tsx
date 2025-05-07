@@ -19,12 +19,12 @@ const Employee: React.FC<EmployeeProps> = ({
       className="employee grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
       style={{ gridTemplateColumns: "0.4fr 0.4fr 0.8fr 0.7fr 0.6fr 1.1fr 1fr" }}
     >
-      <p className="text-sm font-normal">{employee.employee_id}</p>
-      <p className="text-sm font-normal">{employee.cinema_id}</p>
-      <p className="text-sm font-normal">{employee.fullname}</p>
-      <p className="text-sm font-normal">{employee.dob}</p>
-      <p className="text-sm font-normal">{employee.position}</p>
-      <p className="text-sm font-normal">{employee.shift}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.employee_id}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.cinema_id}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.full_name}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.dateOfBirth}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.position}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.shift}</p>
       <div className="flex flex-row">
         <button
           className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200"

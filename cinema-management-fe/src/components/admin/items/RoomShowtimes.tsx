@@ -62,7 +62,7 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
       {/* List of Showtimes */}
       <Box className="flex flex-col gap-2 overflow-y-auto">
         {showtimes.map((showtime) => (
-          <Showtime key={showtime.showtime_id} {...showtime} />
+          <Showtime key={showtime._id} {...showtime} />
         ))}
       </Box>
 

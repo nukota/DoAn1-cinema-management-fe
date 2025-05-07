@@ -6,7 +6,7 @@ const Showtime: React.FC<ShowtimeType> = (showtime) => {
   return (
     <Box className="w-full h-[160px] bg-[#eee] rounded-xl flex flex-col justify-between p-4">
       <Typography variant="h6" className="text-dark-gray">
-        Showtime ID: {showtime.showtime_id}
+        Showtime ID: {showtime._id}
       </Typography>
 
       {/* Movie ID */}

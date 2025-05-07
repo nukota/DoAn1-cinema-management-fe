@@ -91,12 +91,12 @@ const Employees: React.FC = () => {
   const filteredEmployees = uniqueEmployees.filter((employee) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (employee.fullname &&
-        employee.fullname.toLowerCase().includes(searchTermLower)) ||
+      (employee.full_name &&
+        employee.full_name.toLowerCase().includes(searchTermLower)) ||
       (employee.cccd && employee.cccd.toString().includes(searchTermLower)) ||
       (employee.role &&
         employee.role.toLowerCase().includes(searchTermLower)) ||
-      (employee.dob && employee.dob.includes(searchTermLower));
+      (employee.dateOfBirth && employee.dateOfBirth.includes(searchTermLower));
   
     const matchesCinema =
       !selectedCinema || employee.cinema_id.toString() === selectedCinema;

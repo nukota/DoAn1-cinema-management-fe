@@ -13,11 +13,11 @@ import { UserType } from "../../interfaces/types";
 
 const exampleEmployee: UserType = {
   _id: "1",
-  fullname: "John Doe",
+  full_name: "John Doe",
   email: "john.doe@example.com",
   phone: "123-456-7890",
   password_hash: "hashedpassword1",
-  dob: "1990-01-01",
+  dateOfBirth: "1990-01-01",
   cccd: "123456789",
   role: "employee",
   created_at: "2023-01-01T10:00:00",
@@ -85,7 +85,7 @@ const Employee: React.FC = () => {
       </div>
       <div className="flex flex-col w-full">
         <Header
-          ProfileName={exampleEmployee.fullname}
+          ProfileName={exampleEmployee.full_name}
           ProfileRole={exampleEmployee.role}
           ProfilePic={ProfileImg}
           onArrowDownClick={toggleProfileVisibility}

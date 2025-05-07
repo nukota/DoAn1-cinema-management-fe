@@ -14,16 +14,20 @@ const Customer: React.FC<CustomerProps> = ({
   handleInfoClick,
   handleDeleteClick,
 }) => {
+  const formattedDateOfBirth = customer.dateOfBirth
+    ? new Date(customer.dateOfBirth).toISOString().split("T")[0]
+    : "N/A";
+    
   return (
     <div
       className="customer grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
       style={{ gridTemplateColumns: "0.4fr 1.2fr 0.7fr 0.6fr 1.1fr 1fr" }}
     >
-      <p className="text-sm font-normal">{customer._id}</p>
-      <p className="text-sm font-normal">{customer.fullname}</p>
-      <p className="text-sm font-normal">{customer.phone}</p>
-      <p className="text-sm font-normal">{customer.cccd}</p>
-      <p className="text-sm font-normal">{customer.dob}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{customer._id}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{customer.full_name}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{customer.phone}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{customer.cccd}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{formattedDateOfBirth}</p>
       <div className="flex flex-row">
         <button
           className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200"
