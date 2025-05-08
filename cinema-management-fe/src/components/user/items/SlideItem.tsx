@@ -26,7 +26,7 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
   };
 
   const handleBuyTicketClicked = () => {
-    navigate(`/user/movie-detail/${movie.movie_id}`)
+    navigate(`/user/movie-detail/${movie._id}`)
   };
 
   const getEmbedUrl = (url: string) => {
@@ -45,11 +45,11 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
     <div className="slide-item relative flex-shrink-0 w-[240px] h-[490px] rounded-md overflow-hidden">
       <img
         className="absolute slide-item-poster w-[240px] h-[360px] object-cover rounded-md z-[9]"
-        src={movie.poster}
-        alt={`${movie.name} poster`}
+        src={movie.poster_url}
+        alt={`${movie.title} poster`}
       />
       <div className="text-xl font-medium text-white absolute top-[376px] w-full flex justify-center">
-        <span className="truncate">{movie.name}</span>
+        <span className="truncate">{movie.title}</span>
       </div>
       <div className="absolute top-[426px] w-full items-center flex flex-row justify-between">
         <Button
@@ -75,7 +75,7 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
       <div className="absolute slide-item-filter w-[240px] h-[360px] bg-black z-10" />
       <div className="absolute slide-item-info w-full h-[170px] z-[11]">
         <div className="text-white flex flex-col py-4 pl-6">
-          <div className="text-[18px] my-2">{movie.name}</div>
+          <div className="text-[18px] my-2">{movie.title}</div>
           <div className="text-sm pl-2 flex flex-col space-y-2">
             <div>
               <StyleIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.genre}
@@ -86,10 +86,10 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
             </div>
             <div>
               <PersonOffIcon sx={{ fontSize: 16, color: "#ebd113" }} /> T
-              {movie.ageLimit}
+              {movie.age_limit}
             </div>
             <div>
-              <PublicIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.nation}
+              <PublicIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.country}
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
           <iframe
             width="1000"
             height="562.5"
-            src={getEmbedUrl(movie.trailer)}
+            src={getEmbedUrl(movie.trailer_url)}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             title="Trailer"

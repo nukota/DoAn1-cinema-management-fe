@@ -9,7 +9,7 @@ import { EmployeeType } from "../../interfaces/types";
 import { useEmployees } from "../../providers/EmployeesProvider";
 
 const Employees: React.FC = () => {
-  const { employees, fetchEmployeesData, loading } = useEmployees();
+  const { employees, fetchEmployeesData, createEmployee, updateEmployee, deleteEmployee, loading } = useEmployees();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -66,8 +66,9 @@ const Employees: React.FC = () => {
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (employee: EmployeeType) => {
-    setShowDeleteConfirm(true);
-    setSelectedEmployee(employee);
+    handleDeleteEmployee(employee._id);
+    // setShowDeleteConfirm(true);
+    // setSelectedEmployee(employee);
   };
 
   const handleCloseDialog = () => {
@@ -76,8 +77,38 @@ const Employees: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {};
-  const handleOnSave = async (employee: EmployeeType) => {};
+  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {
+    try {
+      await createEmployee(newEmployee);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new Employee:", error);
+      alert("An error occurred while adding the Employee. Please try again.");
+    }
+  };
+
+  const handleOnSave = async (updatedEmployee: EmployeeType) => {
+    try {
+      await updateEmployee(updatedEmployee);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save Employee:", error);
+      alert("An error occurred while saving the Employee. Please try again.");
+    }
+  };
+
+  const handleDeleteEmployee = async (EmployeeId: string) => {
+    try {
+      await deleteEmployee(EmployeeId);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete Employee:", error);
+      alert("An error occurred while deleting the Employee. Please try again.");
+    }
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));

@@ -1,13 +1,14 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import Discount from "./items/Discount";
 import { DiscountType } from "../../interfaces/types";
-import { exampleDiscounts } from "../../data";
 import CreateDiscount from "./dialogs/CreateDiscount";
+import { useDiscounts } from "../../providers/DiscountsProvider";
 
 const Discounts: React.FC = () => {
+  const { discounts, fetchDiscountsData, loading } = useDiscounts();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -19,6 +20,10 @@ const Discounts: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+      fetchDiscountsData();
+    }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -57,7 +62,7 @@ const Discounts: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueDiscounts = exampleDiscounts.filter(
+  const uniqueDiscounts = discounts.filter(
     (discount, index, self) =>
       index === self.findIndex((e) => e._id === discount._id)
   );

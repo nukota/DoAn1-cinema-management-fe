@@ -19,7 +19,7 @@ const Employee: React.FC<EmployeeProps> = ({
       className="employee grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
       style={{ gridTemplateColumns: "0.4fr 0.4fr 0.8fr 0.7fr 0.6fr 1.1fr 1fr" }}
     >
-      <p className="text-sm font-normal overflow-ellipsis truncate">{employee.employee_id}</p>
+      <p className="text-sm font-normal overflow-ellipsis truncate">{employee._id}</p>
       <p className="text-sm font-normal overflow-ellipsis truncate">{employee.cinema_id}</p>
       <p className="text-sm font-normal overflow-ellipsis truncate">{employee.full_name}</p>
       <p className="text-sm font-normal overflow-ellipsis truncate">{employee.dateOfBirth}</p>

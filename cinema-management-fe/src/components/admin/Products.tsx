@@ -83,11 +83,14 @@ const Products: React.FC = () => {
   };
   const filteredProducts = products.filter((product) => {
     const matchesTab =
-      activeTab === "All" ||
-      (activeTab === "Others"
-        ? product.category !== "Food and Drinks" &&
-          product.category !== "Souvenirs"
-        : product.category === activeTab);
+    activeTab === "All" ||
+    (activeTab === "Food and Drinks"
+      ? product.category === "Food" || product.category === "Drink"
+      : activeTab === "Others"
+      ? product.category !== "Food" &&
+        product.category !== "Drink" &&
+        product.category !== "Souvenirs"
+      : product.category === activeTab);
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       (product.name && product.name.toLowerCase().includes(searchTermLower)) ||

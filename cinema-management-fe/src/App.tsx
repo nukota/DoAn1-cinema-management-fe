@@ -18,7 +18,7 @@ import { TicketsProvider } from "./providers/TicketsProviders";
 import { ShowtimesProvider } from "./providers/ShowtimesProvider";
 import { OrdersProvider } from "./providers/OrdersProvider";
 import { PaymentsProvider } from "./providers/PaymentsProvider";
-import { DiscountsProvider } from "./providers/DiscountsProviders";
+import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
 
 const App: React.FC = () => {

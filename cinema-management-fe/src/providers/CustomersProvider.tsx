@@ -23,7 +23,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user`, {
+      const response = await fetch(`${baseURL}/user/role/customer`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

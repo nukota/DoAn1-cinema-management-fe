@@ -9,7 +9,7 @@ import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
 
 const Customers: React.FC = () => {
-  const { customers, fetchCustomersData, loading } = useCustomers();
+  const { customers, fetchCustomersData, createCustomer, updateCustomer, deleteCustomer, loading } = useCustomers();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -52,8 +52,9 @@ const Customers: React.FC = () => {
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (customer: UserType) => {
-    setShowDeleteConfirm(true);
-    setSelectedCustomer(customer);
+    handleDeleteCustomer(customer._id);
+    // setShowDeleteConfirm(true);
+    // setSelectedCustomer(customer);
   };
 
   const handleCloseDialog = () => {
@@ -63,9 +64,37 @@ const Customers: React.FC = () => {
   };
 
   const handleAddNewCustomer = async (newCustomer: UserType) => {
-    
+    try {
+      await createCustomer(newCustomer);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new customer:", error);
+      alert("An error occurred while adding the customer. Please try again.");
+    }
   };
-  const handleOnSave = async (customer: UserType) => {};
+
+  const handleOnSave = async (updatedCustomer: UserType) => {
+    try {
+      await updateCustomer(updatedCustomer);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save customer:", error);
+      alert("An error occurred while saving the customer. Please try again.");
+    }
+  };
+
+  const handleDeleteCustomer = async (customerId: string) => {
+    try {
+      await deleteCustomer(customerId);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete customer:", error);
+      alert("An error occurred while deleting the customer. Please try again.");
+    }
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));

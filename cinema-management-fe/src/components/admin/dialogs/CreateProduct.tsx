@@ -100,7 +100,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
               </Typography>
               <TextField
                 placeholder="Image"
-                type="number"
                 sx={{ width: 240 }}
                 margin="dense"
                 size="small"

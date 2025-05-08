@@ -13,8 +13,9 @@ import Footer from "./elements/Footer";
 
 const User: React.FC = () => {
   return (
-    <div className="bg-black min-h-screen w-full h-auto">
+    <div className="bg-black min-h-screen w-full h-auto relative">
       <UserHeader />
+      <div className="z-[99] bg-black w-full relative">
       <Routes>
         <Route path="/" element={<UserHome />} />
         <Route path="/home" element={<UserHome />} />
@@ -27,7 +28,11 @@ const User: React.FC = () => {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/about-us" element={<AboutUs />} />
       </Routes>
-      <Footer />
+      </div>
+      <div className="z-[100] bg-black w-full">
+        <Footer />
+      </div>
+      
     </div>
   );
 }

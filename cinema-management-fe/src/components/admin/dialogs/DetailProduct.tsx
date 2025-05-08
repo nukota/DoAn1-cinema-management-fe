@@ -152,7 +152,6 @@ const DetailProduct: React.FC<DetailProductProps> = ({
               </Typography>
               <TextField
                 placeholder="Image"
-                type="number"
                 sx={{ width: 240 }}
                 margin="dense"
                 size="small"

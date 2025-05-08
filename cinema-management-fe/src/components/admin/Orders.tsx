@@ -2,11 +2,6 @@ import { useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Order from "./items/Order";
-import {
-  exampleOrders,
-  exampleTickets,
-  exampleOrderProducts,
-} from "../../data";
 import { OrderProductType, OrderType, TicketType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 

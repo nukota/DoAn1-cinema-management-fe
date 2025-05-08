@@ -10,6 +10,7 @@ import PaymentsImg from "./../../assets/images/receipts.svg";
 import SettingsImg from "../../assets/images/settings.svg";
 import ProfileImg from "./../../assets/images/profile.png";
 import { UserType } from "../../interfaces/types";
+import EmployeeHome from "./home";
 
 const exampleEmployee: UserType = {
   _id: "1",
@@ -37,7 +38,7 @@ const Employee: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">a
       {" "}
       {/* Added background color */}
       <div className={`sidebar md:block ${isSidebarOpen ? "block" : "hidden"}`}>
@@ -97,9 +98,9 @@ const Employee: React.FC = () => {
           }`}
         >
           <Routes>
-            <Route path="/" element={<div />} />
+            <Route path="/" element={<EmployeeHome />} />
             <Route path="/customers" element={<div />} />
-            <Route path="/showtimes" element={<div />} />
+            <Route path="/showtimes" element={<div />} />s
             <Route path="/orders" element={<div />} />
             <Route path="/payments" element={<div />} />
             <Route path="/settings" element={<div />} />

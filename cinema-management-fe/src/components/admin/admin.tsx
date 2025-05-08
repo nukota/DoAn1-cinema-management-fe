@@ -77,7 +77,7 @@ const Admin: React.FC = () => {
   return (
     <div className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] overflow-auto">
       <Header
-        ProfileName={exampleAdmin.fullname}
+        ProfileName={exampleAdmin.full_name}
         ProfileRole={exampleAdmin.role}
         ProfilePic={ProfileImg}
         onArrowDownClick={toggleProfileVisibility}

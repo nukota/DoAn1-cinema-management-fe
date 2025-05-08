@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { EmployeeType, CinemaType } from "../../../interfaces/types";
-import { exampleCinemas } from "../../../data";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useCinemas } from "../../../providers/CinemasProvider";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -51,20 +51,30 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   const [phone, setPhone] = useState<string>("");
   const [dob, setDob] = useState<string>("");
   const [cccd, setCccd] = useState<string>("");
-  const [role, setRole] = useState<string>("employee");
+  const [role, setRole] = useState<string>("");
   const [cinemaId, setCinemaId] = useState<string>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
   const [password, setPassword] = useState<String>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const { cinemas, fetchCinemasData } = useCinemas(); // Use the useCinemas hook
+
+  useEffect(() => {
+    fetchCinemasData();
+  }, []);
+
   useEffect(() => {
     if (employee) {
       setFullname(employee.full_name);
       setEmail(employee.email);
       setPhone(employee.phone);
-      setDob(employee.dateOfBirth);
+      setDob(employee.dateOfBirth ? employee.dateOfBirth.split("T")[0] : "");
       setCccd(employee.cccd);
+      setRole(employee.role);
+      setCinemaId(employee.cinema_id);
+      setPosition(employee.position);
+      setShift(employee.shift);
     }
     if (!open) {
       setIsEditing(false);
@@ -76,7 +86,20 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   };
 
   const handleSaveClick = () => {
-    setIsEditing(false);
+    const updatedEmployee = {
+      ...employee,
+      full_name: fullname,
+      email,
+      phone,
+      dateOfBirth: dob,
+      cccd,
+      role,
+      cinema_id: cinemaId,
+      position,
+      shift,
+      password: password || undefined,
+    };
+    onSave(updatedEmployee);
   };
 
   const togglePasswordVisibility = () => {
@@ -194,32 +217,34 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
             onChange={(e) => setEmail(e.target.value)}
           />
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Password:
-          </Typography>
-          <TextField
-            placeholder="Password"
-            fullWidth
-            margin="dense"
-            size="small"
-            type={showPassword ? "text" : "password"} // Toggle between text and password
-            value={password}
-            disabled={!isEditing}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  onClick={togglePasswordVisibility}
-                  edge="end"
-                  disabled={!isEditing} // Disable toggle when not editing
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-          />
-        </Box>
+        {isEditing && (
+          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+              Password:
+            </Typography>
+            <TextField
+              placeholder="Password"
+              fullWidth
+              margin="dense"
+              size="small"
+              type={showPassword ? "text" : "password"} // Toggle between text and password
+              value={password}
+              disabled={!isEditing}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={togglePasswordVisibility}
+                    edge="end"
+                    disabled={!isEditing} // Disable toggle when not editing
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                ),
+              }}
+            />
+          </Box>
+        )}
         <Typography
           variant="h6"
           gutterBottom
@@ -234,14 +259,12 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
             Cinema:
           </Typography>
           <Autocomplete
-            options={exampleCinemas}
-            value={exampleCinemas.find((c) => c._id === cinemaId) || null}
+            options={cinemas}
+            value={cinemas.find((c) => c._id === cinemaId) || null}
             disabled={!isEditing}
             fullWidth
             onChange={(event, newValue) => setCinemaId(newValue?._id)}
-            getOptionLabel={(option) =>
-              `(ID: ${option._id}) ${option.name}`
-            }
+            getOptionLabel={(option) => `(ID: ${option._id}) ${option.name}`}
             renderInput={(params) => (
               <TextField
                 {...params}

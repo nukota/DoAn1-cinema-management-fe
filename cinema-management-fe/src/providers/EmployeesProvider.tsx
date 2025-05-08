@@ -23,7 +23,7 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user`, {
+      const response = await fetch(`${baseURL}/employee`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,7 +45,7 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user`, {
+      const response = await fetch(`${baseURL}/employee`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/${updatedEmployee._id}`, {
+      const response = await fetch(`${baseURL}/employee/${updatedEmployee._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +99,7 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/${EmployeeId}`, {
+      const response = await fetch(`${baseURL}/employee/${EmployeeId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

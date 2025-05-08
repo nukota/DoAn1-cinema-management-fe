@@ -131,7 +131,7 @@ const Login: React.FC = () => {
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col justify-center relative">
       <img
-        className="absolute w-full h-[820px] top-[60px] z-0 opacity-20"
+        className="absolute w-full h-[640px] top-[60px] z-0 opacity-20 object-cover"
         src={wallPaperImg}
       />
       <Box

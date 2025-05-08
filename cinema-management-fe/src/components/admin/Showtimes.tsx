@@ -160,7 +160,7 @@ const Showtimes: React.FC = () => {
         sx={{
           position: "relative",
           mt: 4,
-          width: { xs: "100%", md: "80%" },
+          width: "100%",
           maxWidth: { md: "960px", lg: "1200px", xl: "2000px" },
           px: 2,
           py: 2,

@@ -4,6 +4,7 @@ import { OrderType } from "../interfaces/types";
 interface OrdersContextType {
   orders: OrderType[];
   fetchOrdersData: () => Promise<void>;
+  fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
   createOrder: (newOrder: OrderType) => Promise<void>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
@@ -39,6 +40,29 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setLoading(false);
     }
   };
+
+  // Fetch order details
+  const fetchOrderDetails = useCallback(async (orderId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/order/details/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data; // Return the detailed order data
+    } catch (error) {
+      console.error("Failed to fetch order details:", error);
+      throw error; // Re-throw the error to handle it in the calling component
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Create a new order
   const createOrder = useCallback(async (newOrder: OrderType) => {
@@ -123,6 +147,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       value={{
         orders,
         fetchOrdersData,
+        fetchOrderDetails,
         createOrder,
         updateOrder,
         deleteOrder,

@@ -2,7 +2,6 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { ShowtimeType } from "../../../interfaces/types";
-import { exampleShowtimes } from "../../../data";
 
 // const theme = useTheme();
 const CustomTab = styled(Tab)(({ theme }) => ({
@@ -148,7 +147,7 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
           {showtimesForSelectedDate.map((showtime) => (
             <Box
-              key={showtime.showtime_id}
+              key={showtime._id}
               sx={{
                 border: "1px solid",
                 borderColor: isPastShowtime(showtime.showtime)
