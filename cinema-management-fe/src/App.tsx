@@ -20,6 +20,7 @@ import { OrdersProvider } from "./providers/OrdersProvider";
 import { PaymentsProvider } from "./providers/PaymentsProvider";
 import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
+import { SeatProvider } from "./providers/SeatProvider";
 
 const App: React.FC = () => {
   return (
@@ -41,7 +42,9 @@ const App: React.FC = () => {
                               <PaymentsProvider>
                                 <DiscountsProvider>
                                   <RoomsProvider>
-                                    <Admin />
+                                    <SeatProvider>
+                                      <Admin />
+                                    </SeatProvider>
                                   </RoomsProvider>
                                 </DiscountsProvider>
                               </PaymentsProvider>
@@ -57,7 +60,26 @@ const App: React.FC = () => {
           }
         />
         <Route path="/user/*" element={<User />} />
-        <Route path="/employee" element={<Employee />} />
+        <Route
+          path="/employee/*"
+          element={
+            <SeatProvider>
+              <ShowtimesProvider>
+                <OrdersProvider>
+                  <PaymentsProvider>
+                    <DiscountsProvider>
+                      <ProductsProvider>
+                        <TicketsProvider>
+                          <Employee />
+                        </TicketsProvider>
+                      </ProductsProvider>
+                    </DiscountsProvider>
+                  </PaymentsProvider>
+                </OrdersProvider>
+              </ShowtimesProvider>
+            </SeatProvider>
+          }
+        />
       </Routes>
     </Router>
   );

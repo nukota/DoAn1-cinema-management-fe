@@ -195,7 +195,6 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onSave, onDelete, 
             Room ID:
           </Typography>
           <TextField
-            type="number"
             sx={{ width: 240 }}
             margin="dense"
             size="small"

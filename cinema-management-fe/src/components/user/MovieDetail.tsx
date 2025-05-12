@@ -15,7 +15,12 @@ import {
   exampleProducts,
   exampleMovies,
 } from "../../data";
-import { MovieType, SeatType, ProductType, ShowtimeType } from "../../interfaces/types";
+import {
+  MovieType,
+  SeatType,
+  ProductType,
+  ShowtimeType,
+} from "../../interfaces/types";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
@@ -27,20 +32,22 @@ const MovieDetail: React.FC = () => {
   const [ticketCount, setTicketCount] = useState<number>(0);
 
   useEffect(() => {
-    const foundMovie = exampleMovies.find(
-      (m) => m._id === movieId || ""
-    );
+    const foundMovie = exampleMovies.find((m) => m._id === movieId || "");
     setMovie(foundMovie);
   }, [movieId]);
 
   if (!movie) {
-    return <div className="text-white text-center text-xl mt-10">Movie not found</div>;
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        Movie not found
+      </div>
+    );
   }
 
   return (
     <div className="bg-black min-h-screen w-full flex flex-col">
       <img
-        className="absolute top-0 w-full object-cover z-0 overflow-hidden"
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
         src={movie.poster_url}
         style={{
           filter: "blur(10px)",
@@ -74,8 +81,7 @@ const MovieDetail: React.FC = () => {
           />
         </div>
       </div>
-      <div className="w-full bg-black z-20 mt-32">
-      </div>
+      <div className="w-full bg-black z-20 mt-32"></div>
       //see if the footer is in the right place
       <BookingFooter movie={movie} selectedProducts={selectedProducts} />
     </div>

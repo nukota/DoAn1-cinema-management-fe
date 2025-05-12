@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -6,19 +6,198 @@ import {
   Step,
   StepLabel,
   Typography,
+  TextField,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
-// import wallPaperImg from "../../assets/wallpaper.jpg"; // Replace with the actual path to your wallpaper image
-
+import { ProductType, ShowtimeType } from "../../interfaces/types";
+import CalendarImg from "../../assets/images/calendar.svg";
+import ShowtimeUnit from "./items/ShowtimeUnit";
+import { exampleProducts } from "../../data";
+import ProductItem from "./items/ProductItem";
+import VisaImg from "../../assets/images/visa.png";
+import MomoImg from "../../assets/images/momo.png";
+import CashImg from "../../assets/images/cash.png";
+import BankingImg from "../../assets/images/banking.png";
+import { useSeats } from "../../providers/SeatProvider";
+import { TypeSpecimenTwoTone } from "@mui/icons-material";
 const steps = [
   "Select Ticket",
+  "Select Seats",
   "Select Products",
   "Customer Information",
   "Payment",
   "Print Ticket",
 ];
 
+const movies = [
+  {
+    id: 1,
+    title: "Movie 1",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 2,
+    title: "Movie 2",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 3,
+    title: "Movie 3",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 4,
+    title: "Movie 4",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 5,
+    title: "Movie 5",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 6,
+    title: "Movie 6",
+    image: "https://via.placeholder.com/150",
+  },
+];
+
+const showtimeExample: ShowtimeType[] = [
+  { _id: "1", room_id: "101", movie_id: "m123", showtime: "08:00", price: 100 },
+  { _id: "2", room_id: "101", movie_id: "m123", showtime: "09:30", price: 100 },
+  { _id: "3", room_id: "101", movie_id: "m123", showtime: "11:00", price: 120 },
+  { _id: "4", room_id: "101", movie_id: "m123", showtime: "12:30", price: 120 },
+  { _id: "5", room_id: "101", movie_id: "m123", showtime: "14:00", price: 150 },
+  { _id: "6", room_id: "101", movie_id: "m123", showtime: "15:30", price: 150 },
+  { _id: "7", room_id: "101", movie_id: "m123", showtime: "17:00", price: 180 },
+  { _id: "8", room_id: "101", movie_id: "m123", showtime: "18:30", price: 180 },
+  { _id: "9", room_id: "101", movie_id: "m123", showtime: "20:00", price: 200 },
+  {
+    _id: "10",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "21:30",
+    price: 200,
+  },
+  {
+    _id: "11",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "23:00",
+    price: 220,
+  },
+  {
+    _id: "12",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "00:30",
+    price: 220,
+  },
+  {
+    _id: "13",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "02:00",
+    price: 250,
+  },
+  {
+    _id: "14",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "03:30",
+    price: 250,
+  },
+  {
+    _id: "15",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "05:00",
+    price: 300,
+  },
+  {
+    _id: "16",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "06:30",
+    price: 300,
+  },
+  {
+    _id: "17",
+    room_id: "101",
+    movie_id: "m123",
+    showtime: "10:30",
+    price: 100,
+  },
+  {
+    _id: "18",
+    room_id: "102",
+    movie_id: "m123",
+    showtime: "12:45",
+    price: 120,
+  },
+  {
+    _id: "19",
+    room_id: "103",
+    movie_id: "m123",
+    showtime: "15:00",
+    price: 150,
+  },
+  {
+    _id: "20",
+    room_id: "104",
+    movie_id: "m123",
+    showtime: "17:30",
+    price: 200,
+  },
+  {
+    _id: "21",
+    room_id: "105",
+    movie_id: "m123",
+    showtime: "20:00",
+    price: 250,
+  },
+];
+
 const EmployeeHome: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [selectedProducts, setSelectedProducts] = useState<{
+    [key: string]: number;
+  }>({});
+  const { seats, fetchSeatsData, loading } = useSeats();
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [ticketCount, setTicketCount] = useState<number>(0);
+
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const [filterName, setFilterName] = useState<string>("");
+  const [filterPhone, setFilterPhone] = useState<string>("");
+  const [guestPhone, setGuestPhone] = useState<string>("");
+  const [guestEmail, setGuestEmail] = useState<string>("");
+  const [selectedAccount, setSelectedAccount] = useState<string | null>(
+    "Guest"
+  );
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("cash");
+  const [isPaid, setIsPaid] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchSeatsData();
+  }, []);
+
+  const handlePaymentMethodChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelectedPaymentMethod(event.target.value);
+  };
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -30,45 +209,133 @@ const EmployeeHome: React.FC = () => {
 
   const handleReset = () => {
     setActiveStep(0);
+    setSelectedPaymentMethod("cash");
+    setIsPaid(false);
   };
 
-  const renderStepContent = (step: number) => {
-    switch (step) {
-      case 0:
-        return <Typography variant="h5">Step 1: Select Ticket</Typography>;
-      case 1:
-        return <Typography variant="h5">Step 2: Select Products</Typography>;
-      case 2:
-        return <Typography variant="h5">Step 3: Customer Information</Typography>;
-      case 3:
-        return <Typography variant="h5">Step 4: Payment</Typography>;
-      case 4:
-        return <Typography variant="h5">Step 5: Print Ticket</Typography>;
-      default:
-        return <Typography variant="h5">Unknown Step</Typography>;
-    }
+  const handleMarkAsPaid = () => {
+    setIsPaid(true);
   };
+
+  const handleSetAmount = (product: ProductType, newAmount: number) => {
+    setSelectedProducts((prev) => {
+      const updatedProducts = { ...prev };
+      if (newAmount > 0) {
+        updatedProducts[product._id] = newAmount;
+      } else {
+        delete updatedProducts[product._id];
+      }
+      return updatedProducts;
+    });
+  };
+
+  const handleAccountSelect = (accountName: string) => {
+    setSelectedAccount(accountName);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+
+  const handleSeatClick = (seatId: string) => {
+    setSelectedSeats((prevSelectedSeats) => {
+      if (prevSelectedSeats.includes(seatId)) {
+        return prevSelectedSeats.filter((id) => id !== seatId);
+      } else if (prevSelectedSeats.length < ticketCount) {
+        return [...prevSelectedSeats, seatId];
+      }
+      return prevSelectedSeats;
+    });
+  };
+
+  const renderSeatGrid = () => {
+    const rows = "ABCDEFGHIJKLMN".split(""); // Example rows
+    const grid = [];
+
+    for (let row = 1; row <= 14; row++) {
+      for (let col = -8; col <= 8; col++) {
+        const seat = seats.find(
+          (s) =>
+            rows.indexOf(s.seat_name[0]) + 1 === row && s.seat_column === col
+        );
+
+        grid.push(
+          <Box
+            key={`${row}-${col}`}
+            sx={{
+              width: "42px",
+              height: "26px",
+              display: "flex",
+              textAlign: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              backgroundColor: seat
+                ? selectedSeats.includes(seat._id)
+                  ? "#b80007" // Selected seat color
+                  : "#fafafa" // Available seat color
+                : "transparent", // Empty space
+              // border: seat ? "1px solid #ccc" : "none",
+              cursor: seat ? "pointer" : "default",
+            }}
+            onClick={() => seat && handleSeatClick(seat._id)}
+          >
+            <Typography
+              align="center"
+              sx={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: seat
+                  ? selectedSeats.includes(seat._id)
+                    ? "#fff"
+                    : "#000"
+                  : "#ccc",
+              }}
+            >
+              {seat ? seat.seat_name : ""}
+            </Typography>
+          </Box>
+        );
+      }
+    }
+    return grid;
+  };
+
+  const customerAccounts = [
+    { id: 1, name: "John Doe", phone: "123-456-7890" },
+    { id: 2, name: "Jane Smith", phone: "987-654-3210" },
+    { id: 3, name: "Alice Johnson", phone: "555-123-4567" },
+    { id: 4, name: "Bob Brown", phone: "444-555-6666" },
+  ];
+
+  const filteredAccounts = customerAccounts.filter(
+    (account) =>
+      account.name.toLowerCase().includes(filterName.toLowerCase()) &&
+      account.phone.includes(filterPhone)
+  );
+
+  var settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
+  const products = exampleProducts;
 
   return (
-    <div className="bg-black min-h-screen w-full h-full flex flex-col relative">
+    <div className="flex flex-col h-full py-2 relative">
       {/* <img
         className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
         src={wallPaperImg}
         alt="Background"
       /> */}
-      <Box
-        sx={{
-          zIndex: 1,
-          width: "80%",
-          margin: "auto",
-          mt: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          color: "white",
-        }}
-      >
-        <Typography variant="h4" sx={{ mb: 4, fontWeight: "bold" }}>
+      <div className="z-[1] w-full h-full max-w-[1200px] m-auto flex flex-col items-start text-black">
+        <Typography
+          variant="h4"
+          color="black"
+          sx={{ mb: 4, fontWeight: "bold", alignSelf: "center" }}
+        >
           Employee Workflow
         </Typography>
         <Stepper activeStep={activeStep} sx={{ width: "100%", mb: 4 }}>
@@ -78,51 +345,632 @@ const EmployeeHome: React.FC = () => {
             </Step>
           ))}
         </Stepper>
-        <Box
-          sx={{
-            width: "100%",
-            minHeight: "calc(100vh - 200px)",
-            textAlign: "center",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            borderRadius: "8px",
-          }}
-        >
+        <div className="w-full min-h-[600px] text-center flex justify-start items-start bg-white mb-3 rounded-lg relative">
           {activeStep === steps.length ? (
-            <Box>
+            <div>
               <Typography sx={{ mt: 2, mb: 1 }}>
-                All steps completed - you can now print the ticket.
+                All steps completed.
               </Typography>
-              <Button onClick={handleReset} variant="contained" color="primary">
-                Reset
-              </Button>
-            </Box>
+            </div>
           ) : (
-            <Box>
-              {renderStepContent(activeStep)}
-              <Box sx={{ mt: 2 }}>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  sx={{ mr: 1 }}
-                  variant="outlined"
+            <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative p-4">
+              {activeStep === 0 && (
+                <div className="flex gap-4 w-full">
+                  {movies.map((movie) => (
+                    <div className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0">
+                      {/* Movie Image */}
+                      <div className="image w-full h-[240px] bg-[#dadada] object-cover" />
+                      <Typography
+                        className="text-center font-bold mt-4 mb-2 px-2 py-2"
+                        sx={{
+                          fontSize: "16spx",
+                          color: "#484848",
+                          textAlign: "center",
+                        }}
+                      >
+                        movieTitle
+                      </Typography>
+                      <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
+                        {showtimeExample.map((showtime) => (
+                          <ShowtimeUnit
+                            key={showtime._id}
+                            showtimeData={showtime}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {activeStep === 1 && (
+                <div className="w-full h-[480px] overflow-y-scroll custom-scrollbar flex flex-col gap-4 pb-4">
+                  {/* Ticket Count Picker */}
+                    <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      paddingLeft: "16px",
+                    }}
+                    >
+                    <Typography
+                      style={{ fontWeight: 400, fontSize: "18px", paddingRight: "8px" }}
+                    >
+                      Number of Tickets:
+                    </Typography>
+                    {/* Decrement Button */}
+                    <Button
+                      variant="outlined"
+                      onClick={() =>
+                      setTicketCount((prev) => Math.max(0, prev - 1))
+                      }
+                      style={{
+                      minWidth: "40px",
+                      height: "40px",
+                      fontSize: "24px",
+                      }}
+                    >
+                      -
+                    </Button>
+
+                    {/* Ticket Count Input */}
+                    <TextField
+                      type="number"
+                      value={ticketCount}
+                      size="small"
+                      onChange={(e) => {
+                      const value = Math.max(0, Number(e.target.value));
+                      setTicketCount(value);
+                      setSelectedSeats([]); // Reset selected seats when ticket count changes
+                      }}
+                      inputProps={{ min: 0 }}
+                      style={{ width: "60px", textAlign: "center" }}
+                    />
+
+                    {/* Increment Button */}
+                    <Button
+                      variant="outlined"
+                      onClick={() => setTicketCount((prev) => prev + 1)}
+                      style={{
+                      minWidth: "40px",
+                      height: "40px",
+                      fontSize: "24px",
+                      }}
+                    >
+                      +
+                    </Button>
+                    </div>
+                    <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "16px",
+                      border: "1px solid #ccc",
+                      borderRadius: "18px",
+                    }}
+                    >
+                    {/* Screen Representation */}
+                    <Typography style={{ fontSize: "24px", fontWeight: 400 }}>
+                      SCREEN
+                    </Typography>
+                    <div
+                      style={{
+                      width: "80%",
+                      minWidth: "400px",
+                      height: "4px",
+                      textAlign: "center",
+                      backgroundColor: "#ccc",
+                      borderRadius: "8px",
+                      fontSize: "24px",
+                      color: "#333",
+                      marginBottom: "16px",
+                      }}
+                    />
+
+                    {/* Seat Map */}
+                    <div
+                      style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(17, 42px)",
+                      gridTemplateRows: "repeat(14, 30px)",
+                      justifyContent: "center",
+                      gap: "8px",
+                      margin: "16px 0",
+                      }}
+                    >
+                      {loading ? (
+                      <Typography>Loading seats...</Typography>
+                      ) : (
+                      renderSeatGrid()
+                      )}
+                    </div>
+                    </div>
+                </div>
+              )}
+              {activeStep === 2 && (
+                <div
+                  className="w-full max-h-[480px] overflow-y-auto grid grid-cols-4 gap-y-4 z-10 custom-scrollbar"
                 >
-                  Back
-                </Button>
-                <Button
-                  onClick={handleNext}
-                  variant="contained"
-                  color="primary"
+                  {products.map((product) => (
+                  <ProductItem
+                    key={product._id}
+                    product={product}
+                    amount={selectedProducts[product._id] || 0}
+                    setAmount={handleSetAmount}
+                  />
+                  ))}
+                </div>
+              )}
+              {activeStep === 3 && (
+                <Box sx={{ width: "100%" }}>
+                  {/* Tabs for Existed Account and Guest */}
+                  <Tabs
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    aria-label="Customer Tabs"
+                    sx={{ mb: 2 }}
+                  >
+                    <Tab label="Existed Account" />
+                    <Tab label="Guest" />
+                  </Tabs>
+
+                  {/* Existed Account Tab */}
+                  {selectedTab === 0 && (
+                    <Box>
+                      {/* Filter Fields */}
+                      <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                        <TextField
+                          label="Name"
+                          variant="outlined"
+                          value={filterName}
+                          onChange={(e) => setFilterName(e.target.value)}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Phone"
+                          variant="outlined"
+                          value={filterPhone}
+                          onChange={(e) => setFilterPhone(e.target.value)}
+                          fullWidth
+                        />
+                      </Box>
+
+                      {/* Customer List */}
+                      <List>
+                        {filteredAccounts.map((account) => (
+                          <ListItem
+                            key={account.id}
+                            disablePadding
+                            sx={{ mb: 0.5 }}
+                          >
+                            <ListItemButton
+                              sx={{
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                              }}
+                            >
+                              <ListItemText
+                                primary={account.name}
+                                secondary={account.phone}
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Box>
+                  )}
+
+                  {/* Guest Tab */}
+                  {selectedTab === 1 && (
+                    <Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        <TextField
+                          label="Phone"
+                          variant="outlined"
+                          value={guestPhone}
+                          onChange={(e) => setGuestPhone(e.target.value)}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Email"
+                          variant="outlined"
+                          value={guestEmail}
+                          onChange={(e) => setGuestEmail(e.target.value)}
+                          fullWidth
+                        />
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              )}
+              {activeStep === 4 && (
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    height: "500px",
+                    gap: 4,
+                  }}
                 >
-                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                </Button>
-              </Box>
-            </Box>
+                  {/* Radio Group for Payment Methods */}
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 400, my: 3 }}>
+                      Select Payment Method
+                    </Typography>
+                    <RadioGroup
+                      value={selectedPaymentMethod}
+                      onChange={handlePaymentMethodChange}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                        pl: 4,
+                      }}
+                    >
+                      <FormControlLabel
+                        value="cash"
+                        disabled={isPaid}
+                        control={<Radio />}
+                        label={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <img
+                              src={CashImg}
+                              alt="Cash"
+                              style={{ width: "40px", height: "40px" }}
+                            />
+                            <Typography>Cash</Typography>
+                          </Box>
+                        }
+                      />
+                      <FormControlLabel
+                        value="visa"
+                        disabled={isPaid}
+                        control={<Radio />}
+                        label={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <img
+                              src={VisaImg}
+                              alt="Visa/Mastercard"
+                              style={{ width: "40px", height: "40px" }}
+                            />
+                            <Typography>Visa/Mastercard</Typography>
+                          </Box>
+                        }
+                      />
+                      <FormControlLabel
+                        value="momo"
+                        disabled={isPaid}
+                        control={<Radio />}
+                        label={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <img
+                              src={MomoImg}
+                              alt="Momo"
+                              style={{ width: "40px", height: "40px" }}
+                            />
+                            <Typography>Momo (E-Wallet)</Typography>
+                          </Box>
+                        }
+                      />
+                      <FormControlLabel
+                        value="banking"
+                        disabled={isPaid}
+                        control={<Radio />}
+                        label={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <img
+                              src={BankingImg}
+                              alt="Banking"
+                              style={{ width: "40px", height: "40px" }}
+                            />
+                            <Typography>Banking</Typography>
+                          </Box>
+                        }
+                      />
+                    </RadioGroup>
+                  </Box>
+                  {/* Conditional Rendering for Text Fields */}
+                  <Box
+                    sx={{
+                      flex: 2,
+                      borderLeft: "1px solid #ccc",
+                      pl: 6,
+                      py: 2,
+                      pr: 2,
+                    }}
+                  >
+                    {selectedPaymentMethod === "cash" && (
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#333",
+                          height: "100%",
+                          alignItems: "center",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Please prepare the exact amount in cash to complete the
+                        payment.
+                      </Typography>
+                    )}
+                    {selectedPaymentMethod === "visa" && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        <TextField
+                          label="Card Number"
+                          variant="outlined"
+                          fullWidth
+                        />
+                        <TextField
+                          label="Cardholder Name"
+                          variant="outlined"
+                          fullWidth
+                        />
+                        <TextField
+                          label="Expiration Date (MM/YY)"
+                          variant="outlined"
+                          fullWidth
+                        />
+                        <TextField label="CVV" variant="outlined" fullWidth />
+                      </Box>
+                    )}
+                    {selectedPaymentMethod === "momo" && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "100%",
+                        }}
+                      >
+                        {/* <img
+                          src="https://via.placeholder.com/200" // Replace with actual QR code image
+                          alt="Momo QR Code"
+                          style={{ width: "200px", height: "200px" }}
+                        /> */}
+                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover" />
+                        <Typography
+                          variant="body1"
+                          sx={{ color: "#333", textAlign: "center" }}
+                        >
+                          Scan the QR code above to complete the payment using
+                          Momo.
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {selectedPaymentMethod === "banking" && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "100%",
+                        }}
+                      >
+                        {/* <img
+                          src="https://via.placeholder.com/200" // Replace with actual QR code image
+                          alt="Momo QR Code"
+                          style={{ width: "200px", height: "200px" }}
+                        /> */}
+                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover" />
+                        <Typography
+                          variant="body1"
+                          sx={{ color: "#333", textAlign: "center" }}
+                        >
+                          Scan the QR code above to complete the payment using
+                          Banking.
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+              )}
+              {activeStep === 5 && (
+                <div>
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 500, width: "100%", mt: 10 }}
+                  >
+                    Ticket has been successfully booked!
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 2 }}
+                    onClick={() => {}}
+                  >
+                    Print Ticket
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
-        </Box>
-      </Box>
+          <div className="absolute bottom-6 w-full flex gap-2 px-4">
+            {activeStep === 0 && (
+              <div className=" mr-auto flex flex-row gap-2 items-center">
+                <div className="DateFilterBar relative w-full max-w-[240px] h-9 mr-2">
+                  <input
+                    type="date"
+                    id="date-picker"
+                    className="w-full h-full pr-5 pl-10 text-sm text-gray rounded-md text-gray-700 bg-white border-light-gray border focus:outline-none focus:ring-1"
+                    // value={selectedDate}
+                    // onChange={handleDateChange}
+                  />
+                  <img
+                    src={CalendarImg}
+                    alt="Calendar"
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer"
+                    style={{
+                      filter:
+                        "invert(10%) sepia(88%) saturate(6604%) hue-rotate(352deg) brightness(73%) contrast(0%)",
+                    }}
+                    // onClick={handleCalendarClick}
+                  />
+                </div>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    width: "400px",
+                    textAlign: "left",
+                    color: "#999999",
+                  }}
+                >
+                  Selected movie: Movie 1
+                </Typography>
+              </div>
+            )}
+            {activeStep === 1 && (
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  marginRight: "auto",
+                }}
+              >
+                Selected Seats: {selectedSeats.join(", ") || "None"}
+              </Typography>
+            )}
+            {activeStep === 2 && (
+              <div className="mr-auto flex flex-row items-center justify-items-start gap-2">
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 500, width: "154px", height: "auto" }}
+                  textAlign="left"
+                >
+                  Selected Products:{" "}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    maxWidth: "800px",
+                    color: "#333",
+                    height: "auto",
+                    textAlign: "left",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {Object.entries(selectedProducts)
+                    .map(([productId, quantity]) => {
+                      const product = products.find((p) => p._id === productId);
+                      return product ? `${product.name} (${quantity})` : null;
+                    })
+                    .filter(Boolean) // Remove null values
+                    .join(", ")}
+                </Typography>
+              </div>
+            )}
+            {activeStep === 3 && (
+              <div className="mr-auto flex flex-row items-center gap-2">
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 500, width: "154px", height: "auto" }}
+                  textAlign="left"
+                >
+                  Selected Account:
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    maxWidth: "800px",
+                    color: "#333",
+                    height: "auto",
+                    textAlign: "left",
+                  }}
+                >
+                  {selectedAccount}
+                </Typography>
+              </div>
+            )}
+            {activeStep === 4 && (
+              <div className="mr-auto flex flex-row items-center gap-2">
+                <Button
+                  onClick={handleMarkAsPaid}
+                  color="primary"
+                  variant="contained"
+                  sx={{ mr: 1, height: "34px", alignSelf: "end" }}
+                  disabled={isPaid}
+                >
+                  Mark as Paid
+                </Button>
+              </div>
+            )}
+            <Button
+              onClick={handleReset}
+              color="secondary"
+              variant="outlined"
+              sx={{ mr: 1, height: "34px", alignSelf: "end" }}
+            >
+              Reset
+            </Button>
+            <Button
+              disabled={activeStep === 0}
+              color="primary"
+              onClick={handleBack}
+              sx={{ mr: 1, height: "34px", alignSelf: "end" }}
+              variant="outlined"
+            >
+              Back
+            </Button>
+            {activeStep < steps.length - 1 && (
+              <Button
+                onClick={handleNext}
+                variant="contained"
+                color="primary"
+                sx={{ height: "34px", alignSelf: "end" }}
+                disabled={activeStep === 4 && !isPaid}
+              >
+                Next
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

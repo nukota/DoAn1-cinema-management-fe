@@ -14,7 +14,7 @@ const MovieList: React.FC = () => {
     const searchValue = searchParams.get("search") || "";
     if (searchValue) {
       const filtered = movies.filter((movie) =>
-        movie.name.toLowerCase().includes(searchValue.toLowerCase())
+        movie.title.toLowerCase().includes(searchValue.toLowerCase())
       );
       setFilteredMovies(filtered);
     } else {
@@ -25,7 +25,7 @@ const MovieList: React.FC = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     const filtered = movies.filter((movie) =>
-      movie.name.toLowerCase().includes(searchValue.toLowerCase())
+      movie.title.toLowerCase().includes(searchValue.toLowerCase())
     );
     setFilteredMovies(filtered);
   };
@@ -55,7 +55,7 @@ const MovieList: React.FC = () => {
         }}
       >
         {filteredMovies.map((movie) => (
-          <SlideItem key={movie.movie_id} movie={movie} />
+          <SlideItem key={movie._id} movie={movie} />
         ))}
       </Box>
       {filteredMovies.length === 0 && (

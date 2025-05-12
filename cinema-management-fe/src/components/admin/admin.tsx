@@ -37,12 +37,12 @@ import Rooms from "./Rooms";
 import Showtimes from "./Showtimes";
 
 const exampleAdmin: UserType = {
-  user_id: 1,
-  fullname: "John Doe",
+  _id: "1",
+  full_name: "John Doe",
   email: "john.doe@example.com",
   phone: "123-456-7890",
   password_hash: "hashedpassword1",
-  dob: "1990-01-01",
+  dateOfBirth: "1990-01-01",
   cccd: "123456789",
   role: "admin",
   created_at: "2023-01-01T10:00:00",

@@ -152,7 +152,7 @@ const Rooms: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white border-[3px] border-light-gray rounded-xl pl-4 sm:pl-12 py-6 pr-4 overflow-scroll">
+      <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
         <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip">
           {filteredRooms.map((room, index) => (
             <Room
