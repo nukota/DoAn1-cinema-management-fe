@@ -1,36 +1,42 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import MovieSlide from "./elements/MovieSlide";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import {
-  Typography,
-  Box,
-} from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import QuickBook from "./elements/QuickBook";
-import { exampleMovies } from "../../data";
+import { useMovies } from "../../providers/MoviesProvider";
 import { MovieType } from "../../interfaces/types";
 
 const UserHome: React.FC = () => {
   const navigate = useNavigate();
-  const handleBuyTicketClicked = () => {
-    navigate("/user/movie-detail");
-  };
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-    }
-  };
+  const { fetchMovieByStatus, loading } = useMovies();
 
-  const demoMovie: MovieType = exampleMovies[0];
+  const [nowShowingMovies, setNowShowingMovies] = useState<MovieType[]>([]);
+  const [upComingMovies, setUpComingMovies] = useState<MovieType[]>([]);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const nowShowing = await fetchMovieByStatus("Now Playing");
+        const upComing = await fetchMovieByStatus("Coming Soon");
+
+        setNowShowingMovies(nowShowing);
+        setUpComingMovies(upComing);
+      } catch (error) {
+        console.error("Failed to fetch movies:", error);
+      }
+    };
+
+    fetchMovies();
+  }, []);
+
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col relative">
       <img
         className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
         src={wallPaperImg}
+        alt="Wallpaper"
       />
       <Box
         sx={{
@@ -92,15 +98,28 @@ const UserHome: React.FC = () => {
         </Typography>
         <KeyboardDoubleArrowDownIcon sx={{ color: "white" }} />
       </Box>
-      <div className="space-y-32 w-full mt-10 px-5 z-30">
-        <MovieSlide title="Now Showing" movies={exampleMovies} />
-        <MovieSlide title="Up Coming" movies={exampleMovies} />
-        <MovieSlide title="All" movies={exampleMovies} />
+      <div className="w-full mt-10 px-5 z-30">
+        <div className="mt-6 mb-20">
+          <QuickBook />
+        </div>
+
+        {loading ? (
+          <Typography
+            variant="h6"
+            sx={{ color: "white", textAlign: "center", mt: 4 }}
+          >
+            Loading movies...
+          </Typography>
+        ) : (
+          <div className="mb-4 flex flex-col gap-10">
+            <MovieSlide title="Now Showing" movies={nowShowingMovies} />
+            <MovieSlide title="Up Coming" movies={upComingMovies} />
+          </div>
+        )}
       </div>
-      <QuickBook />
-      <div className="w-full bg-black z-20">
-      </div>
+      <div className="w-full bg-black z-20"></div>
     </div>
   );
 };
+
 export default UserHome;

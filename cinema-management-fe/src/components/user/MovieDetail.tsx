@@ -5,7 +5,7 @@ import StyleIcon from "@mui/icons-material/Style";
 import PublicIcon from "@mui/icons-material/Public";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
-import { Button, Dialog, DialogContent } from "@mui/material";
+import { Button, Dialog, DialogContent, Rating } from "@mui/material";
 import ShowTimes from "./elements/ShowTimes";
 import BookingInfo from "./elements/BookingInfo";
 import BookingFooter from "./elements/BookingFooter";
@@ -13,18 +13,18 @@ import {
   exampleShowtimes,
   exampleSeats,
   exampleProducts,
-  exampleMovies,
 } from "../../data";
 import {
   MovieType,
   SeatType,
   ProductType,
-  ShowtimeType,
 } from "../../interfaces/types";
+import { useMovies } from "../../providers/MoviesProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
-  const [movie, setMovie] = useState<MovieType | undefined>(undefined);
+  const { fetchMovieById, loading } = useMovies();
+  const [movie, setMovie] = useState<MovieType | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SeatType[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<
     { product: ProductType; amount: number }[]
@@ -32,9 +32,27 @@ const MovieDetail: React.FC = () => {
   const [ticketCount, setTicketCount] = useState<number>(0);
 
   useEffect(() => {
-    const foundMovie = exampleMovies.find((m) => m._id === movieId || "");
-    setMovie(foundMovie);
-  }, [movieId]);
+    const fetchMovie = async () => {
+      if (movieId) {
+        try {
+          const fetchedMovie = await fetchMovieById(movieId);
+          setMovie(fetchedMovie);
+        } catch (error) {
+          console.error("Failed to fetch movie:", error);
+        }
+      }
+    };
+
+    fetchMovie();
+  }, [movieId, fetchMovieById]);
+
+  if (loading) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        Loading movie details...
+      </div>
+    );
+  }
 
   if (!movie) {
     return (
@@ -114,6 +132,17 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
   };
 
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB"); // Formats to dd/mm/yyyy
+  };
+
   return (
     <div className="flex flex-row z-10">
       <img
@@ -134,7 +163,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                     marginRight: 1.5,
                   }}
                 />
-                {movie.genre}
+                {movie.genre.join(", ")}
               </div>
               <div>
                 <AccessTimeIcon
@@ -144,7 +173,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                     marginRight: 1.5,
                   }}
                 />
-                {movie.duration}
+                {formatDuration(movie.duration)}
               </div>
               <div>
                 <PublicIcon
@@ -178,14 +207,21 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                 <strong>Director:</strong> {movie.director}
               </div>
               <div className="text-sm mt-2">
-                <strong>Cast:</strong> {movie.actors}
+                <strong>Cast:</strong> {movie.actors.join(", ")}
               </div>
               <div className="text-sm mt-2">
-                <strong>Release Date:</strong> {movie.release_date}
+                <strong>Release Date:</strong> {formatDate(movie.release_date)}
               </div>
-              <div className="text-sm mt-2">
-                <strong>Rating:</strong> {movie.rating}
-              </div>
+                <div className="text-sm mt-2 flex items-center">
+                <strong>Rating:</strong>
+                <Rating
+                  value={movie.rating}
+                  precision={0.5}
+                  readOnly
+                  sx={{ ml: 1 }}
+                  max={5}
+                />
+                </div>
             </div>
             <div className="pt-6">
               <div

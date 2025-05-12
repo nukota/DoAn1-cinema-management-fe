@@ -1,26 +1,46 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
 import MessageImg from "../../../assets/images/messageQuestion.svg";
 import CalendarImg from "../../../assets/images/calendar.svg";
 import ArrowDownImg from "../../../assets/images/arrowDown.svg";
+import profileImg from "../../../assets/images/profile.png";
+import { Button, IconButton, Menu, MenuItem } from "@mui/material";
+import { useAuth } from "../../../providers/AuthProvider";
 
-interface HeaderProps {
-  ProfileName: string;
-  ProfileRole: string;
-  ProfilePic: string;
-  className?: string;
-  onArrowDownClick?: () => void;
-}
+const Header: React.FC = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { isLoggedIn, userProfile, handleLogout } = useAuth();
+  const navigate = useNavigate();
 
-const Header: React.FC<HeaderProps> = ({
-  ProfileName,
-  ProfileRole,
-  ProfilePic,
-  className,
-  onArrowDownClick,
-}) => {
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSeeProfile = () => {
+    navigate("/admin/profile");
+    handleMenuClose();
+  };
+
+  const handleLoginClick = () => {
+    navigate("/user/login");
+  };
+
+  const handleLogOut = async () => {
+    try {
+      await handleLogout();
+      navigate("/user/login");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    } finally {
+      handleMenuClose();
+    }
+  };
   const handleCalendarClick = () => {
     // alert("Calendar clicked")
   };
@@ -30,9 +50,10 @@ const Header: React.FC<HeaderProps> = ({
   const handleNotificationClick = () => {
     // alert("Notification clicked")
   };
+  
   return (
     <header
-      className={`header fixed top-0 left-0 z-[999] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray ${className}`}
+      className={`header fixed top-0 left-0 z-[999] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray`}
     >
       <Link to="/" className="logo pl-3 shrink-0 w-60 md:block hidden">
         <img src={logo} alt="Clinic logo" />
@@ -59,23 +80,45 @@ const Header: React.FC<HeaderProps> = ({
             <img className="size-6" src={NotificationImg} alt="Notification" />
           </button>
         </div>
-        <div className="flex">
-          <div className="profile-info flex flex-col text-right leading-snug">
-            <span className="profile-name text-dark-gray text-[14px]">
-              {ProfileName}
-            </span>
-            <span className="profile-role text-dark-gray text-[12px]">
-              {ProfileRole}
-            </span>
+        {isLoggedIn ? (
+          <div className="flex">
+            <div className="profile-info flex flex-col text-right leading-snug">
+              <span className="profile-name text-dark-gray text-[14px]">
+                {userProfile?.full_name}
+              </span>
+              <span className="profile-role text-dark-gray text-[12px]">
+                {userProfile?.role}
+              </span>
+            </div>
+            <img
+              className="profile-pic size-10 rounded-full"
+              src={profileImg}
+            />
+            <IconButton onClick={handleMenuOpen}>
+              <img src={ArrowDownImg} alt="Arrow Down" />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleSeeProfile}>See Profile</MenuItem>
+              <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
+            </Menu>
           </div>
-        </div>
-        <img className="profile-pic size-10 rounded-full" src={ProfilePic} />
-        <button
-          className="arrow-down hover:transform hover:-translate-y-1 transition-transform duration-200"
-          onClick={onArrowDownClick}
-        >
-          <img src={ArrowDownImg} alt="Arrow Down" />
-        </button>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              color="secondary"
+              sx={{ borderRadius: "20px", fontSize: "14px", color: "black" }}
+              onClick={handleLoginClick}
+            >
+              SignIn or SignUp
+            </Button>
+          </>
+        )}
       </div>
     </header>
   );

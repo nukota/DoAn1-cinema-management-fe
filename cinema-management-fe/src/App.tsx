@@ -21,66 +21,46 @@ import { PaymentsProvider } from "./providers/PaymentsProvider";
 import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
 import { SeatProvider } from "./providers/SeatProvider";
+import Showtime from "./components/admin/items/Showtime";
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/user" />} />
-        <Route
-          path="/admin/*"
-          element={
-            <CinemasProvider>
-              <MoviesProvider>
-                <ProductsProvider>
-                  <CustomersProvider>
-                    <EmployeesProvider>
-                      <ReviewsProvider>
-                        <TicketsProvider>
-                          <ShowtimesProvider>
-                            <OrdersProvider>
-                              <PaymentsProvider>
-                                <DiscountsProvider>
-                                  <RoomsProvider>
-                                    <SeatProvider>
-                                      <Admin />
-                                    </SeatProvider>
-                                  </RoomsProvider>
-                                </DiscountsProvider>
-                              </PaymentsProvider>
-                            </OrdersProvider>
-                          </ShowtimesProvider>
-                        </TicketsProvider>
-                      </ReviewsProvider>
-                    </EmployeesProvider>
-                  </CustomersProvider>
-                </ProductsProvider>
-              </MoviesProvider>
-            </CinemasProvider>
-          }
-        />
-        <Route path="/user/*" element={<User />} />
-        <Route
-          path="/employee/*"
-          element={
-            <SeatProvider>
-              <ShowtimesProvider>
-                <OrdersProvider>
-                  <PaymentsProvider>
-                    <DiscountsProvider>
-                      <ProductsProvider>
-                        <TicketsProvider>
-                          <Employee />
-                        </TicketsProvider>
-                      </ProductsProvider>
-                    </DiscountsProvider>
-                  </PaymentsProvider>
-                </OrdersProvider>
-              </ShowtimesProvider>
-            </SeatProvider>
-          }
-        />
-      </Routes>
+      <CinemasProvider>
+        <MoviesProvider>
+          <ProductsProvider>
+            <CustomersProvider>
+              <EmployeesProvider>
+                <ReviewsProvider>
+                  <TicketsProvider>
+                    <ShowtimesProvider>
+                      <OrdersProvider>
+                        <PaymentsProvider>
+                          <DiscountsProvider>
+                            <RoomsProvider>
+                              <SeatProvider>
+                                <Routes>
+                                  <Route
+                                    path="/"
+                                    element={<Navigate to="/user" />}
+                                  />
+                                  <Route path="/admin/*" element={<Admin />} />
+                                  <Route path="/user/*" element={<User />} />
+                                  <Route path="/employee/*" element={<Employee />} />
+                                </Routes>
+                              </SeatProvider>
+                            </RoomsProvider>
+                          </DiscountsProvider>
+                        </PaymentsProvider>
+                      </OrdersProvider>
+                    </ShowtimesProvider>
+                  </TicketsProvider>
+                </ReviewsProvider>
+              </EmployeesProvider>
+            </CustomersProvider>
+          </ProductsProvider>
+        </MoviesProvider>
+      </CinemasProvider>
     </Router>
   );
 };

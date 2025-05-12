@@ -10,6 +10,7 @@ import TermsOfService from "./TermsOfService";
 import AboutUs from "./AboutUs";
 import UserHeader from "./elements/Header";
 import Footer from "./elements/Footer";
+import UserProfile from "./Profile";
 
 const User: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const User: React.FC = () => {
       <div className="z-[99] bg-black w-full relative">
       <Routes>
         <Route path="/" element={<UserHome />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/home" element={<UserHome />} />
         <Route path="/contact" element={<Contact />} />   
         <Route path="/login" element={<Login />} />

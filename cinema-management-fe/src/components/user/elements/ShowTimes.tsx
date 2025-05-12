@@ -3,7 +3,6 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import { ShowtimeType } from "../../../interfaces/types";
 
-// const theme = useTheme();
 const CustomTab = styled(Tab)(({ theme }) => ({
   minWidth: 0,
   width: 96,
@@ -76,51 +75,31 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
         TabIndicatorProps={{ style: { display: "none" } }}
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(0)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(1)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(2)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
+        {Array.from({ length: 7 }).map((_, index) => (
+          <CustomTab
+            key={index}
+            label={<CustomTabLabel {...getFormattedDate(index)} />}
+            sx={{
+              marginRight: 2,
+              backgroundColor: (theme) =>
+                value === index ? theme.palette.secondary.main : "transparent",
+              color: (theme) =>
+                value === index
+                  ? theme.palette.common.black
+                  : theme.palette.secondary.main,
+              border: (theme) =>
+                value === index ? "none" : `1px solid ${theme.palette.secondary.main}`,
+              "&.Mui-selected": {
+                backgroundColor: (theme) => theme.palette.secondary.main,
+                color: (theme) => theme.palette.common.black,
+              },
+              "&:not(.Mui-selected)": {
+                color: (theme) => theme.palette.secondary.main,
+                border: (theme) => `1px solid ${theme.palette.secondary.main}`,
+              },
+            }}
+          />
+        ))}
       </Tabs>
       <Box
         sx={{
@@ -168,7 +147,6 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
             >
               <Typography
                 sx={{
-                  // color: "gray",
                   fontSize: 14,
                   color: isPastShowtime(showtime.showtime)
                     ? "gray"

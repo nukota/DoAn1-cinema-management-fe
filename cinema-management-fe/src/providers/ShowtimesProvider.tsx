@@ -7,6 +7,7 @@ interface ShowtimesContextType {
   createShowtime: (newShowtime: ShowtimeType) => Promise<void>;
   updateShowtime: (updatedShowtime: ShowtimeType) => Promise<void>;
   deleteShowtime: (showtimeId: string) => Promise<void>;
+  getCurrentShowtime: () => Promise<void>; // Added getCurrentShowtime
   loading: boolean;
 }
 
@@ -118,6 +119,28 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   }, []);
 
+  // Fetch current showtimes
+  const getCurrentShowtime = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/showtime/current`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Current Showtimes:", data); // Log the current showtimes
+    } catch (error) {
+      console.error("Failed to fetch current showtimes:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <ShowtimesContext.Provider
       value={{
@@ -126,6 +149,7 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
         createShowtime,
         updateShowtime,
         deleteShowtime,
+        getCurrentShowtime, // Added to context
         loading,
       }}
     >

@@ -12,6 +12,7 @@ import ProfileImg from "./../../assets/images/profile.png";
 import { UserType } from "../../interfaces/types";
 import EmployeeHome from "./Home";
 import { Button } from "@mui/material";
+import Profile from "../admin/Profile";
 
 const exampleEmployee: UserType = {
   _id: "1",
@@ -27,7 +28,6 @@ const exampleEmployee: UserType = {
 
 const Employee: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isProfileVisible, setIsProfileVisible] = useState<boolean>(false);
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -38,18 +38,9 @@ const Employee: React.FC = () => {
     setIsSidebarOpen(false);
   };
 
-  const toggleProfileVisibility = () => {
-    setIsProfileVisible(!isProfileVisible); // Toggle Profile visibility
-  };
-
   return (
     <div className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] overflow-auto">
-      <Header
-        ProfileName={exampleEmployee.full_name}
-        ProfileRole={exampleEmployee.role}
-        ProfilePic={ProfileImg}
-        onArrowDownClick={toggleProfileVisibility}
-      />{" "}
+      <Header />
       {/* Added header */}
       <div className="sidebar-toggle z-[1000] fixed md:hidden block">
         <Button
@@ -123,8 +114,8 @@ const Employee: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<EmployeeHome />} />
-            <Route path="/customers" element={<div />} />
-            <Route path="/showtimes" element={<div />} />s
+            <Route path="profile" element={<Profile />} />
+            <Route path="/showtimes" element={<div />} />
             <Route path="/orders" element={<div />} />
             <Route path="/payments" element={<div />} />
             <Route path="/settings" element={<div />} />

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -6,13 +6,13 @@ import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
 import ArrowDownImg from "../../../assets/images/arrowDown.svg";
 import profileImg from "../../../assets/images/profile.png";
-import { AuthContext, AuthContextType } from "../../../providers/AuthProvider";
-import ProfileDialog from "../dialogs/ProfileDialog";
+import { useAuth } from "../../../providers/AuthProvider";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 
 const UserHeader: React.FC = () => {
-  const [searchPhrase, setSearchPhrase] = useState<string>('');
-  const { isLoggedIn, userProfile } = useContext(AuthContext) as AuthContextType;
-  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState<boolean>(false);
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const { isLoggedIn, userProfile, handleLogout } = useAuth();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
@@ -25,28 +25,36 @@ const UserHeader: React.FC = () => {
     // alert("Notification clicked");
   };
 
-  const handleArrowDownClick = () => {
-    // alert("Arrow down clicked");
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const handleLoginClick = () => {
     navigate("/user/login");
   };
 
-  // const handleLogoutClick = () => {
-  //   navigate("/");
-  // };
-
   const handleBuyTicketClicked = () => {
     navigate("/user/movie-list");
   };
 
-  const handleProfileClick = () => {
-    setIsProfileDialogOpen(true);
+  const handleSeeProfile = () => {
+    navigate("/user/profile");
+    handleMenuClose();
   };
 
-  const handleProfileDialogClose = () => {
-    setIsProfileDialogOpen(false);
+  const handleLogOut = async () => {
+    try {
+      await handleLogout();
+      navigate("/user/login");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    } finally {
+      handleMenuClose();
+    }
   };
 
   return (
@@ -117,14 +125,24 @@ const UserHeader: React.FC = () => {
         {isLoggedIn ? (
           <div className="flex flex-row items-center space-x-2">
             <span className="profile-name text-light-gray text-sm">
-              {userProfile?.name}
+              {userProfile!.full_name}
             </span>
             <img
               className="profile-pic size-8 rounded-[6px]"
               src={profileImg}
               alt="Profile"
-              onClick={handleProfileClick}
             />
+            <IconButton onClick={handleMenuOpen}>
+              <img src={ArrowDownImg} alt="Arrow Down" />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleSeeProfile}>See Profile</MenuItem>
+              <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
+            </Menu>
           </div>
         ) : (
           <>
@@ -139,19 +157,7 @@ const UserHeader: React.FC = () => {
             </Button>
           </>
         )}
-        <button
-          className="arrow-down hover:transform hover:-translate-y-1 transition-transform duration-200"
-          onClick={handleArrowDownClick}
-        >
-          <img
-            className="size-6"
-            src={ArrowDownImg}
-            alt="Arrow Down"
-            style={{ filter: "invert(100%) brightness(200%) constrast(200%)" }}
-          />
-        </button>
       </div>
-      <ProfileDialog open={isProfileDialogOpen} onClose={handleProfileDialogClose} />
     </header>
   );
 };

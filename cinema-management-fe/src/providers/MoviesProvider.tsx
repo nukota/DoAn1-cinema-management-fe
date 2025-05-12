@@ -10,6 +10,8 @@ import { MovieType } from "../interfaces/types";
 interface MoviesContextType {
   movies: MovieType[];
   fetchMoviesData: () => Promise<void>;
+  fetchMovieById: (movieId: string) => Promise<MovieType | null>;
+  fetchMovieByStatus: (status: string) => Promise<MovieType[]>;
   createMovie: (newMovie: MovieType) => Promise<void>;
   updateMovie: (updatedMovie: MovieType) => Promise<void>;
   deleteMovie: (movieId: string) => Promise<void>;
@@ -25,7 +27,7 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(false);
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchMoviesData = async () => {
+  const fetchMoviesData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${baseURL}/movie`, {
@@ -43,7 +45,53 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const fetchMovieById = useCallback(async (movieId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${baseURL}/movie/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data; // Return the fetched movie
+    } catch (error) {
+      console.error(`Failed to fetch movie with ID "${movieId}":`, error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch movies by status
+  const fetchMovieByStatus = useCallback(async (status: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${baseURL}/movie/status?status=${encodeURIComponent(status)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data; // Return the fetched movies
+    } catch (error) {
+      console.error(`Failed to fetch movies with status "${status}":`, error);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const createMovie = useCallback(async (newMovie: MovieType) => {
     try {
@@ -113,6 +161,8 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         movies,
         fetchMoviesData,
+        fetchMovieById,
+        fetchMovieByStatus,
         createMovie,
         updateMovie,
         deleteMovie,
