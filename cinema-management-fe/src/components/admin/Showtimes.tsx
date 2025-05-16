@@ -13,7 +13,13 @@ import { useMovies } from "../../providers/MoviesProvider";
 
 const Showtimes: React.FC = () => {
   const { rooms, fetchRoomsData } = useRooms();
-  const { showtimes, fetchShowtimesData, createShowtime, updateShowtime, deleteShowtime } = useShowtimes();
+  const {
+    showtimes,
+    fetchShowtimesData,
+    createShowtime,
+    updateShowtime,
+    deleteShowtime,
+  } = useShowtimes();
   const { movies, fetchMoviesData } = useMovies();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -22,7 +28,9 @@ const Showtimes: React.FC = () => {
 
   useEffect(() => {
     fetchRoomsData();
+    console.log("Rooms data fetched:", rooms);
     fetchShowtimesData();
+    console.log("Showtimes data fetched:", showtimes);
     fetchMoviesData();
   }, []);
 
@@ -59,7 +67,6 @@ const Showtimes: React.FC = () => {
   const handleAddShowtime = async (newShowtime: ShowtimeType) => {
     try {
       await createShowtime(newShowtime);
-      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to add showtime:", error);
     }
@@ -68,7 +75,6 @@ const Showtimes: React.FC = () => {
   const handleUpdateShowtime = async (updatedShowtime: ShowtimeType) => {
     try {
       await updateShowtime(updatedShowtime);
-      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to update showtime:", error);
     }
@@ -77,7 +83,6 @@ const Showtimes: React.FC = () => {
   const handleDeleteShowtime = async (showtimeId: string) => {
     try {
       await deleteShowtime(showtimeId);
-      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to delete showtime:", error);
     }
@@ -88,10 +93,18 @@ const Showtimes: React.FC = () => {
     const matchesSearchTerm =
       (showtime._id && showtime._id.toString().includes(searchTermLower)) ||
       (showtime.movie.title &&
-        showtime.movie.title.toString().includes(searchTermLower));
+        showtime.movie.title
+          .toString()
+          .toLowerCase()
+          .includes(searchTermLower));
 
-    const matchesDate =
-      !selectedDate || showtime.showtime.startsWith(selectedDate);
+    // Normalize showtime to local date
+    const showtimeDate = new Date(showtime.showtime);
+    const localShowtimeDate = `${showtimeDate.getFullYear()}-${String(
+      showtimeDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(showtimeDate.getDate()).padStart(2, "0")}`;
+
+    const matchesDate = !selectedDate || localShowtimeDate === selectedDate;
 
     const matchesMovie =
       !selectedMovie || showtime.movie.title === selectedMovie;
@@ -99,7 +112,6 @@ const Showtimes: React.FC = () => {
     return matchesSearchTerm && matchesDate && matchesMovie;
   });
 
-  // Group filtered showtimes by room
   const roomsWithShowtimes = rooms
     .filter(
       (room) =>
@@ -110,8 +122,8 @@ const Showtimes: React.FC = () => {
       showtimes: filteredShowtimes.filter(
         (showtime) => showtime.room.room_id === room._id
       ),
-    }));
-  console.log("Rooms with Showtimes:", roomsWithShowtimes);
+    }))
+    .sort((a, b) => a._id.localeCompare(b._id));
   return (
     <div className="showtimes flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Showtimes</div>

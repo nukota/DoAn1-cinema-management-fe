@@ -1,19 +1,36 @@
-import React from "react";
-import { ShowtimeType } from "../../../interfaces/types";
+import React, { useState } from "react";
+import { MovieType, ShowtimeType } from "../../../interfaces/types";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import DetailShowtime from "../dialogs/DetailShowtime";
 
 interface ShowtimeProps {
   showtime: ShowtimeType;
+  movies: MovieType[];
   onUpdateShowtime: (showtime: ShowtimeType) => void;
   onDeleteShowtime: (showtimeId: string) => void;
 }
 const Showtime: React.FC<ShowtimeProps> = ({
   showtime,
+  movies,
   onUpdateShowtime,
   onDeleteShowtime,
 }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleEditClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleSaveShowtime = (updatedShowtime: ShowtimeType) => {
+    onUpdateShowtime(updatedShowtime);
+    setIsDialogOpen(false);
+  };
   return (
     <Box className="w-full h-[160px] bg-white rounded-xl flex flex-col justify-between p-2 relative overflow-hiden">
       <Box
@@ -31,7 +48,7 @@ const Showtime: React.FC<ShowtimeProps> = ({
             size="small"
             color="default"
             sx={{ p: "2px" }}
-            onClick={() => onUpdateShowtime(showtime)}
+            onClick={handleEditClick}
           >
             <EditIcon fontSize="inherit" />
           </IconButton>
@@ -79,6 +96,13 @@ const Showtime: React.FC<ShowtimeProps> = ({
           })}
         </Typography>
       </Box>
+      <DetailShowtime
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        onSave={handleSaveShowtime}
+        showtime={showtime}
+        movies={movies}
+      />
     </Box>
   );
 };

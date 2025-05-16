@@ -3,8 +3,10 @@ import { MovieType, ShowtimeType } from "../interfaces/types";
 
 interface ShowtimesContextType {
   showtimes: ShowtimeType[];
+  showtimesByMovieId: ShowtimeType[];
   currentShowtime: MovieType[];
   fetchShowtimesData: () => Promise<void>;
+  fetchShowtimesByMovieId: (movieId: string) => Promise<void>;
   createShowtime: (newShowtime: ShowtimeType) => Promise<void>;
   updateShowtime: (updatedShowtime: ShowtimeType) => Promise<void>;
   deleteShowtime: (showtimeId: string) => Promise<void>;
@@ -16,6 +18,7 @@ const ShowtimesContext = createContext<ShowtimesContextType | undefined>(undefin
 
 export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [showtimes, setShowtimes] = useState<ShowtimeType[]>([]);
+  const [showtimesByMovieId, setShowtimesByMovieId] = useState<ShowtimeType[]>([]);
   const [currentShowtime, setCurrentShowtime] = useState<MovieType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +46,28 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   };
 
+  // Fetch showtimes by movie ID
+  const fetchShowtimesByMovieId = useCallback(async (movieId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/showtime/movie/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setShowtimesByMovieId(data);
+    } catch (error) {
+      console.error("Failed to fetch showtimes by movie ID:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Create a new showtime
   const createShowtime = useCallback(async (newShowtime: ShowtimeType) => {
     setLoading(true);
@@ -59,8 +84,7 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const createdShowtime = await response.json();
-      setShowtimes((prevShowtimes) => [...prevShowtimes, createdShowtime]);
+      fetchShowtimesData();
     } catch (error) {
       console.error("Failed to create showtime:", error);
     } finally {
@@ -84,12 +108,7 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const updatedData = await response.json();
-      setShowtimes((prevShowtimes) =>
-        prevShowtimes.map((showtime) =>
-          showtime._id === updatedData._id ? updatedData : showtime
-        )
-      );
+      fetchShowtimesData();
     } catch (error) {
       console.error("Failed to update showtime:", error);
     } finally {
@@ -111,9 +130,7 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setShowtimes((prevShowtimes) =>
-        prevShowtimes.filter((showtime) => showtime._id !== showtimeId)
-      );
+      fetchShowtimesData();
     } catch (error) {
       console.error("Failed to delete showtime:", error);
     } finally {
@@ -153,8 +170,10 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
     <ShowtimesContext.Provider
       value={{
         showtimes,
+        showtimesByMovieId,
         currentShowtime,
         fetchShowtimesData,
+        fetchShowtimesByMovieId,
         createShowtime,
         updateShowtime,
         deleteShowtime,

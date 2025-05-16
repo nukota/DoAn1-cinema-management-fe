@@ -52,29 +52,37 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
   const [price, setPrice] = useState<number | null>(null);
 
   const handleAddClick = async () => {
-  if (!movieId || !showtime || price === null || price === 0 || isNaN(Number(price))) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+    if (
+      !movieId ||
+      !showtime ||
+      price === null ||
+      price === 0 ||
+      isNaN(Number(price))
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    
 
-  const newShowtime = {
-    room_id: roomId,
-    movie_id: movieId,
-    showtime,
-    price: Number(price),
+    const newShowtime = {
+      room_id: roomId,
+      movie_id: movieId,
+      showtime,
+      price: Number(price),
+    };
+    console.log("Payload being sent:", newShowtime); // Debugging log
+
+    try {
+      await onAdd(newShowtime);
+      setMovieId("");
+      setShowtime("");
+      setPrice(null);
+      onClose();
+    } catch (error) {
+      console.error("Failed to add showtime:", error);
+      alert("An error occurred while adding the showtime. Please try again.");
+    }
   };
-
-  try {
-    await onAdd(newShowtime);
-    setMovieId("");
-    setShowtime("");
-    setPrice(null);
-    onClose();
-  } catch (error) {
-    console.error("Failed to add showtime:", error);
-    alert("An error occurred while adding the showtime. Please try again.");
-  }
-};
 
   return (
     <Dialog
@@ -139,7 +147,10 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
             margin="dense"
             size="small"
             value={showtime}
-            onChange={(e) => setShowtime(e.target.value)}
+            onChange={(e) => {
+              const selectedDateTime = e.target.value;
+              setShowtime(selectedDateTime); // Update the state with the selected value
+            }}
             InputLabelProps={{
               shrink: true,
             }}

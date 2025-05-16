@@ -90,10 +90,24 @@ export type TicketType = {
 
 export type OrderType = {
   _id: string;
-  user_id: string;
+  ordercode: string;
+  user: string;
   total_price: number;
-  status: "pending" | "completed" | "cancelled";
+  status: "pending" | "paid" | "cancelled";
   created_at: string;
+  ticketCount?: number;
+  productCount?: number;
+  tickets?: {
+    title: string; //movie tiltle
+    showtime: string; //date time
+    price: number; //price of each ticket
+    seats: { seat_id: string; seat_name: string };
+  }[];
+  products?: {
+    product_id: string;
+    name: string;
+    quantity: number;
+  }[];
 };
 
 export type PaymentType = {
@@ -101,7 +115,7 @@ export type PaymentType = {
   order_id: string;
   amount: number;
   payment_method: string;
-  status: "pending" | "completed" | "cancelled";
+  status?: "pending" | "completed" | "cancelled";
   discount_id: string;
   paid_at: string;
 };

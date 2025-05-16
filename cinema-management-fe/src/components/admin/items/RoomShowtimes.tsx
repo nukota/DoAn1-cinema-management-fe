@@ -103,6 +103,7 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
           <Showtime
             key={showtime._id}
             showtime={showtime}
+            movies={movies} 
             onUpdateShowtime={onUpdateShowtime}
             onDeleteShowtime={onDeleteShowtime}
           />

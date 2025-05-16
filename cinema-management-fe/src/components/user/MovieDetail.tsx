@@ -10,7 +10,6 @@ import ShowTimes from "./elements/ShowTimes";
 import BookingInfo from "./elements/BookingInfo";
 import BookingFooter from "./elements/BookingFooter";
 import {
-  exampleShowtimes,
   exampleSeats,
   exampleProducts,
 } from "../../data";
@@ -20,10 +19,12 @@ import {
   ProductType,
 } from "../../interfaces/types";
 import { useMovies } from "../../providers/MoviesProvider";
+import { useShowtimes } from "../../providers/ShowtimesProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
-  const { fetchMovieById, loading } = useMovies();
+  const { fetchMovieById, loading: movieLoading } = useMovies();
+  const { fetchShowtimesByMovieId, showtimesByMovieId, loading: showtimesLoading } = useShowtimes();
   const [movie, setMovie] = useState<MovieType | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SeatType[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<
@@ -43,10 +44,22 @@ const MovieDetail: React.FC = () => {
       }
     };
 
-    fetchMovie();
-  }, [movieId, fetchMovieById]);
+    const fetchShowtimes = async () => {
+      if (movieId) {
+        try {
+          await fetchShowtimesByMovieId(movieId);
+        } catch (error) {
+          console.error("Failed to fetch showtimes:", error);
+        }
+      }
+    };
 
-  if (loading) {
+    fetchMovie();
+    fetchShowtimes();
+  }, [movieId]);
+
+
+  if (movieLoading || showtimesLoading) {
     return (
       <div className="text-white text-center text-xl mt-10">
         Loading movie details...
@@ -80,7 +93,7 @@ const MovieDetail: React.FC = () => {
             <div className="text-white text-4xl font-bold self-center">
               SHOWTIMES
             </div>
-            <ShowTimes showtimes={exampleShowtimes} />
+            <ShowTimes showtimes={showtimesByMovieId} />
           </div>
           <div className="flex flex-col mt-24">
             <div className="text-white text-4xl font-bold self-center">

@@ -49,14 +49,16 @@ const Products: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const handleAddNewProduct = async (newProduct: ProductType) => {
+  const handleAddNewProduct = async (newProduct: ProductType): Promise<boolean> => {
     try {
       await createProduct(newProduct);
       await fetchProductsData();
+      return true;
       handleCloseDialog();
     } catch (error) {
       console.error("Failed to add new product:", error);
       alert("An error occurred while adding the product. Please try again.");
+      return false;
     }
   };
   
