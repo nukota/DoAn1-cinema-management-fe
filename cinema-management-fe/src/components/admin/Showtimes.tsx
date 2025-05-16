@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RoomShowtimes from "./items/RoomShowtimes";
 import { Mousewheel, Navigation } from "swiper/modules";
@@ -9,17 +9,21 @@ import theme from "../../main";
 import { ShowtimeType } from "../../interfaces/types";
 import { useRooms } from "../../providers/RoomsProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
+import { useMovies } from "../../providers/MoviesProvider";
 
 const Showtimes: React.FC = () => {
   const { rooms, fetchRoomsData } = useRooms();
-  const { showtimes, fetchShowtimesData } = useShowtimes();
+  const { showtimes, fetchShowtimesData, createShowtime, updateShowtime, deleteShowtime } = useShowtimes();
+  const { movies, fetchMoviesData } = useMovies();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedMovie, setSelectedMovie] = useState<string>("");
 
   useEffect(() => {
     fetchRoomsData();
     fetchShowtimesData();
+    fetchMoviesData();
   }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,24 +52,51 @@ const Showtimes: React.FC = () => {
     setSelectedCinema(event.target.value);
   };
 
-  const handleAddShowtime = (newShowtime: ShowtimeType) => {
-    // Add logic to handle adding a showtime for the specified room
+  const handleMovieChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMovie(event.target.value);
   };
 
-  const handleDeleteClick = () => {};
-  const handleAddNewClick = () => {};
+  const handleAddShowtime = async (newShowtime: ShowtimeType) => {
+    try {
+      await createShowtime(newShowtime);
+      await fetchShowtimesData();
+    } catch (error) {
+      console.error("Failed to add showtime:", error);
+    }
+  };
+
+  const handleUpdateShowtime = async (updatedShowtime: ShowtimeType) => {
+    try {
+      await updateShowtime(updatedShowtime);
+      await fetchShowtimesData();
+    } catch (error) {
+      console.error("Failed to update showtime:", error);
+    }
+  };
+
+  const handleDeleteShowtime = async (showtimeId: string) => {
+    try {
+      await deleteShowtime(showtimeId);
+      await fetchShowtimesData();
+    } catch (error) {
+      console.error("Failed to delete showtime:", error);
+    }
+  };
 
   const filteredShowtimes = showtimes.filter((showtime) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearchTerm =
       (showtime._id && showtime._id.toString().includes(searchTermLower)) ||
-      (showtime.movie_id &&
-        showtime.movie_id.toString().includes(searchTermLower));
+      (showtime.movie.title &&
+        showtime.movie.title.toString().includes(searchTermLower));
 
     const matchesDate =
       !selectedDate || showtime.showtime.startsWith(selectedDate);
 
-    return matchesSearchTerm && matchesDate;
+    const matchesMovie =
+      !selectedMovie || showtime.movie.title === selectedMovie;
+
+    return matchesSearchTerm && matchesDate && matchesMovie;
   });
 
   // Group filtered showtimes by room
@@ -77,7 +108,7 @@ const Showtimes: React.FC = () => {
     .map((room) => ({
       ...room,
       showtimes: filteredShowtimes.filter(
-        (showtime) => showtime.room_id === room._id
+        (showtime) => showtime.room.room_id === room._id
       ),
     }));
   console.log("Rooms with Showtimes:", roomsWithShowtimes);
@@ -138,21 +169,26 @@ const Showtimes: React.FC = () => {
               className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
             />
           </div>
-        </div>
-        <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
-            sx={{
-              mt: 2,
-              ml: { 1270: 2 },
-              width: "114px",
-              height: "32px",
-            }}
-          >
-            Add New
-          </Button>
+          {/* Movie select */}
+          <div className="MovieFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
+            <select
+              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+              value={selectedMovie}
+              onChange={handleMovieChange}
+            >
+              <option value="">All Movies</option>
+              {movies.map((movie) => (
+                <option key={movie._id} value={movie.title}>
+                  {movie.title}
+                </option>
+              ))}
+            </select>
+            <img
+              src={SearchImg}
+              alt="Movie"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+            />
+          </div>
         </div>
       </div>
 
@@ -222,7 +258,10 @@ const Showtimes: React.FC = () => {
               <RoomShowtimes
                 room={room}
                 showtimes={room.showtimes}
+                movies={movies}
                 onAddShowtime={handleAddShowtime}
+                onUpdateShowtime={handleUpdateShowtime}
+                onDeleteShowtime={handleDeleteShowtime}
               />
             </SwiperSlide>
           ))}

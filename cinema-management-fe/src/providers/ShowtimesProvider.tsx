@@ -1,13 +1,14 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
-import { ShowtimeType } from "../interfaces/types";
+import { MovieType, ShowtimeType } from "../interfaces/types";
 
 interface ShowtimesContextType {
   showtimes: ShowtimeType[];
+  currentShowtime: MovieType[];
   fetchShowtimesData: () => Promise<void>;
   createShowtime: (newShowtime: ShowtimeType) => Promise<void>;
   updateShowtime: (updatedShowtime: ShowtimeType) => Promise<void>;
   deleteShowtime: (showtimeId: string) => Promise<void>;
-  getCurrentShowtime: () => Promise<void>; // Added getCurrentShowtime
+  getCurrentShowtime: () => Promise<void>;
   loading: boolean;
 }
 
@@ -15,6 +16,7 @@ const ShowtimesContext = createContext<ShowtimesContextType | undefined>(undefin
 
 export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [showtimes, setShowtimes] = useState<ShowtimeType[]>([]);
+  const [currentShowtime, setCurrentShowtime] = useState<MovieType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -132,8 +134,14 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-      console.log("Current Showtimes:", data); // Log the current showtimes
+      const { data } = await response.json();
+    if (Array.isArray(data)) {
+      setCurrentShowtime(data);
+    } else {
+      console.error("Invalid data format: Expected an array in 'data'");
+      setCurrentShowtime([]);
+    }
+      console.log("Current Showtimes:", data);
     } catch (error) {
       console.error("Failed to fetch current showtimes:", error);
     } finally {
@@ -145,11 +153,12 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
     <ShowtimesContext.Provider
       value={{
         showtimes,
+        currentShowtime,
         fetchShowtimesData,
         createShowtime,
         updateShowtime,
         deleteShowtime,
-        getCurrentShowtime, // Added to context
+        getCurrentShowtime,
         loading,
       }}
     >

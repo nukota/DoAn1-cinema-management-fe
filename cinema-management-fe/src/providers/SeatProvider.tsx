@@ -1,9 +1,17 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { SeatType } from "../interfaces/types";
 
 interface SeatsContextType {
   seats: SeatType[];
   fetchSeatsData: () => Promise<void>;
+  fetchSeatsByRoomId: (roomId: string) => Promise<void>;
+  fetchSeatsByShowtimeId: (showtimeId: string) => Promise<void>;
   createSeat: (newSeat: SeatType) => Promise<void>;
   updateSeat: (updatedSeat: SeatType) => Promise<void>;
   deleteSeat: (seatId: string) => Promise<void>;
@@ -12,7 +20,9 @@ interface SeatsContextType {
 
 const SeatsContext = createContext<SeatsContextType | undefined>(undefined);
 
-export const SeatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SeatProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [seats, setSeats] = useState<SeatType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +45,50 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSeats(data);
     } catch (error) {
       console.error("Failed to fetch seats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch seats by room ID
+  const fetchSeatsByRoomId = async (roomId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/seat/room/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setSeats(data);
+    } catch (error) {
+      console.error("Failed to fetch seats by room ID:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add fetchSeatsByShowtimeId function
+  const fetchSeatsByShowtimeId = async (showtimeId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/seat/showtime/${showtimeId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const { data } = await response.json();
+      setSeats(data);
+    } catch (error) {
+      console.error("Failed to fetch seats by showtime ID:", error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +137,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       const updatedData = await response.json();
       setSeats((prevSeats) =>
-        prevSeats.map((seat) => (seat._id === updatedData._id ? updatedData : seat))
+        prevSeats.map((seat) =>
+          seat._id === updatedData._id ? updatedData : seat
+        )
       );
     } catch (error) {
       console.error("Failed to update seat:", error);
@@ -119,6 +175,8 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         seats,
         fetchSeatsData,
+        fetchSeatsByRoomId,
+        fetchSeatsByShowtimeId,
         createSeat,
         updateSeat,
         deleteSeat,

@@ -6,7 +6,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   Grid2,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -14,6 +18,7 @@ import { styled } from "@mui/material/styles";
 import { RoomType } from "../../../interfaces/types";
 import { exampleSeats } from "../../../data";
 import Seat from "../items/Seat";
+import { useCinemas } from "../../../providers/CinemasProvider";
 
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -44,17 +49,28 @@ const getSeatRow = (seatName: string): number | null => {
   return match ? match[0].charCodeAt(0) - 64 : null;
 };
 
-const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onSave, onDelete, onClose }) => {
+const DetailRoom: React.FC<DetailRoomsProps> = ({
+  room,
+  open,
+  onSave,
+  onDelete,
+  onClose,
+}) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [seatCount, setSeatCount] = useState<number>(0);
-  const [cinemaName, setCinemaName] = useState<string>("");
+  const [cinemaId, setCinemaId] = useState<string>("");
+  const { cinemas, fetchCinemasData } = useCinemas();
+
+  useEffect(() => {
+    fetchCinemasData();
+  }, []);
 
   useEffect(() => {
     if (room) {
       setName(room.name);
       setSeatCount(room.seat_count);
-      setCinemaName(room.cinema.name);
+      setCinemaId(room.cinema?.cinema_id || "");
     }
     if (!open) {
       setIsEditing(false);
@@ -66,17 +82,21 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onSave, onDelete, 
   };
 
   const handleSaveClick = () => {
-    const updatedRoom: RoomType = {
+    const updatedRoom = {
       ...room,
       name,
       seat_count: seatCount,
+      cinema_id: cinemaId,
     };
-    onSave(updatedRoom); // Call onSave to update the room
+    onSave(updatedRoom as any);
     setIsEditing(false);
   };
 
   const handleCancelClick = () => {
     setIsEditing(false);
+    setName(room.name);
+    setSeatCount(room.seat_count);
+    setCinemaId(room.cinema?.cinema_id || "");
   };
 
   const renderSeatGrid = (roomId: string) => {
@@ -184,13 +204,22 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({ room, open, onSave, onDelete, 
           <Typography sx={{ ml: 2, marginTop: 1, width: 100 }}>
             Cinema:
           </Typography>
-          <TextField
-            sx={{ width: 240 }}
-            margin="dense"
-            size="small"
-            value={cinemaName}
-            disabled
-          />
+          <FormControl sx={{ width: 240 }} size="small">
+            <InputLabel id="cinema-select-label">Cinema</InputLabel>
+            <Select
+              labelId="cinema-select-label"
+              value={cinemaId}
+              label="Cinema"
+              onChange={(e) => setCinemaId(e.target.value)}
+              disabled={!isEditing}
+            >
+              {cinemas.map((cinema) => (
+                <MenuItem key={cinema._id} value={cinema._id}>
+                  {cinema.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Typography sx={{ ml: 4, marginTop: 1, width: 100 }}>
             Room ID:
           </Typography>

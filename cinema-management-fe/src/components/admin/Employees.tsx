@@ -9,7 +9,14 @@ import { EmployeeType } from "../../interfaces/types";
 import { useEmployees } from "../../providers/EmployeesProvider";
 
 const Employees: React.FC = () => {
-  const { employees, fetchEmployeesData, createEmployee, updateEmployee, deleteEmployee, loading } = useEmployees();
+  const {
+    employees,
+    fetchEmployeesData,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee,
+    loading,
+  } = useEmployees();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -113,13 +120,7 @@ const Employees: React.FC = () => {
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
-
-  const uniqueEmployees = employees.filter(
-    (employee, index, self) =>
-      index === self.findIndex((e) => e.employee_id === employee.employee_id)
-  );
-
-  const filteredEmployees = uniqueEmployees.filter((employee) => {
+  const filteredEmployees = employees.filter((employee) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       (employee.full_name &&
@@ -128,10 +129,10 @@ const Employees: React.FC = () => {
       (employee.role &&
         employee.role.toLowerCase().includes(searchTermLower)) ||
       (employee.dateOfBirth && employee.dateOfBirth.includes(searchTermLower));
-  
+
     const matchesCinema =
       !selectedCinema || employee.cinema_id.toString() === selectedCinema;
-  
+
     return matchesSearch && matchesCinema;
   });
 

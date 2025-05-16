@@ -18,7 +18,7 @@ const Room: React.FC<RoomProps> = ({ room, handleInfoClick }) => {
         <div className="text-[16px] text-dark-gray truncate space-y-1 flex-col flex">
           <p className="h-[21px]">
             <span>Cinema: </span>
-            <span className="text-black">{room.cinema.name}</span>
+            <span className="text-black">{room.cinema?.name}</span>
           </p>
           <p className="h-[21px]">
             <span>Capacity: </span>

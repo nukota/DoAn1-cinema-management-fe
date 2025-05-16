@@ -19,17 +19,22 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/material";
-import { ProductType, ShowtimeType } from "../../interfaces/types";
+import {
+  MovieType,
+  ProductType,
+  SeatType,
+  ShowtimeType,
+} from "../../interfaces/types";
 import CalendarImg from "../../assets/images/calendar.svg";
 import ShowtimeUnit from "./items/ShowtimeUnit";
-import { exampleProducts } from "../../data";
 import ProductItem from "./items/ProductItem";
 import VisaImg from "../../assets/images/visa.png";
 import MomoImg from "../../assets/images/momo.png";
 import CashImg from "../../assets/images/cash.png";
 import BankingImg from "../../assets/images/banking.png";
 import { useSeats } from "../../providers/SeatProvider";
-import { TypeSpecimenTwoTone } from "@mui/icons-material";
+import { useShowtimes } from "../../providers/ShowtimesProvider";
+import { useProducts } from "../../providers/ProductsProvider";
 const steps = [
   "Select Ticket",
   "Select Seats",
@@ -39,145 +44,27 @@ const steps = [
   "Print Ticket",
 ];
 
-const movies = [
-  {
-    id: 1,
-    title: "Movie 1",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 2,
-    title: "Movie 2",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 3,
-    title: "Movie 3",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 4,
-    title: "Movie 4",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 5,
-    title: "Movie 5",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 6,
-    title: "Movie 6",
-    image: "https://via.placeholder.com/150",
-  },
-];
-
-const showtimeExample: ShowtimeType[] = [
-  { _id: "1", room_id: "101", movie_id: "m123", showtime: "08:00", price: 100 },
-  { _id: "2", room_id: "101", movie_id: "m123", showtime: "09:30", price: 100 },
-  { _id: "3", room_id: "101", movie_id: "m123", showtime: "11:00", price: 120 },
-  { _id: "4", room_id: "101", movie_id: "m123", showtime: "12:30", price: 120 },
-  { _id: "5", room_id: "101", movie_id: "m123", showtime: "14:00", price: 150 },
-  { _id: "6", room_id: "101", movie_id: "m123", showtime: "15:30", price: 150 },
-  { _id: "7", room_id: "101", movie_id: "m123", showtime: "17:00", price: 180 },
-  { _id: "8", room_id: "101", movie_id: "m123", showtime: "18:30", price: 180 },
-  { _id: "9", room_id: "101", movie_id: "m123", showtime: "20:00", price: 200 },
-  {
-    _id: "10",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "21:30",
-    price: 200,
-  },
-  {
-    _id: "11",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "23:00",
-    price: 220,
-  },
-  {
-    _id: "12",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "00:30",
-    price: 220,
-  },
-  {
-    _id: "13",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "02:00",
-    price: 250,
-  },
-  {
-    _id: "14",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "03:30",
-    price: 250,
-  },
-  {
-    _id: "15",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "05:00",
-    price: 300,
-  },
-  {
-    _id: "16",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "06:30",
-    price: 300,
-  },
-  {
-    _id: "17",
-    room_id: "101",
-    movie_id: "m123",
-    showtime: "10:30",
-    price: 100,
-  },
-  {
-    _id: "18",
-    room_id: "102",
-    movie_id: "m123",
-    showtime: "12:45",
-    price: 120,
-  },
-  {
-    _id: "19",
-    room_id: "103",
-    movie_id: "m123",
-    showtime: "15:00",
-    price: 150,
-  },
-  {
-    _id: "20",
-    room_id: "104",
-    movie_id: "m123",
-    showtime: "17:30",
-    price: 200,
-  },
-  {
-    _id: "21",
-    room_id: "105",
-    movie_id: "m123",
-    showtime: "20:00",
-    price: 250,
-  },
-];
-
 const EmployeeHome: React.FC = () => {
+  const { currentShowtime, getCurrentShowtime } = useShowtimes();
+  const { seats, fetchSeatsByShowtimeId, loading } = useSeats();
+  const { products, fetchProductsData } = useProducts();
+  //
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+  //
+  const [selectedShowtime, setSelectedShowtime] = useState<{
+    movie: MovieType;
+    showtime: ShowtimeType;
+  } | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<{
     [key: string]: number;
   }>({});
-  const { seats, fetchSeatsData, loading } = useSeats();
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<SeatType[]>([]);
   const [ticketCount, setTicketCount] = useState<number>(0);
-
-  const [selectedTab, setSelectedTab] = useState<number>(0);
   const [filterName, setFilterName] = useState<string>("");
   const [filterPhone, setFilterPhone] = useState<string>("");
   const [guestPhone, setGuestPhone] = useState<string>("");
@@ -190,13 +77,28 @@ const EmployeeHome: React.FC = () => {
   const [isPaid, setIsPaid] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchSeatsData();
+    getCurrentShowtime();
+    fetchProductsData();
   }, []);
+
+  useEffect(() => {
+    if (activeStep === 1 && selectedShowtime) {
+      fetchSeatsByShowtimeId(selectedShowtime.showtime._id);
+    }
+  }, [activeStep, selectedShowtime]);
 
   const handlePaymentMethodChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSelectedPaymentMethod(event.target.value);
+  };
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const handleShowtimeSelect = (movie: MovieType, showtime: ShowtimeType) => {
+    setSelectedShowtime({ movie, showtime });
   };
 
   const handleNext = () => {
@@ -211,6 +113,9 @@ const EmployeeHome: React.FC = () => {
     setActiveStep(0);
     setSelectedPaymentMethod("cash");
     setIsPaid(false);
+    setSelectedProducts({});
+    setSelectedSeats([]);
+    setSelectedShowtime(null);
   };
 
   const handleMarkAsPaid = () => {
@@ -239,17 +144,20 @@ const EmployeeHome: React.FC = () => {
 
   const handleSeatClick = (seatId: string) => {
     setSelectedSeats((prevSelectedSeats) => {
-      if (prevSelectedSeats.includes(seatId)) {
-        return prevSelectedSeats.filter((id) => id !== seatId);
+      const seat = seats.find((s) => s._id === seatId);
+      if (!seat) return prevSelectedSeats;
+
+      if (prevSelectedSeats.includes(seat)) {
+        return prevSelectedSeats.filter((s) => s._id !== seatId);
       } else if (prevSelectedSeats.length < ticketCount) {
-        return [...prevSelectedSeats, seatId];
+        return [...prevSelectedSeats, seat];
       }
       return prevSelectedSeats;
     });
   };
 
   const renderSeatGrid = () => {
-    const rows = "ABCDEFGHIJKLMN".split(""); // Example rows
+    const rows = "ABCDEFGHIJKLMN".split("");
     const grid = [];
 
     for (let row = 1; row <= 14; row++) {
@@ -270,14 +178,15 @@ const EmployeeHome: React.FC = () => {
               justifyContent: "center",
               borderRadius: "4px",
               backgroundColor: seat
-                ? selectedSeats.includes(seat._id)
-                  ? "#b80007" // Selected seat color
-                  : "#fafafa" // Available seat color
-                : "transparent", // Empty space
-              // border: seat ? "1px solid #ccc" : "none",
-              cursor: seat ? "pointer" : "default",
+                ? seat.available
+                  ? selectedSeats.includes(seat)
+                    ? "#b80007"
+                    : "#fafafa"
+                  : "#ccc"
+                : "transparent",
+              cursor: seat && seat.available ? "pointer" : "not-allowed",
             }}
-            onClick={() => seat && handleSeatClick(seat._id)}
+            onClick={() => seat && seat.available && handleSeatClick(seat._id)}
           >
             <Typography
               align="center"
@@ -285,9 +194,11 @@ const EmployeeHome: React.FC = () => {
                 fontSize: "12px",
                 fontWeight: 500,
                 color: seat
-                  ? selectedSeats.includes(seat._id)
-                    ? "#fff"
-                    : "#000"
+                  ? seat.available
+                    ? selectedSeats.includes(seat)
+                      ? "#fff"
+                      : "#000"
+                    : "#666"
                   : "#ccc",
               }}
             >
@@ -313,23 +224,15 @@ const EmployeeHome: React.FC = () => {
       account.phone.includes(filterPhone)
   );
 
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
-
-  const products = exampleProducts;
+  const filteredShowtimes = currentShowtime.filter((movie: MovieType) =>
+    movie.showtimes?.some(
+      (showtime: ShowtimeType) =>
+        new Date(showtime.showtime).toLocaleDateString("en-CA") === selectedDate
+    )
+  );
 
   return (
     <div className="flex flex-col h-full py-2 relative">
-      {/* <img
-        className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
-        src={wallPaperImg}
-        alt="Background"
-      /> */}
       <div className="z-[1] w-full h-full max-w-[1200px] m-auto flex flex-col items-start text-black">
         <Typography
           variant="h4"
@@ -356,27 +259,55 @@ const EmployeeHome: React.FC = () => {
             <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative p-4">
               {activeStep === 0 && (
                 <div className="flex gap-4 w-full">
-                  {movies.map((movie) => (
-                    <div className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0">
+                  {filteredShowtimes.map((movie: MovieType) => (
+                    <div
+                      key={movie._id}
+                      className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0 overflow-clip"
+                    >
                       {/* Movie Image */}
-                      <div className="image w-full h-[240px] bg-[#dadada] object-cover" />
+                      <div
+                        className="image w-full h-[240px] bg-[#dadada] object-cover"
+                        style={{
+                          backgroundImage: `url(${movie.poster_url})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      />
                       <Typography
-                        className="text-center font-bold mt-4 mb-2 px-2 py-2"
+                        className="text-center font-bold mt-4 mb-2 px-2 py-2 h-[64px]"
                         sx={{
-                          fontSize: "16spx",
+                          fontSize: "16px",
                           color: "#484848",
                           textAlign: "center",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        movieTitle
+                        {movie.title}
                       </Typography>
                       <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
-                        {showtimeExample.map((showtime) => (
-                          <ShowtimeUnit
-                            key={showtime._id}
-                            showtimeData={showtime}
-                          />
-                        ))}
+                        {movie.showtimes
+                          ?.filter(
+                            (showtime: ShowtimeType) =>
+                              new Date(showtime.showtime).toLocaleDateString(
+                                "en-CA"
+                              ) === selectedDate
+                          )
+                          .map((showtime: ShowtimeType) => (
+                            <ShowtimeUnit
+                              key={showtime._id}
+                              showtimeData={showtime}
+                              selected={
+                                selectedShowtime?.showtime._id === showtime._id
+                              }
+                              onClick={() =>
+                                handleShowtimeSelect(movie, showtime)
+                              }
+                            />
+                          ))}
                       </div>
                     </div>
                   ))}
@@ -385,16 +316,20 @@ const EmployeeHome: React.FC = () => {
               {activeStep === 1 && (
                 <div className="w-full h-[480px] overflow-y-scroll custom-scrollbar flex flex-col gap-4 pb-4">
                   {/* Ticket Count Picker */}
-                    <div
+                  <div
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
                       paddingLeft: "16px",
                     }}
-                    >
+                  >
                     <Typography
-                      style={{ fontWeight: 400, fontSize: "18px", paddingRight: "8px" }}
+                      style={{
+                        fontWeight: 400,
+                        fontSize: "18px",
+                        paddingRight: "8px",
+                      }}
                     >
                       Number of Tickets:
                     </Typography>
@@ -402,13 +337,14 @@ const EmployeeHome: React.FC = () => {
                     <Button
                       variant="outlined"
                       onClick={() =>
-                      setTicketCount((prev) => Math.max(0, prev - 1))
+                        setTicketCount((prev) => Math.max(0, prev - 1))
                       }
                       style={{
-                      minWidth: "40px",
-                      height: "40px",
-                      fontSize: "24px",
+                        minWidth: "40px",
+                        height: "40px",
+                        fontSize: "24px",
                       }}
+                      disabled={selectedSeats.length < ticketCount}
                     >
                       -
                     </Button>
@@ -419,9 +355,9 @@ const EmployeeHome: React.FC = () => {
                       value={ticketCount}
                       size="small"
                       onChange={(e) => {
-                      const value = Math.max(0, Number(e.target.value));
-                      setTicketCount(value);
-                      setSelectedSeats([]); // Reset selected seats when ticket count changes
+                        const value = Math.max(0, Number(e.target.value));
+                        setTicketCount(value);
+                        setSelectedSeats([]); // Reset selected seats when ticket count changes
                       }}
                       inputProps={{ min: 0 }}
                       style={{ width: "60px", textAlign: "center" }}
@@ -432,15 +368,15 @@ const EmployeeHome: React.FC = () => {
                       variant="outlined"
                       onClick={() => setTicketCount((prev) => prev + 1)}
                       style={{
-                      minWidth: "40px",
-                      height: "40px",
-                      fontSize: "24px",
+                        minWidth: "40px",
+                        height: "40px",
+                        fontSize: "24px",
                       }}
                     >
                       +
                     </Button>
-                    </div>
-                    <div
+                  </div>
+                  <div
                     style={{
                       display: "flex",
                       flexDirection: "column",
@@ -449,56 +385,58 @@ const EmployeeHome: React.FC = () => {
                       border: "1px solid #ccc",
                       borderRadius: "18px",
                     }}
-                    >
+                  >
                     {/* Screen Representation */}
-                    <Typography style={{ fontSize: "24px", fontWeight: 400 }}>
-                      SCREEN
-                    </Typography>
-                    <div
-                      style={{
-                      width: "80%",
-                      minWidth: "400px",
-                      height: "4px",
-                      textAlign: "center",
-                      backgroundColor: "#ccc",
-                      borderRadius: "8px",
-                      fontSize: "24px",
-                      color: "#333",
-                      marginBottom: "16px",
-                      }}
-                    />
-
-                    {/* Seat Map */}
-                    <div
-                      style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(17, 42px)",
-                      gridTemplateRows: "repeat(14, 30px)",
-                      justifyContent: "center",
-                      gap: "8px",
-                      margin: "16px 0",
-                      }}
-                    >
-                      {loading ? (
+                    {loading ? (
                       <Typography>Loading seats...</Typography>
-                      ) : (
-                      renderSeatGrid()
-                      )}
-                    </div>
-                    </div>
+                    ) : (
+                      <>
+                        <Typography
+                          style={{ fontSize: "24px", fontWeight: 400 }}
+                        >
+                          SCREEN
+                        </Typography>
+                        <div
+                          style={{
+                            width: "80%",
+                            minWidth: "400px",
+                            height: "4px",
+                            textAlign: "center",
+                            backgroundColor: "#ccc",
+                            borderRadius: "8px",
+                            fontSize: "24px",
+                            color: "#333",
+                            marginBottom: "16px",
+                          }}
+                        />
+
+                        {/* Seat Map */}
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(17, 42px)",
+                            gridTemplateRows: "repeat(14, 30px)",
+                            justifyContent: "center",
+                            gap: "8px",
+                            margin: "16px 0",
+                          }}
+                        >
+                          {renderSeatGrid()}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
               {activeStep === 2 && (
-                <div
-                  className="w-full max-h-[480px] overflow-y-auto grid grid-cols-4 gap-y-4 z-10 custom-scrollbar"
-                >
+                <div className="w-full max-h-[480px] overflow-y-auto grid grid-cols-4 gap-y-4 z-10 custom-scrollbar">
                   {products.map((product) => (
-                  <ProductItem
-                    key={product._id}
-                    product={product}
-                    amount={selectedProducts[product._id] || 0}
-                    setAmount={handleSetAmount}
-                  />
+                    <ProductItem
+                      key={product._id}
+                      product={product}
+                      amount={selectedProducts[product._id] || 0}
+                      setAmount={handleSetAmount}
+                    />
                   ))}
                 </div>
               )}
@@ -830,13 +768,13 @@ const EmployeeHome: React.FC = () => {
           <div className="absolute bottom-6 w-full flex gap-2 px-4">
             {activeStep === 0 && (
               <div className=" mr-auto flex flex-row gap-2 items-center">
-                <div className="DateFilterBar relative w-full max-w-[240px] h-9 mr-2">
+                <div className="DateFilterBar relative w-full max-w-[240px] h-9 mr-2 self-end">
                   <input
                     type="date"
                     id="date-picker"
                     className="w-full h-full pr-5 pl-10 text-sm text-gray rounded-md text-gray-700 bg-white border-light-gray border focus:outline-none focus:ring-1"
-                    // value={selectedDate}
-                    // onChange={handleDateChange}
+                    value={selectedDate}
+                    onChange={handleDateChange}
                   />
                   <img
                     src={CalendarImg}
@@ -857,7 +795,15 @@ const EmployeeHome: React.FC = () => {
                     color: "#999999",
                   }}
                 >
-                  Selected movie: Movie 1
+                  Selected:{" "}
+                  {selectedShowtime
+                    ? `${selectedShowtime.movie.title} - ${new Date(
+                        selectedShowtime.showtime.showtime
+                      ).toLocaleTimeString("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}`
+                    : "None"}
                 </Typography>
               </div>
             )}
@@ -963,7 +909,11 @@ const EmployeeHome: React.FC = () => {
                 variant="contained"
                 color="primary"
                 sx={{ height: "34px", alignSelf: "end" }}
-                disabled={activeStep === 4 && !isPaid}
+                disabled={
+                  (activeStep === 0 && !selectedShowtime) ||
+                  (activeStep === 1 && selectedSeats.length < ticketCount) ||
+                  (activeStep === 4 && !isPaid)
+                }
               >
                 Next
               </Button>

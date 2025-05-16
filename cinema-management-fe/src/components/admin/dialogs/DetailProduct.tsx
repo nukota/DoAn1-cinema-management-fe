@@ -128,6 +128,20 @@ const DetailProduct: React.FC<DetailProductProps> = ({
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
+                Name:
+              </Typography>
+              <TextField
+                placeholder="Name"
+                sx={{ width: 240 }}
+                margin="dense"
+                size="small"
+                disabled={!isEditing}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+              <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
                 Category:
               </Typography>
               <Autocomplete

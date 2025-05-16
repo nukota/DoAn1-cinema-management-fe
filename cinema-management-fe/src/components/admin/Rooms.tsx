@@ -2,36 +2,40 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
 import { Button } from "@mui/material";
-import { RoomType } from "../../interfaces/types";
+import { CinemaType, RoomType } from "../../interfaces/types";
 import DetailRoom from "./dialogs/DetailRoom";
 import { useRooms } from "../../providers/RoomsProvider";
+import { useCinemas } from "../../providers/CinemasProvider";
+import CreateRoom from "./dialogs/CreateRoom";
 
 const Rooms: React.FC = () => {
   const { rooms, fetchRoomsData, createRoom, updateRoom, deleteRoom, loading } =
     useRooms();
+  const { cinemas, fetchCinemasData } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
-  const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
 
   useEffect(() => {
     fetchRoomsData();
+    fetchCinemasData();
   }, []);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const uniqueCinemas = Array.from(
-    new Set(rooms.map((room) => room.cinema.name)) // Extract unique cinema names
-  ).map((cinemaName) => ({
-    name: cinemaName, // Use the cinema name directly
-  }));
-
   const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCinema(event.target.value);
+    const cinemaId = event.target.value;
+    if (!cinemaId) {
+      setSelectedCinema(null);
+    } else {
+      const found = cinemas.find((cinema) => cinema._id === cinemaId);
+      setSelectedCinema(found || null);
+    }
   };
 
   const handleInfoClick = (room: RoomType) => {
@@ -79,6 +83,8 @@ const Rooms: React.FC = () => {
     try {
       await updateRoom(updatedRoom);
       setDetailDialogOpen(false);
+      setSelectedRoom(null);
+      fetchRoomsData();
     } catch (error) {
       console.error("Failed to update room:", error);
     }
@@ -88,9 +94,9 @@ const Rooms: React.FC = () => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       room.name.toLowerCase().includes(searchTermLower) ||
-      room.cinema.cinema_id.toString().includes(searchTermLower);
+      room.cinema?.cinema_id.toString().includes(searchTermLower);
     const matchesCinema = selectedCinema
-      ? room.cinema.cinema_id.toString() === selectedCinema
+      ? room.cinema?.cinema_id.toString() === selectedCinema._id
       : true;
     return matchesSearch && matchesCinema;
   });
@@ -116,12 +122,12 @@ const Rooms: React.FC = () => {
         <div className="SearchBar relative w-full max-w-[240px] h-8 ml-4">
           <select
             className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            value={selectedCinema}
+            value={selectedCinema?._id || ""}
             onChange={handleCinemaChange}
           >
             <option value="">All Cinemas</option>
-            {uniqueCinemas.map((cinema) => (
-              <option key={cinema.name} value={cinema.name}>
+            {cinemas.map((cinema) => (
+              <option key={cinema._id} value={cinema._id}>
                 {cinema.name}
               </option>
             ))}
@@ -172,6 +178,11 @@ const Rooms: React.FC = () => {
           onSave={handleUpdateRoom}
         />
       )}
+      <CreateRoom
+        open={showAddDialog}
+        onAdd={handleAddNewRoom}
+        onClose={() => setShowAddDialog(false)}
+      />
     </div>
   );
 };

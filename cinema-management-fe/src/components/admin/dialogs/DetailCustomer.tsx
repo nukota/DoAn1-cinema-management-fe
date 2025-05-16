@@ -58,7 +58,7 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
       setFullname(customer.full_name);
       setEmail(customer.email);
       setPhone(customer.phone);
-      setDob(customer.dateOfBirth);
+      setDob(customer.dateOfBirth ? customer.dateOfBirth.split("T")[0] : "");
       setCccd(customer.cccd);
     }
     if (!open) {

@@ -21,10 +21,10 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const fetchRoomsData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("accessToken"); // Retrieve the token from localStorage
+      const token = localStorage.getItem("accessToken");
       const response = await fetch(`${baseURL}/room`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -78,10 +78,11 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const updatedData = await response.json();
-      setRooms((prevRooms) =>
-        prevRooms.map((room) => (room._id === updatedData._id ? updatedData : room))
-      );
+      // const updatedData = await response.json();
+      // setRooms((prevRooms) =>
+      //   prevRooms.map((room) => (room._id === updatedData._id ? updatedData : room))
+      // );
+      await fetchRoomsData(); // Refresh the room list after updating
     } catch (error) {
       console.error("Failed to update room:", error);
     } finally {

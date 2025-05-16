@@ -76,7 +76,11 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       !phone ||
       !dob ||
       !password ||
-      !confirmPassword
+      !confirmPassword ||
+      !cccd ||
+      !cinemaId ||
+      !shift ||
+      !position
     ) {
       alert("Please fill in all required fields.");
       return;
@@ -93,7 +97,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       phone,
       dateOfBirth: dob,
       cccd,
-      role,
       cinema_id: cinemaId,
       shift,
       position,
@@ -101,8 +104,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     };
     try {
       await onAdd(newEmployee);
-
-      onAdd(newEmployee);
 
       setFullname("");
       setEmail("");

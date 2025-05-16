@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -8,12 +7,10 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Autocomplete,
   Rating,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ReviewType } from "../../../interfaces/types";
-import { exampleCinemas } from "../../../data";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",

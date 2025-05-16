@@ -6,12 +6,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
-  Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ShowtimeType } from "../../../interfaces/types";
+import { MovieType, ShowtimeType } from "../../../interfaces/types";
 
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -31,21 +34,47 @@ const CustomDialogContent = styled(DialogContent)({
 
 interface CreateShowtimeProps {
   open: boolean;
+  roomId: string;
+  movies: MovieType[];
   onClose: () => void;
-  onAdd: (newShowtime: ShowtimeType) => void;
+  onAdd: (newShowtime: any) => void;
 }
 
 const CreateShowtime: React.FC<CreateShowtimeProps> = ({
   open,
   onClose,
   onAdd,
+  roomId,
+  movies,
 }) => {
-  const [roomId, setRoomId] = useState<number | null>(null);
-  const [movieId, setMovieId] = useState<number | null>(null);
+  const [movieId, setMovieId] = useState<string | null>(null);
   const [showtime, setShowtime] = useState<string>("");
   const [price, setPrice] = useState<number | null>(null);
 
-  const handleAddClick = () => {};
+  const handleAddClick = async () => {
+  if (!movieId || !showtime || price === null || price === 0 || isNaN(Number(price))) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  const newShowtime = {
+    room_id: roomId,
+    movie_id: movieId,
+    showtime,
+    price: Number(price),
+  };
+
+  try {
+    await onAdd(newShowtime);
+    setMovieId("");
+    setShowtime("");
+    setPrice(null);
+    onClose();
+  } catch (error) {
+    console.error("Failed to add showtime:", error);
+    alert("An error occurred while adding the showtime. Please try again.");
+  }
+};
 
   return (
     <Dialog
@@ -73,26 +102,32 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
             Room ID:
           </Typography>
           <TextField
-            type="number"
             fullWidth
             margin="dense"
             size="small"
             value={roomId || ""}
-            onChange={(e) => setRoomId(Number(e.target.value))}
+            disabled
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Movie ID:
+            Movie:
           </Typography>
-          <TextField
-            type="number"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={movieId || ""}
-            onChange={(e) => setMovieId(Number(e.target.value))}
-          />
+          <FormControl fullWidth margin="dense" size="small">
+            <InputLabel id="movie-select-label">Movie</InputLabel>
+            <Select
+              labelId="movie-select-label"
+              value={movieId}
+              label="Movie"
+              onChange={(e) => setMovieId(e.target.value)}
+            >
+              {movies.map((movie) => (
+                <MenuItem key={movie._id} value={movie._id}>
+                  {movie.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
