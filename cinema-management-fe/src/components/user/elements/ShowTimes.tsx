@@ -164,7 +164,7 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
                   color: "lightgray",
                 }}
               >
-                ${showtime.price.toFixed(2)}
+                {showtime.price.toFixed(0)} vnd
               </Typography>
             </Box>
           ))}

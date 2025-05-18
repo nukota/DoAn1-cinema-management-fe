@@ -35,6 +35,7 @@ import BankingImg from "../../assets/images/banking.png";
 import { useSeats } from "../../providers/SeatProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
+import { useCustomers } from "../../providers/CustomersProvider";
 const steps = [
   "Select Ticket",
   "Select Seats",
@@ -48,6 +49,7 @@ const EmployeeHome: React.FC = () => {
   const { currentShowtime, getCurrentShowtime } = useShowtimes();
   const { seats, fetchSeatsByShowtimeId, loading } = useSeats();
   const { products, fetchProductsData } = useProducts();
+  const { customers, fetchCustomersData } = useCustomers();
   //
   const [activeStep, setActiveStep] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<string>(() => {
@@ -79,6 +81,7 @@ const EmployeeHome: React.FC = () => {
   useEffect(() => {
     getCurrentShowtime();
     fetchProductsData();
+    fetchCustomersData();
   }, []);
 
   useEffect(() => {
@@ -211,22 +214,16 @@ const EmployeeHome: React.FC = () => {
     return grid;
   };
 
-  const customerAccounts = [
-    { id: 1, name: "John Doe", phone: "123-456-7890" },
-    { id: 2, name: "Jane Smith", phone: "987-654-3210" },
-    { id: 3, name: "Alice Johnson", phone: "555-123-4567" },
-    { id: 4, name: "Bob Brown", phone: "444-555-6666" },
-  ];
-
-  const filteredAccounts = customerAccounts.filter(
+  const filteredAccounts = customers.filter(
     (account) =>
-      account.name.toLowerCase().includes(filterName.toLowerCase()) &&
+      account.full_name.toLowerCase().includes(filterName.toLowerCase()) &&
       account.phone.includes(filterPhone)
   );
+  console.log("Filtered Accounts: ", filteredAccounts);
 
   const filteredShowtimes = currentShowtime.filter((movie: MovieType) =>
     movie.showtimes?.some(
-      (showtime: ShowtimeType) =>
+      (showtime: any) =>
         new Date(showtime.showtime).toLocaleDateString("en-CA") === selectedDate
     )
   );
@@ -291,12 +288,12 @@ const EmployeeHome: React.FC = () => {
                       <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
                         {movie.showtimes
                           ?.filter(
-                            (showtime: ShowtimeType) =>
+                            (showtime: any) =>
                               new Date(showtime.showtime).toLocaleDateString(
                                 "en-CA"
                               ) === selectedDate
                           )
-                          .map((showtime: ShowtimeType) => (
+                          .map((showtime: any) => (
                             <ShowtimeUnit
                               key={showtime._id}
                               showtimeData={showtime}
@@ -344,7 +341,7 @@ const EmployeeHome: React.FC = () => {
                         height: "40px",
                         fontSize: "24px",
                       }}
-                      disabled={selectedSeats.length < ticketCount}
+                      disabled={selectedSeats.length >= ticketCount}
                     >
                       -
                     </Button>
@@ -475,10 +472,11 @@ const EmployeeHome: React.FC = () => {
                       </Box>
 
                       {/* Customer List */}
-                      <List>
+                      {/* Customer List */}
+                      <List sx={{ maxHeight: "380px", overflowY: "auto" }}>
                         {filteredAccounts.map((account) => (
                           <ListItem
-                            key={account.id}
+                            key={account._id}
                             disablePadding
                             sx={{ mb: 0.5 }}
                           >
@@ -487,10 +485,14 @@ const EmployeeHome: React.FC = () => {
                                 padding: "4px 8px",
                                 borderRadius: "4px",
                               }}
+                              onClick={() =>
+                                handleAccountSelect(
+                                  `${account.full_name} (${account.phone})`
+                                )
+                              } // Update selected account
                             >
                               <ListItemText
-                                primary={account.name}
-                                secondary={account.phone}
+                                primary={`${account.full_name} (${account.phone})`} // Display full name with phone number
                               />
                             </ListItemButton>
                           </ListItem>
@@ -815,7 +817,10 @@ const EmployeeHome: React.FC = () => {
                   marginRight: "auto",
                 }}
               >
-                Selected Seats: {selectedSeats.join(", ") || "None"}
+                Selected Seats:{" "}
+                {selectedSeats.length > 0
+                  ? selectedSeats.map((seat) => seat.seat_name).join(", ")
+                  : "None"}
               </Typography>
             )}
             {activeStep === 2 && (
@@ -869,7 +874,11 @@ const EmployeeHome: React.FC = () => {
                     textAlign: "left",
                   }}
                 >
-                  {selectedAccount}
+                  {selectedTab === 0
+                    ? selectedAccount && selectedAccount !== "Guest"
+                      ? selectedAccount
+                      : "No account selected"
+                    : "Guest"}
                 </Typography>
               </div>
             )}

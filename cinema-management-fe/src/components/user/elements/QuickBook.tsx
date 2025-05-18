@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormControl,
   MenuItem,
@@ -10,23 +10,120 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { keyframes } from "@emotion/react";
+import { useShowtimes } from "../../../providers/ShowtimesProvider";
+import { ShowtimeType, MovieType } from "../../../interfaces/types";
 
 const QuickBook: React.FC = () => {
+  const { getCurrentShowtime, fetchShowtimesData, currentShowtime, showtimes } = useShowtimes();
+  const [movies, setMovies] = useState<MovieType[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [filteredCinemas, setFilteredCinemas] = useState<string[]>([]);
+  const [filteredDates, setFilteredDates] = useState<string[]>([]);
+  const [filteredTimes, setFilteredTimes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        await getCurrentShowtime();
+        setMovies(currentShowtime);
+      } catch (error) {
+        console.error("Failed to fetch movies:", error);
+      }
+    };
+  
+    fetchMovies();
+  }, [getCurrentShowtime, currentShowtime])
+
+  useEffect(() => {
+    if (selectedMovie) {
+      const movie = movies.find((movie) => movie._id === selectedMovie);
+      if (movie) {
+        const cinemas = Array.from(
+          new Set(
+            movie.showtimes?.map((showtime) => showtime.room_id)
+          )
+        );
+        setFilteredCinemas(cinemas);
+      }
+    } else {
+      setFilteredCinemas([]);
+    }
+    setSelectedCinema("");
+    setSelectedDate("");
+    setSelectedTime("");
+  }, [selectedMovie, movies]);
+
+  useEffect(() => {
+    if (selectedCinema) {
+      const movie = movies.find((movie) => movie._id === selectedMovie);
+      if (movie) {
+        const dates = Array.from(
+          new Set(
+            movie.showtimes!
+              .filter((showtime) => showtime.room_id === selectedCinema)
+              .map((showtime) =>
+                new Date(showtime.showtime).toISOString().split("T")[0]
+              )
+          )
+        );
+        setFilteredDates(dates);
+      }
+    } else {
+      setFilteredDates([]);
+    }
+    setSelectedDate("");
+    setSelectedTime("");
+  }, [selectedCinema, selectedMovie, movies]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      const movie = movies.find((movie) => movie._id === selectedMovie);
+      if (movie) {
+        const times = Array.from(
+          new Set(
+            movie.showtimes!
+              .filter(
+                (showtime) =>
+                  showtime.room_id === selectedCinema &&
+                  new Date(showtime.showtime).toISOString().split("T")[0] ===
+                    selectedDate
+              )
+              .map((showtime) =>
+                new Date(showtime.showtime).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              )
+          )
+        );
+        setFilteredTimes(times);
+      }
+    } else {
+      setFilteredTimes([]);
+    }
+    setSelectedTime("");
+  }, [selectedDate, selectedCinema, selectedMovie, movies]);
+
 
   const handleMovieChange = (event: SelectChangeEvent<string>) => {
     setSelectedMovie(event.target.value);
+    setSelectedCinema("");
+    setSelectedDate("");
+    setSelectedTime("");
   };
 
   const handleCinemaChange = (event: SelectChangeEvent<string>) => {
     setSelectedCinema(event.target.value);
+    setSelectedDate("");
+    setSelectedTime("");
   };
 
   const handleDateChange = (event: SelectChangeEvent<string>) => {
     setSelectedDate(event.target.value);
+    setSelectedTime("");
   };
 
   const handleTimeChange = (event: SelectChangeEvent<string>) => {
@@ -47,7 +144,8 @@ const QuickBook: React.FC = () => {
     },
   };
 
-  const allSelected = selectedMovie && selectedCinema && selectedDate && selectedTime;
+  const allSelected =
+    selectedMovie && selectedCinema && selectedDate && selectedTime;
 
   const shake = keyframes`
     0%, 100% { transform: translateY(0); }
@@ -88,7 +186,7 @@ const QuickBook: React.FC = () => {
               height: "45px",
               color: selectedMovie ? "black" : "#999999",
               fontSize: "18px",
-              fontWeight: "bold",
+              fontWeight: "semibold",
               backgroundColor: selectedMovie ? "secondary.main" : "#111",
               border: selectedMovie ? "" : "2px solid #999999",
               "& .MuiSelect-select": {
@@ -102,12 +200,18 @@ const QuickBook: React.FC = () => {
             <MenuItem value="">
               <em>Movie</em>
             </MenuItem>
-            <MenuItem value="Movie1">Movie 1</MenuItem>
-            <MenuItem value="Movie2">Movie 2</MenuItem>
-            <MenuItem value="Movie3">Movie 3</MenuItem>
+            {movies.map((movie) => (
+              <MenuItem key={movie._id} value={movie._id}>
+                {movie.title}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <FormControl variant="outlined" sx={{ width: 180 }}>
+        <FormControl
+          variant="outlined"
+          sx={{ width: 180 }}
+          disabled={!selectedMovie}
+        >
           <Select
             value={selectedCinema}
             onChange={handleCinemaChange}
@@ -118,7 +222,7 @@ const QuickBook: React.FC = () => {
               height: "45px",
               color: selectedCinema ? "black" : "#999999",
               fontSize: "18px",
-              fontWeight: "bold",
+              fontWeight: "semibold",
               backgroundColor: selectedCinema ? "secondary.main" : "#111",
               border: selectedCinema ? "" : "2px solid #999999",
               "& .MuiSelect-select": {
@@ -132,12 +236,18 @@ const QuickBook: React.FC = () => {
             <MenuItem value="">
               <em>Cinema</em>
             </MenuItem>
-            <MenuItem value="Cinema1">Cinema 1</MenuItem>
-            <MenuItem value="Cinema2">Cinema 2</MenuItem>
-            <MenuItem value="Cinema3">Cinema 3</MenuItem>
+            {filteredCinemas.map((cinema) => (
+              <MenuItem key={cinema} value={cinema}>
+                {cinema}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <FormControl variant="outlined" sx={{ width: 180 }}>
+        <FormControl
+          variant="outlined"
+          sx={{ width: 180 }}
+          disabled={!selectedCinema}
+        >
           <Select
             value={selectedDate}
             onChange={handleDateChange}
@@ -148,7 +258,7 @@ const QuickBook: React.FC = () => {
               height: "45px",
               color: selectedDate ? "black" : "#999999",
               fontSize: "18px",
-              fontWeight: "bold",
+              fontWeight: "semibold",
               backgroundColor: selectedDate ? "secondary.main" : "#111",
               border: selectedDate ? "" : "2px solid #999999",
               "& .MuiSelect-select": {
@@ -162,12 +272,18 @@ const QuickBook: React.FC = () => {
             <MenuItem value="">
               <em>Date</em>
             </MenuItem>
-            <MenuItem value="2024-12-14">14/12/2024</MenuItem>
-            <MenuItem value="2024-12-15">15/12/2024</MenuItem>
-            <MenuItem value="2024-12-16">16/12/2024</MenuItem>
+            {filteredDates.map((date) => (
+              <MenuItem key={date} value={date}>
+                {new Date(date).toLocaleDateString()}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-        <FormControl variant="outlined" sx={{ width: 180 }}>
+        <FormControl
+          variant="outlined"
+          sx={{ width: 180 }}
+          disabled={!selectedDate}
+        >
           <Select
             value={selectedTime}
             onChange={handleTimeChange}
@@ -178,7 +294,7 @@ const QuickBook: React.FC = () => {
               height: "45px",
               color: selectedTime ? "black" : "#999999",
               fontSize: "18px",
-              fontWeight: "bold",
+              fontWeight: "semibold",
               backgroundColor: selectedTime ? "secondary.main" : "#111",
               border: selectedTime ? "" : "2px solid #999999",
               "& .MuiSelect-select": {
@@ -192,9 +308,11 @@ const QuickBook: React.FC = () => {
             <MenuItem value="">
               <em>Time</em>
             </MenuItem>
-            <MenuItem value="10:00">10:00</MenuItem>
-            <MenuItem value="13:00">13:00</MenuItem>
-            <MenuItem value="16:20">16:20</MenuItem>
+            {filteredTimes.map((time) => (
+              <MenuItem key={time} value={time}>
+                {time}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <Button

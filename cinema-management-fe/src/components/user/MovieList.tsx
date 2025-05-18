@@ -34,9 +34,9 @@ const MovieList: React.FC = () => {
     <Box sx={{ padding: 6, backgroundColor: "black", minHeight: "100vh", width: "100vw" }}>
       <Typography
         variant="h2"
-        sx={{ color: "white", marginBottom: 4, textAlign: "center", marginTop: 6, fontFamily: "Poppins" }}
+        sx={{ color: "#484848", marginBottom: 4, textAlign: "center", marginTop: 6, fontFamily: "Poppins" }}
       >
-        Movie List
+        ALL MOVIES
       </Typography>
       <TextField
         placeholder="Search movies..."

@@ -38,7 +38,13 @@ export type MovieType = {
   description: string;
   rating: number;
   trailer_url: string;
-  showtimes?: ShowtimeType[];
+  showtimes?: {
+    _id: string;
+    room_id: string;
+    movie_id: string;
+    showtime: string;
+    price: number;
+  }[];
 };
 
 export type ProductType = {
@@ -101,8 +107,8 @@ export type OrderType = {
     title: string; //movie tiltle
     showtime: string; //date time
     price: number; //price of each ticket
-    seats: { seat_id: string; seat_name: string };
-  }[];
+    seats: { seat_id: string; seat_name: string }[];
+  };
   products?: {
     product_id: string;
     name: string;

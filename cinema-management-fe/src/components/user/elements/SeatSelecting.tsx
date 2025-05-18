@@ -62,8 +62,8 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
 
   const handleSeatClick = (seat: SeatType) => {
     setSelectedSeats((prevSelectedSeats) => {
-      if (prevSelectedSeats.some((s) => s.seat_id === seat.seat_id)) {
-        return prevSelectedSeats.filter((s) => s.seat_id !== seat.seat_id);
+      if (prevSelectedSeats.some((s) => s._id === seat._id)) {
+        return prevSelectedSeats.filter((s) => s._id !== seat._id);
       } else if (prevSelectedSeats.length < ticketCount) {
         return [...prevSelectedSeats, seat];
       }
