@@ -11,10 +11,10 @@ const Payment: React.FC<PaymentProps> = ({payment, handleInfoClick}) => {
   return (
     <div
       className="payment grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
-      style={{ gridTemplateColumns: "0.6fr 0.6fr 1fr 1fr 0.8fr 1fr" }}
+      style={{ gridTemplateColumns: "0.7fr 0.7fr 0.8fr 1fr 0.8fr 1fr" }}
     >
-      <p className="text-sm font-normal truncate">{payment._id}</p>
-      <p className="text-sm font-normal truncate">{payment.order_id}</p>
+      <p className="text-sm font-normal truncate pr-8">{payment._id}</p>
+      <p className="text-sm font-normal truncate pr-8">{payment.order_id}</p>
       <p className="text-sm font-normal truncate">{payment.amount}</p>
       <p className="text-sm font-normal truncate">{payment.paid_at}</p>
       <p className="text-sm font-normal truncate">{payment.status}</p>

@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { RoomType } from "../../../interfaces/types";
+import { RoomWithSeatsType } from "../../../interfaces/types";
 import { useCinemas } from "../../../providers/CinemasProvider";
 
 const CustomDialogContent = styled(DialogContent)({
@@ -36,18 +36,31 @@ const CustomDialogContent = styled(DialogContent)({
 
 interface CreateRoomsProps {
   open: boolean;
-  onAdd: (newRoom: RoomType) => void;
+  onAdd: (newRoom: RoomWithSeatsType) => void;
   onClose: () => void;
 }
-
-const getSeatRow = (seatName: string): number | null => {
-  const match = seatName.match(/^[A-Z]/);
-  return match ? match[0].charCodeAt(0) - 64 : null;
+const ROWS = 14;
+const COLS = 17;
+const getSeatName = (
+  row: number,
+  col: number,
+  selectedSeats: { seat_column: number; seat_name: string }[]
+) => {
+  const rowLetter = String.fromCharCode(65 + row - 1); // A, B, C...
+  const rowSeats = selectedSeats
+    .filter((seat) => seat.seat_name.startsWith(rowLetter))
+    .sort((a, b) => a.seat_column - b.seat_column);
+  const index = rowSeats.findIndex((seat) => seat.seat_column === col);
+  if (index === -1) return `${rowLetter}`;
+  const seatNumber = (index + 1).toString().padStart(2, "0");
+  return `${rowLetter}${seatNumber}`;
 };
 
 const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
   const [name, setName] = useState<string>("");
-  const [seatCount, setSeatCount] = useState<number>(0);
+  const [selectedSeats, setSelectedSeats] = useState<
+    { seat_name: string; seat_column: number }[]
+  >([]);
   const [cinemaId, setCinemaId] = useState<string>("");
   const { cinemas, fetchCinemasData } = useCinemas();
 
@@ -55,23 +68,62 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
     fetchCinemasData();
   }, []);
 
-  const handleAddClick = () => {
-    const newRoomData = {
-      name,
-      seat_count: seatCount,
-      cinema_id: cinemaId,
-    };
-    onAdd(newRoomData as any);
-    setName("");
-    setSeatCount(0);
-    setCinemaId("");
+  const handleSeatClick = (row: number, col: number) => {
+    // Always recalculate seat names for the row after selection change
+    const rowLetter = String.fromCharCode(65 + row - 1);
+    const seat_column = col;
+    const isAlreadySelected = selectedSeats.some(
+      (seat) =>
+        seat.seat_column === seat_column && seat.seat_name.startsWith(rowLetter)
+    );
+
+    let updatedSeats;
+    if (isAlreadySelected) {
+      updatedSeats = selectedSeats.filter(
+        (seat) =>
+          !(
+            seat.seat_column === seat_column &&
+            seat.seat_name.startsWith(rowLetter)
+          )
+      );
+    } else {
+      updatedSeats = [...selectedSeats, { seat_name: "", seat_column }];
+    }
+
+    const rowSeats = updatedSeats
+      .filter(
+        (seat) => seat.seat_name.startsWith(rowLetter) || seat.seat_name === ""
+      )
+      .filter((seat) => {
+        if (isAlreadySelected) return seat.seat_name.startsWith(rowLetter);
+        return (
+          seat.seat_name.startsWith(rowLetter) ||
+          (seat.seat_name === "" && seat.seat_column === seat_column)
+        );
+      })
+      .sort((a, b) => a.seat_column - b.seat_column);
+
+    rowSeats.forEach((seat, idx) => {
+      seat.seat_name = `${rowLetter}${(idx + 1).toString().padStart(2, "0")}`;
+    });
+
+    const newSelectedSeats = updatedSeats
+      .filter((seat) => !seat.seat_name.startsWith(rowLetter))
+      .concat(rowSeats);
+
+    setSelectedSeats(newSelectedSeats);
   };
 
   const renderSeatGrid = () => {
     const grid = [];
-    for (let row = 1; row <= 14; row++) {
+    for (let row = 1; row <= ROWS; row++) {
       for (let col = -8; col <= 8; col++) {
-        // No seats yet, just render empty boxes
+        const seat_name = getSeatName(row, col, selectedSeats);
+        const seat_column = col;
+        const isSelected = selectedSeats.some(
+          (seat) =>
+            seat.seat_name === seat_name && seat.seat_column === seat_column
+        );
         grid.push(
           <Box
             key={`${row}-${col}`}
@@ -81,15 +133,34 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
               display: "inline-block",
               textAlign: "center",
               borderRadius: "6px",
-              background: "#f5f5f5",
+              background: isSelected ? "#1976d2" : "#f5f5f5",
+              color: isSelected ? "#fff" : "#000",
+              cursor: "pointer",
+              // border: isSelected ? "2px solid #1976d2" : "1px solid #ccc",
+              fontWeight: 500,
+              userSelect: "none",
             }}
+            onClick={() => handleSeatClick(row, col)}
           >
-            {/* Optionally show seat name */}
+            {isSelected ? seat_name : ""}
           </Box>
         );
       }
     }
     return grid;
+  };
+
+  const handleAddClick = () => {
+    const newRoomData: RoomWithSeatsType = {
+      name,
+      cinema_id: cinemaId,
+      seats: selectedSeats,
+      _id: "",
+    };
+    onAdd(newRoomData);
+    setName("");
+    setCinemaId("");
+    setSelectedSeats([]);
   };
 
   return (
@@ -206,8 +277,8 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
             sx={{ width: 240 }}
             margin="dense"
             size="small"
-            value={seatCount}
-            onChange={(e) => setSeatCount(Number(e.target.value))}
+            value={selectedSeats.length}
+            disabled
           />
         </Box>
       </CustomDialogContent>
@@ -226,7 +297,7 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
             color="primary"
             variant="contained"
             sx={{ width: 130 }}
-            disabled={!name || !cinemaId || seatCount <= 0}
+            disabled={!name || !cinemaId}
           >
             Add
           </Button>

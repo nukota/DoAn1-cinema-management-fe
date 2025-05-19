@@ -150,9 +150,9 @@ const Payments: React.FC = () => {
       </div>
       <div className="Payments-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[12%] text-base">Payment ID</div>
-          <div className="w-[12%] text-base">Order ID</div>
-          <div className="w-[20%] text-base">Amount</div>
+          <div className="w-[14%] text-base">Payment ID</div>
+          <div className="w-[14%] text-base">Order ID</div>
+          <div className="w-[16%] text-base">Amount</div>
           <div className="w-[20%] text-base">Paid at</div>
           <div className="w-[16%] text-base">Status</div>
           <div className="w-[20%] text-base">Payment Action</div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { DiscountType } from "../../../interfaces/types";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -27,18 +28,21 @@ const CustomDialogContent = styled(DialogContent)({
   },
 });
 
-interface CreateDiscountProps {
+interface DetailDiscountProps {
+  discount: DiscountType;
   open: boolean;
   onClose: () => void;
-  onAdd: (newDiscount: any) => void;
+  onSave: (newDiscount: any) => void;
 }
 const types: String[] = ["percentage", "fixed"];
 
-const CreateDiscount: React.FC<CreateDiscountProps> = ({
+const DetailDiscount: React.FC<DetailDiscountProps> = ({
+  discount,
   open,
   onClose,
-  onAdd,
+  onSave,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState<String>("");
   const [type, setType] = useState<String>("");
   const [expiryDate, setExpiryDate] = useState<String>("");
@@ -46,8 +50,27 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   const [minPurchase, setMinPurchase] = useState<Number>(0);
   const [maxUsage, setMaxUsage] = useState<Number>(0);
 
-  const handleAddClick = () => {
-    const newDiscount = {
+  useEffect(() => {
+    if (discount) {
+      setCode(discount.code);
+      setType(discount.discount_type);
+      setValue(discount.value);
+      setMinPurchase(discount.min_purchase);
+      setMaxUsage(discount.max_usage);
+      setExpiryDate(discount.expiry_date);
+    }
+    if (!open) {
+      setIsEditing(false);
+    }
+  }, [discount, open]);
+
+  const handleModifyClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    const updatedDiscount = {
+      ...discount,
       code,
       discount_type: type,
       min_purchase: minPurchase,
@@ -55,8 +78,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       value,
       expiry_date: expiryDate,
     };
-    onAdd(newDiscount);
-    onClose();
+    onSave(updatedDiscount);
   };
 
   return (
@@ -77,7 +99,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           padding: "16px 24px",
         }}
       >
-        Create Discount
+        Detail Discount
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -88,6 +110,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
             fullWidth
             margin="dense"
             size="small"
+            disabled={!isEditing}
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />
@@ -98,6 +121,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           </Typography>
           <Autocomplete
             options={types}
+            disabled={!isEditing}
             value={type}
             fullWidth
             onChange={(event, newValue) => setType(newValue!)}
@@ -118,6 +142,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           <TextField
             type="number"
             fullWidth
+            disabled={!isEditing}
             margin="dense"
             size="small"
             value={minPurchase}
@@ -126,11 +151,12 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Max usage:
+            Max Usage
           </Typography>
           <TextField
             type="number"
             fullWidth
+            disabled={!isEditing}
             margin="dense"
             size="small"
             value={maxUsage}
@@ -143,6 +169,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           </Typography>
           <TextField
             type="number"
+            disabled={!isEditing}
             fullWidth
             margin="dense"
             size="small"
@@ -157,25 +184,45 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           <TextField
             type="date"
             fullWidth
+            disabled={!isEditing}
             margin="dense"
             size="small"
-            value={expiryDate}
+            value={expiryDate ? expiryDate.slice(0, 10) : ""}
             onChange={(e) => setExpiryDate(e.target.value)}
           />
         </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
-          onClick={handleAddClick}
+          onClick={onClose}
           color="primary"
-          variant="contained"
+          variant="outlined"
           sx={{ width: 130 }}
         >
-          Add
+          Cancel
         </Button>
+        {isEditing ? (
+          <Button
+            onClick={handleSaveClick}
+            color="primary"
+            variant="contained"
+            sx={{ width: 130 }}
+          >
+            Save
+          </Button>
+        ) : (
+          <Button
+            onClick={handleModifyClick}
+            color="primary"
+            variant="contained"
+            sx={{ width: 130 }}
+          >
+            Modify
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
 };
 
-export default CreateDiscount;
+export default DetailDiscount;

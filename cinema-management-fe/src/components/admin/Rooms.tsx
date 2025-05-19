@@ -2,14 +2,14 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
 import { Button } from "@mui/material";
-import { CinemaType, RoomType } from "../../interfaces/types";
+import { CinemaType, RoomType, RoomWithSeatsType } from "../../interfaces/types";
 import DetailRoom from "./dialogs/DetailRoom";
 import { useRooms } from "../../providers/RoomsProvider";
 import { useCinemas } from "../../providers/CinemasProvider";
 import CreateRoom from "./dialogs/CreateRoom";
 
 const Rooms: React.FC = () => {
-  const { rooms, fetchRoomsData, createRoom, updateRoom, deleteRoom, loading } =
+  const { rooms, fetchRoomsData, createRoomWithSeats, updateRoom, deleteRoom, loading } =
     useRooms();
   const { cinemas, fetchCinemasData } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -70,16 +70,16 @@ const Rooms: React.FC = () => {
     setShowAddDialog(true);
   };
 
-  const handleAddNewRoom = async (newRoom: RoomType) => {
+  const handleAddNewRoom = async (newRoom: RoomWithSeatsType) => {
     try {
-      await createRoom(newRoom);
+      await createRoomWithSeats(newRoom);
       setShowAddDialog(false);
     } catch (error) {
       console.error("Failed to add new room:", error);
     }
   };
 
-  const handleUpdateRoom = async (updatedRoom: RoomType) => {
+  const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType) => {
     try {
       await updateRoom(updatedRoom);
       setDetailDialogOpen(false);

@@ -65,6 +65,13 @@ export type RoomType = {
   };
 };
 
+export type RoomWithSeatsType = {
+  _id: string;
+  name: string;
+  cinema_id: string;
+  seats: { seat_name: string; seat_column: number }[];
+};
+
 export type ShowtimeType = {
   _id: string;
   room: {
@@ -97,10 +104,10 @@ export type TicketType = {
 export type OrderType = {
   _id: string;
   ordercode: string;
-  user: string;
+  user_id: string;
   total_price: number;
   status: "pending" | "paid" | "cancelled";
-  created_at: string;
+  ordered_at: string;
   ticketCount?: number;
   productCount?: number;
   tickets?: {
@@ -138,13 +145,14 @@ export type DiscountType = {
   discount_type: "percentage" | "fixed";
   value: number;
   min_purchase: number;
+  max_usage: number;
   expiry_date: string;
 };
 
 export type ReviewType = {
   _id: string;
   user_id: string;
-  showtime_id: string;
+  movie_id: string;
   rating: number;
   comment: string;
   created_at: string;

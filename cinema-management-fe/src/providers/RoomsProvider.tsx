@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
-import { RoomType } from "../interfaces/types";
+import { RoomType, RoomWithSeatsType } from "../interfaces/types";
 
 interface RoomsContextType {
   rooms: RoomType[];
   fetchRoomsData: () => Promise<void>;
   createRoom: (room: RoomType) => Promise<void>;
-  updateRoom: (room: RoomType) => Promise<void>;
+  createRoomWithSeats: (room: RoomWithSeatsType | RoomWithSeatsType[]) => Promise<void>;
+  updateRoom: (room: RoomWithSeatsType) => Promise<void>;
   deleteRoom: (roomId: string) => Promise<void>;
   loading: boolean;
 }
@@ -63,7 +64,30 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
 
-  const updateRoom = useCallback(async (updatedRoom: RoomType) => {
+  const createRoomWithSeats = useCallback(async (room: RoomWithSeatsType | RoomWithSeatsType[]) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/room/seats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(room),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      await fetchRoomsData();
+    } catch (error) {
+      console.error("Failed to create room with seats:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateRoom = useCallback(async (updatedRoom: RoomWithSeatsType) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -78,11 +102,7 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      // const updatedData = await response.json();
-      // setRooms((prevRooms) =>
-      //   prevRooms.map((room) => (room._id === updatedData._id ? updatedData : room))
-      // );
-      await fetchRoomsData(); // Refresh the room list after updating
+      await fetchRoomsData();
     } catch (error) {
       console.error("Failed to update room:", error);
     } finally {
@@ -112,7 +132,7 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <RoomsContext.Provider value={{ rooms, fetchRoomsData, createRoom, updateRoom, deleteRoom, loading }}>
+    <RoomsContext.Provider value={{ rooms, fetchRoomsData, createRoom, createRoomWithSeats, updateRoom, deleteRoom, loading }}>
       {children}
     </RoomsContext.Provider>
   );

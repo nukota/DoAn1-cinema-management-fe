@@ -59,73 +59,72 @@ const DetailReview: React.FC<DetailReviewProps> = ({
         Detail Review
       </DialogTitle>
       <CustomDialogContent>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>ID:</Typography>
-          <TextField
-            fullWidth
-            value={review._id}
-            disabled
-            margin="dense"
-            size="small"
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
-            User:
-          </Typography>
-          <TextField
-            fullWidth
-            value={`(ID: ${review.user_id}) Nguyen Van A`}
-            disabled
-            margin="dense"
-            size="small"
-          />
-        </Box>
-        <Box sx={{ display: "flex" }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
-            Showtime:
-          </Typography>
-          <TextField
-            placeholder="Feedback"
-            fullWidth
-            margin="normal"
-            size="small"
-            multiline
-            disabled
-            rows={2}
-            maxRows={3}
-            value={`(ID: ${review.showtime_id}) 24/03/2025 19:00 - Venom: The Last Dance`}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            height: 45,
-          }}
-        >
-          <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
-            Rating:
-          </Typography>
-          <Rating name="read-only" value={review.rating} readOnly />
-        </Box>
-        <Box sx={{ display: "flex" }}>
-          <Typography sx={{ mr: 2, marginTop: 4, width: 100 }}>
-            Feedback:
-          </Typography>
-          <TextField
-            placeholder="Feedback"
-            fullWidth
-            margin="normal"
-            size="small"
-            disabled
-            multiline
-            rows={4}
-            maxRows={6}
-            value={review.comment}
-          />
-        </Box>
+          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
+              ID:
+            </Typography>
+            <TextField
+              fullWidth
+              value={review._id}
+              disabled
+              margin="dense"
+              size="small"
+            />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
+              User:
+            </Typography>
+            <TextField
+              fullWidth
+              value={review.user_id}
+              disabled
+              margin="dense"
+              size="small"
+            />
+          </Box>
+          <Box sx={{ display: "flex" }}>
+            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
+              Movie:
+            </Typography>
+            <TextField
+              placeholder="Feedback"
+              fullWidth
+              margin="dense"
+              size="small"
+              disabled
+              value={review.movie_id}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              height: 45,
+            }}
+          >
+            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
+              Rating:
+            </Typography>
+            <Rating name="read-only" value={review.rating} readOnly />
+          </Box>
+          <Box sx={{ display: "flex" }}>
+            <Typography sx={{ mr: 2, marginTop: 4, width: 120 }}>
+              Feedback:
+            </Typography>
+            <TextField
+              placeholder="Feedback"
+              fullWidth
+              margin="normal"
+              size="small"
+              disabled
+              multiline
+              rows={4}
+              maxRows={6}
+              value={review.comment}
+            />
+          </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button

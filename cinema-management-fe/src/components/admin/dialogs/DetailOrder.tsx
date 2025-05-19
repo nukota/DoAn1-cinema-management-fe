@@ -78,7 +78,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
             fontWeight: "regular",
             opacity: 0.5,
             color:
-              order.status === "completed"
+              order.status === "paid"
                 ? "green"
                 : order.status === "pending"
                 ? "gray"
@@ -98,7 +98,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
         <Typography sx={{ mr: 2, mt: 2 }} color="gray">
           User: {`(ID: ${order.user_id}) Nguyen Van A`}
         </Typography>
-        <Typography sx={{ mr: 2 }} color="gray">Date: {order.created_at}</Typography>
+        <Typography sx={{ mr: 2 }} color="gray">Date: {order.ordered_at}</Typography>
 
         <TableContainer
           component={Paper}
