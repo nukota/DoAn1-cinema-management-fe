@@ -18,6 +18,7 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Paper,
 } from "@mui/material";
 import {
   MovieType,
@@ -45,7 +46,7 @@ const steps = [
   "Print Ticket",
 ];
 
-const EmployeeHome: React.FC = () => {
+const BuyTicket: React.FC = () => {
   const { currentShowtime, getCurrentShowtime } = useShowtimes();
   const { seats, fetchSeatsByShowtimeId, loading } = useSeats();
   const { products, fetchProductsData } = useProducts();
@@ -236,7 +237,7 @@ const EmployeeHome: React.FC = () => {
           color="black"
           sx={{ mb: 4, fontWeight: "bold", alignSelf: "center" }}
         >
-          Employee Workflow
+          Buy Ticket Workflow
         </Typography>
         <Stepper activeStep={activeStep} sx={{ width: "100%", mb: 4 }}>
           {steps.map((label) => (
@@ -245,7 +246,19 @@ const EmployeeHome: React.FC = () => {
             </Step>
           ))}
         </Stepper>
-        <div className="w-full min-h-[600px] text-center flex justify-start items-start bg-white mb-3 rounded-lg relative">
+        <Paper
+          elevation={3}
+          sx={{
+            width: "100%",
+            minHeight: 600,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            borderRadius: 3,
+            background: "#fff",
+            position: "relative",
+          }}
+        >
           {activeStep === steps.length ? (
             <div>
               <Typography sx={{ mt: 2, mb: 1 }}>
@@ -253,7 +266,7 @@ const EmployeeHome: React.FC = () => {
               </Typography>
             </div>
           ) : (
-            <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative p-4">
+            <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative px-4 pt-4">
               {activeStep === 0 && (
                 <div className="flex gap-4 w-full">
                   {filteredShowtimes.map((movie: MovieType) => (
@@ -767,7 +780,7 @@ const EmployeeHome: React.FC = () => {
               )}
             </div>
           )}
-          <div className="absolute bottom-6 w-full flex gap-2 px-4">
+          <div className="absolute bottom-0 w-full flex gap-2 px-4 border-t py-4 border-light-gray rounded-b-lg bg-white">
             {activeStep === 0 && (
               <div className=" mr-auto flex flex-row gap-2 items-center">
                 <div className="DateFilterBar relative w-full max-w-[240px] h-9 mr-2 self-end">
@@ -810,24 +823,23 @@ const EmployeeHome: React.FC = () => {
               </div>
             )}
             {activeStep === 1 && (
+              <div className="mr-auto flex flex-row items-center justify-items-start gap-2">
               <Typography
                 variant="body1"
-                sx={{
-                  fontWeight: 500,
-                  marginRight: "auto",
-                }}
+                sx={{ fontWeight: 400, height: "auto" }}
               >
                 Selected Seats:{" "}
                 {selectedSeats.length > 0
                   ? selectedSeats.map((seat) => seat.seat_name).join(", ")
                   : "None"}
               </Typography>
+              </div>
             )}
             {activeStep === 2 && (
               <div className="mr-auto flex flex-row items-center justify-items-start gap-2">
                 <Typography
                   variant="body1"
-                  sx={{ fontWeight: 500, width: "154px", height: "auto" }}
+                  sx={{ fontWeight: 400, width: "154px", height: "auto" }}
                   textAlign="left"
                 >
                   Selected Products:{" "}
@@ -857,10 +869,10 @@ const EmployeeHome: React.FC = () => {
               </div>
             )}
             {activeStep === 3 && (
-              <div className="mr-auto flex flex-row items-center gap-2">
+              <div className="mr-auto flex flex-row items-center justify-items-start  gap-2">
                 <Typography
                   variant="body1"
-                  sx={{ fontWeight: 500, width: "154px", height: "auto" }}
+                  sx={{ fontWeight: 400, width: "154px", height: "auto" }}
                   textAlign="left"
                 >
                   Selected Account:
@@ -928,10 +940,10 @@ const EmployeeHome: React.FC = () => {
               </Button>
             )}
           </div>
-        </div>
+        </Paper>
       </div>
     </div>
   );
 };
 
-export default EmployeeHome;
+export default BuyTicket;

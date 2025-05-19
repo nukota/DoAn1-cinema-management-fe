@@ -11,10 +11,10 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { keyframes } from "@emotion/react";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
-import { ShowtimeType, MovieType } from "../../../interfaces/types";
+import { MovieType } from "../../../interfaces/types";
 
 const QuickBook: React.FC = () => {
-  const { getCurrentShowtime, fetchShowtimesData, currentShowtime, showtimes } = useShowtimes();
+  const { getCurrentShowtime, currentShowtime } = useShowtimes();
   const [movies, setMovies] = useState<MovieType[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
@@ -35,7 +35,7 @@ const QuickBook: React.FC = () => {
     };
   
     fetchMovies();
-  }, [getCurrentShowtime, currentShowtime])
+  }, [])
 
   useEffect(() => {
     if (selectedMovie) {

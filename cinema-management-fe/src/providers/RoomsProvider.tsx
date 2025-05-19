@@ -5,7 +5,7 @@ interface RoomsContextType {
   rooms: RoomType[];
   fetchRoomsData: () => Promise<void>;
   createRoom: (room: RoomType) => Promise<void>;
-  createRoomWithSeats: (room: RoomWithSeatsType | RoomWithSeatsType[]) => Promise<void>;
+  createRoomWithSeats: (room: RoomWithSeatsType) => Promise<void>;
   updateRoom: (room: RoomWithSeatsType) => Promise<void>;
   deleteRoom: (roomId: string) => Promise<void>;
   loading: boolean;
@@ -64,7 +64,7 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   }, []);
 
-  const createRoomWithSeats = useCallback(async (room: RoomWithSeatsType | RoomWithSeatsType[]) => {
+  const createRoomWithSeats = useCallback(async (room: RoomWithSeatsType) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");

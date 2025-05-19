@@ -4,27 +4,16 @@ import Header from "../admin/elements/Header";
 import NavBar from "../admin/elements/NavBar";
 import NavSelection from "../admin/elements/NavSelection";
 import HomeImg from "../../assets/images/home.svg";
-import ShowtimesImg from "../../assets/images/showtimes.svg";
 import OrdersImg from "../../assets/images/orders.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
 import SettingsImg from "../../assets/images/settings.svg";
-import ProfileImg from "./../../assets/images/profile.png";
-import { UserType } from "../../interfaces/types";
-import EmployeeHome from "./Home";
 import { Button } from "@mui/material";
 import Profile from "../admin/Profile";
+import BuyTicket from "./BuyTicket";
+import PrintTicket from "./PrintTicket";
+import Payments from "../admin/Payments";
+import Orders from "../admin/Orders";
 
-const exampleEmployee: UserType = {
-  _id: "1",
-  full_name: "John Doe",
-  email: "john.doe@example.com",
-  phone: "123-456-7890",
-  password_hash: "hashedpassword1",
-  dateOfBirth: "1990-01-01",
-  cccd: "123456789",
-  role: "employee",
-  created_at: "2023-01-01T10:00:00",
-};
 
 const Employee: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -68,18 +57,18 @@ const Employee: React.FC = () => {
           <NavBar
             topChildren={[
               <NavSelection
-                key="home"
+                key="buy-ticket"
                 icon={HomeImg}
-                title="Home"
-                to="/employee"
+                title="Buy Ticket"
+                to="/employee/"
                 isSelected={location.pathname === "/employee"}
               />,
               <NavSelection
-                key="showtimes"
-                icon={ShowtimesImg}
-                title="Showtimes"
-                to="/employee/showtimes"
-                isSelected={location.pathname === "/employee/showtimes"}
+                key="print-ticket"
+                icon={HomeImg}
+                title="Print Ticket"
+                to="/employee/print-ticket"
+                isSelected={location.pathname === "/employee/print-ticket"}
               />,
               <NavSelection
                 key="orders"
@@ -113,11 +102,11 @@ const Employee: React.FC = () => {
           }`}
         >
           <Routes>
-            <Route path="/" element={<EmployeeHome />} />
+            <Route path="/" element={<BuyTicket />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="/showtimes" element={<div />} />
-            <Route path="/orders" element={<div />} />
-            <Route path="/payments" element={<div />} />
+            <Route path="/print-ticket" element={<PrintTicket />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/payments" element={<Payments />} />
             <Route path="/settings" element={<div />} />
           </Routes>
         </div>

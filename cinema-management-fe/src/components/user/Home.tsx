@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import MovieSlide from "./elements/MovieSlide";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { Typography, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import QuickBook from "./elements/QuickBook";
 import { useMovies } from "../../providers/MoviesProvider";
 import { MovieType } from "../../interfaces/types";
 
 const UserHome: React.FC = () => {
-  const navigate = useNavigate();
   const { fetchMovieByStatus, loading } = useMovies();
 
   const [nowShowingMovies, setNowShowingMovies] = useState<MovieType[]>([]);
   const [upComingMovies, setUpComingMovies] = useState<MovieType[]>([]);
+  const nextSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -73,32 +72,36 @@ const UserHome: React.FC = () => {
         >
           Book Tickets for available movies now
         </Typography>
-      </Box>
-      <Box
-        sx={{
-          position: "absolute",
-          width: "100%",
-          top: "90vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          opacity: 0.5,
-        }}
-      >
-        <Typography
-          variant="h5"
+        <Box
           sx={{
-            fontWeight: "normal",
-            fontFamily: "Poppins",
-            color: "white",
-            mr: 1,
+            position: "absolute",
+            width: "100%",
+            top: "90vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: 0.5,
+          }}
+          onClick={() => {
+            nextSectionRef.current?.scrollIntoView({ behavior: "smooth" });
           }}
         >
-          Slide down for more
-        </Typography>
-        <KeyboardDoubleArrowDownIcon sx={{ color: "white" }} />
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "normal",
+              fontFamily: "Poppins",
+              color: "white",
+              mr: 1,
+            }}
+          >
+            Slide down for more
+          </Typography>
+          <KeyboardDoubleArrowDownIcon sx={{ color: "white" }} />
+        </Box>
       </Box>
-      <div className="w-full mt-10 px-5 z-30">
+
+      <div ref={nextSectionRef} className="w-full mt-10 px-5 z-30">
         <div className="mt-6 mb-20">
           <QuickBook />
         </div>

@@ -133,7 +133,7 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
               display: "inline-block",
               textAlign: "center",
               borderRadius: "6px",
-              background: isSelected ? "#1976d2" : "#f5f5f5",
+              background: isSelected ? "#B80007" : "#f5f5f5",
               color: isSelected ? "#fff" : "#000",
               cursor: "pointer",
               // border: isSelected ? "2px solid #1976d2" : "1px solid #ccc",
