@@ -4,13 +4,13 @@ import { useTheme } from "@mui/material/styles";
 import { SeatType } from "../../../interfaces/types";
 import SeatUnit from "../items/SeatUnit";
 import NumberPicker from "../../utils/NumberPicker";
-
-const ticketPrice = 45000;
+import { useSeats } from "../../../providers/SeatProvider";
 
 interface SeatSelectingProps {
   seats: SeatType[];
   selectedSeats: SeatType[];
   setSelectedSeats: React.Dispatch<React.SetStateAction<SeatType[]>>;
+  price?: number;
   ticketCount: number;
   setTicketCount: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -18,12 +18,29 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
   seats,
   selectedSeats,
   setSelectedSeats,
+  price,
   ticketCount,
   setTicketCount,
 }) => {
   const theme = useTheme();
+  const { loading } = useSeats();
   const rows = "ABCDEFGHIJKLMN".split("");
 
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          textAlign: "center",
+          color: "white",
+          fontSize: "18px",
+          marginTop: "20px",
+        }}
+      >
+        Loading available seats...
+      </Box>
+    );
+  }
+  
   const grid = [];
   for (let row = 1; row <= 14; row++) {
     for (let col = -8; col <= 8; col++) {
@@ -44,7 +61,8 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
           {seat ? (
             <SeatUnit
               seat={seat}
-              status="available"
+              available={seat.available!}
+              isSelected={selectedSeats.some((s) => s._id === seat._id)}
               onSelect={() => handleSeatClick(seat)}
             />
           ) : (
@@ -117,7 +135,7 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
             Ticket
           </Typography>
           <Typography variant="h6" sx={{ color: "gray", fontWeight: "normal" }}>
-            {ticketPrice}
+            {price}
           </Typography>
           <Box
             sx={{
@@ -129,7 +147,11 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
             <NumberPicker
               value={ticketCount}
               onChange={(value) => {
-                setSelectedSeats([]);
+                if (value < selectedSeats.length) {
+                  setSelectedSeats((prevSelectedSeats) =>
+                    prevSelectedSeats.slice(0, value)
+                  );
+                }
                 setTicketCount(value);
               }}
             />
@@ -199,9 +221,10 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
       </Box>
       <Box
         sx={{
-          mb: 4,
+          mb: 10,
           mt: 10,
-          py: 10,
+          pt: 6,
+          pb: 16,
           border: "2px solid gray",
           borderRadius: 2,
           display: "flex",

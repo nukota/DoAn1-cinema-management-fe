@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { MovieType, ShowtimeType } from "../interfaces/types";
 
 interface ShowtimesContextType {
@@ -14,11 +20,17 @@ interface ShowtimesContextType {
   loading: boolean;
 }
 
-const ShowtimesContext = createContext<ShowtimesContextType | undefined>(undefined);
+const ShowtimesContext = createContext<ShowtimesContextType | undefined>(
+  undefined
+);
 
-export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [showtimes, setShowtimes] = useState<ShowtimeType[]>([]);
-  const [showtimesByMovieId, setShowtimesByMovieId] = useState<ShowtimeType[]>([]);
+  const [showtimesByMovieId, setShowtimesByMovieId] = useState<ShowtimeType[]>(
+    []
+  );
   const [currentShowtime, setCurrentShowtime] = useState<MovieType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -97,14 +109,17 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime/${updatedShowtime._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedShowtime),
-      });
+      const response = await fetch(
+        `${baseURL}/showtime/${updatedShowtime._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedShowtime),
+        }
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -152,13 +167,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({ children 
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const { data } = await response.json();
-    if (Array.isArray(data)) {
-      setCurrentShowtime(data);
-    } else {
-      console.error("Invalid data format: Expected an array in 'data'");
-      setCurrentShowtime([]);
-    }
-      console.log("Current Showtimes:", data);
+      console.log("API Response:", data);
+      if (Array.isArray(data)) {
+        setCurrentShowtime(data);
+      } else {
+        console.error("Invalid data format: Expected an array in 'data'");
+        setCurrentShowtime([]);
+      }
     } catch (error) {
       console.error("Failed to fetch current showtimes:", error);
     } finally {

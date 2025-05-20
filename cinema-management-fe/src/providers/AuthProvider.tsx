@@ -65,12 +65,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
       });
 
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken, user_id } = response.data;
 
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("email", email);
+      localStorage.setItem("user_id", user_id);
 
       // Fetch user profile
       await fetchUserProfile(accessToken, email);
@@ -104,6 +105,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Clear tokens and user state
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("email"); 
+    localStorage.removeItem("user_id"); 
     setUserProfile(null);
     setAccessToken(null);
     setIsLoggedIn(false);

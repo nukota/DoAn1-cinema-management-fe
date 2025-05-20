@@ -1,30 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { MovieType, ProductType } from "../../../interfaces/types";
+import {
+  MovieType,
+  OrderType,
+  ProductType,
+  SeatType,
+  ShowtimeType,
+} from "../../../interfaces/types";
+import { useNavigate } from "react-router-dom";
 
 interface BookingFooterProps {
   movie: MovieType;
+  totalPrice: number;
   selectedProducts: {
     product: ProductType;
     amount: number;
   }[];
+  selectedShowtime: ShowtimeType | null;
+  selectedSeats: SeatType[];
 }
 
 const BookingFooter: React.FC<BookingFooterProps> = ({
   movie,
+  totalPrice,
   selectedProducts,
+  selectedShowtime,
+  selectedSeats,
 }) => {
   const theme = useTheme();
   const [isAboveFooter, setIsAboveFooter] = useState(false);
   const footerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsAboveFooter(entry.isIntersecting); // Update state based on visibility
+        setIsAboveFooter(entry.isIntersecting);
       },
-      { root: null, threshold: 0.1 } // Trigger when 10% of the footer is visible
+      { root: null, threshold: 0.1 }
     );
 
     if (footerRef.current) {
@@ -38,14 +52,35 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
     };
   }, []);
 
-  const handleBuyTicketClick = () => {
-    console.log("Navigating to payment...");
+  const handleBuyTicket = () => {
+    const userId = localStorage.getItem("user_id");
+    const email = localStorage.getItem("email");
+
+    if (!userId || !email) {
+      alert("User is not logged in.");
+      return;
+    }
+
+    // Combine the necessary data into the OrderType object
+    const order: any = {
+      user_id: userId,
+      email: email,
+      total_price: totalPrice,
+      showtime: selectedShowtime,
+      products: selectedProducts,
+      seats: selectedSeats
+    };
+
+    navigate("/user/payment", { state: { order } });
   };
 
   return (
     <>
       {/* Main Footer (for Intersection Observer) */}
-      <div ref={footerRef} style={{ height: "1px", background: "transparent" }} />
+      <div
+        ref={footerRef}
+        style={{ height: "1px", background: "transparent" }}
+      />
 
       {/* Booking Footer */}
       <Box
@@ -76,6 +111,17 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
           <Typography sx={{ color: "white", fontSize: 22, fontWeight: 500 }}>
             {movie.title}
           </Typography>
+          {selectedShowtime && (
+            <Typography
+              variant="body2"
+              sx={{ color: "gray", fontSize: 16, mt: 0.5 }}
+            >
+              {new Date(selectedShowtime.showtime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Typography>
+          )}
           <Typography
             variant="body1"
             sx={{
@@ -85,6 +131,7 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               textOverflow: "ellipsis",
+              mt: 1,
             }}
           >
             {selectedProducts
@@ -158,14 +205,14 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
             <Typography
               sx={{ color: "#999", fontSize: 18, fontWeight: 500, mt: 1 }}
             >
-              200 dollars
+              {totalPrice} vnd
             </Typography>
           </Box>
           {/* Buy Ticket Button */}
           <Button
             variant="outlined"
             color="secondary"
-            onClick={handleBuyTicketClick}
+            onClick={handleBuyTicket}
             sx={{
               ml: 4,
               height: "50px",

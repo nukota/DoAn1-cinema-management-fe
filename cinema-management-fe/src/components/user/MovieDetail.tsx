@@ -10,28 +10,47 @@ import ShowTimes from "./elements/ShowTimes";
 import BookingInfo from "./elements/BookingInfo";
 import BookingFooter from "./elements/BookingFooter";
 import {
-  exampleSeats,
-  exampleProducts,
-} from "../../data";
-import {
   MovieType,
   SeatType,
   ProductType,
+  ShowtimeType,
 } from "../../interfaces/types";
 import { useMovies } from "../../providers/MoviesProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
+import { useSeats } from "../../providers/SeatProvider";
+import { useProducts } from "../../providers/ProductsProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
   const { fetchMovieById, loading: movieLoading } = useMovies();
-  const { fetchShowtimesByMovieId, showtimesByMovieId, loading: showtimesLoading } = useShowtimes();
+  const {
+    fetchShowtimesByMovieId,
+    showtimesByMovieId,
+    loading: showtimesLoading,
+  } = useShowtimes();
+  const { seats, fetchSeatsByShowtimeId } = useSeats();
+  const {
+    products,
+    fetchProductsData,
+    loading: productsLoading,
+  } = useProducts();
   const [movie, setMovie] = useState<MovieType | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<SeatType[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<
     { product: ProductType; amount: number }[]
   >([]);
   const [ticketCount, setTicketCount] = useState<number>(0);
-
+  const [selectedShowtime, setSelectedShowtime] = useState<ShowtimeType | null>(
+    null
+  );
+  const totalPrice = React.useMemo(() => {
+    const seatPrice = selectedSeats.length * (selectedShowtime?.price || 0);
+    const productPrice = selectedProducts.reduce(
+      (total, item) => total + item.product.price * item.amount,
+      0
+    );
+    return seatPrice + productPrice;
+  }, [selectedSeats, selectedShowtime, selectedProducts]);
   useEffect(() => {
     const fetchMovie = async () => {
       if (movieId) {
@@ -54,12 +73,34 @@ const MovieDetail: React.FC = () => {
       }
     };
 
+    const fetchProducts = async () => {
+      try {
+        await fetchProductsData();
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
     fetchMovie();
     fetchShowtimes();
+    fetchProducts();
   }, [movieId]);
 
+  useEffect(() => {
+    const fetchSeats = async () => {
+      if (selectedShowtime) {
+        try {
+          await fetchSeatsByShowtimeId(selectedShowtime._id);
+        } catch (error) {
+          console.error("Failed to fetch seats:", error);
+        }
+      }
+    };
 
-  if (movieLoading || showtimesLoading) {
+    fetchSeats();
+  }, [selectedShowtime]);
+
+  if (movieLoading || showtimesLoading || productsLoading) {
     return (
       <div className="text-white text-center text-xl mt-10">
         Loading movie details...
@@ -93,7 +134,11 @@ const MovieDetail: React.FC = () => {
             <div className="text-white text-4xl font-bold self-center">
               SHOWTIMES
             </div>
-            <ShowTimes showtimes={showtimesByMovieId} />
+            <ShowTimes
+              showtimes={showtimesByMovieId}
+              selectedShowtime={selectedShowtime}
+              onSelectShowtime={(showtime) => setSelectedShowtime(showtime)}
+            />
           </div>
           <div className="flex flex-col mt-24">
             <div className="text-white text-4xl font-bold self-center">
@@ -101,20 +146,26 @@ const MovieDetail: React.FC = () => {
             </div>
           </div>
           <BookingInfo
-            seats={exampleSeats}
+            seats={seats}
             selectedSeats={selectedSeats}
             setSelectedSeats={setSelectedSeats}
+            price={selectedShowtime?.price}
             ticketCount={ticketCount}
             setTicketCount={setTicketCount}
-            products={exampleProducts}
+            products={products}
             selectedProducts={selectedProducts}
             setSelectedProducts={setSelectedProducts}
           />
         </div>
       </div>
       <div className="w-full bg-black z-20 mt-32"></div>
-      //see if the footer is in the right place
-      <BookingFooter movie={movie} selectedProducts={selectedProducts} />
+      <BookingFooter
+        movie={movie}
+        totalPrice={totalPrice}
+        selectedProducts={selectedProducts}
+        selectedShowtime={selectedShowtime}
+        selectedSeats={selectedSeats}
+      />
     </div>
   );
 };
@@ -225,7 +276,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
               <div className="text-sm mt-2">
                 <strong>Release Date:</strong> {formatDate(movie.release_date)}
               </div>
-                <div className="text-sm mt-2 flex items-center">
+              <div className="text-sm mt-2 flex items-center">
                 <strong>Rating:</strong>
                 <Rating
                   value={movie.rating}
@@ -234,7 +285,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
                   sx={{ ml: 1 }}
                   max={5}
                 />
-                </div>
+              </div>
             </div>
             <div className="pt-6">
               <div

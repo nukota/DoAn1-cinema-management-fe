@@ -78,6 +78,7 @@ export type ShowtimeType = {
     room_id: string;
     name: string;
   };
+  room_id: string;
   movie: {
     movie_id: string;
     title: string;
@@ -152,7 +153,7 @@ export type DiscountType = {
 export type ReviewType = {
   _id: string;
   user_id: string;
-  movie_id: string;
+  showtime_id: string;
   rating: number;
   comment: string;
   created_at: string;

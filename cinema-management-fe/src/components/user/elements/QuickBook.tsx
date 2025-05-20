@@ -11,11 +11,12 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { keyframes } from "@emotion/react";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
-import { MovieType } from "../../../interfaces/types";
+import { useRooms } from "../../../providers/RoomsProvider";
 
 const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
-  const [movies, setMovies] = useState<MovieType[]>([]);
+  const { rooms, fetchRoomsData } = useRooms();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [selectedMovie, setSelectedMovie] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -25,28 +26,47 @@ const QuickBook: React.FC = () => {
   const [filteredTimes, setFilteredTimes] = useState<string[]>([]);
 
   useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    console.log("User ID:", userId);
+    setIsLoggedIn(!!userId);
+  }, []);
+
+  useEffect(() => {
     const fetchMovies = async () => {
       try {
         await getCurrentShowtime();
-        setMovies(currentShowtime);
+        console.log("Current Showtimes:", currentShowtime);
       } catch (error) {
         console.error("Failed to fetch movies:", error);
       }
     };
-  
+    const fetchRooms = async () => {
+      try {
+        await fetchRoomsData();
+      } catch (error) {
+        console.error("Failed to fetch rooms:", error);
+      }
+    };
+
+    fetchRooms();
     fetchMovies();
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (selectedMovie) {
-      const movie = movies.find((movie) => movie._id === selectedMovie);
+      const movie = currentShowtime.find(
+        (movie) => movie._id === selectedMovie
+      );
       if (movie) {
         const cinemas = Array.from(
           new Set(
-            movie.showtimes?.map((showtime) => showtime.room_id)
+            movie.showtimes?.map((showtime) => {
+              const room = rooms.find((room) => room._id === showtime.room_id);
+              return room?.cinema.name;
+            })
           )
-        );
-        setFilteredCinemas(cinemas);
+        ).filter((cinema) => cinema); // Filter out undefined values
+        setFilteredCinemas(cinemas as string[]);
       }
     } else {
       setFilteredCinemas([]);
@@ -54,18 +74,26 @@ const QuickBook: React.FC = () => {
     setSelectedCinema("");
     setSelectedDate("");
     setSelectedTime("");
-  }, [selectedMovie, movies]);
+  }, [selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
     if (selectedCinema) {
-      const movie = movies.find((movie) => movie._id === selectedMovie);
+      const movie = currentShowtime.find(
+        (movie) => movie._id === selectedMovie
+      );
       if (movie) {
         const dates = Array.from(
           new Set(
-            movie.showtimes!
-              .filter((showtime) => showtime.room_id === selectedCinema)
-              .map((showtime) =>
-                new Date(showtime.showtime).toISOString().split("T")[0]
+            movie
+              .showtimes!.filter((showtime) => {
+                const room = rooms.find(
+                  (room) => room._id === showtime.room_id
+                );
+                return room?.cinema.name === selectedCinema;
+              })
+              .map(
+                (showtime) =>
+                  new Date(showtime.showtime).toISOString().split("T")[0]
               )
           )
         );
@@ -76,21 +104,27 @@ const QuickBook: React.FC = () => {
     }
     setSelectedDate("");
     setSelectedTime("");
-  }, [selectedCinema, selectedMovie, movies]);
+  }, [selectedCinema, selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
     if (selectedDate) {
-      const movie = movies.find((movie) => movie._id === selectedMovie);
+      const movie = currentShowtime.find(
+        (movie) => movie._id === selectedMovie
+      );
       if (movie) {
         const times = Array.from(
           new Set(
-            movie.showtimes!
-              .filter(
-                (showtime) =>
-                  showtime.room_id === selectedCinema &&
+            movie
+              .showtimes!.filter((showtime) => {
+                const room = rooms.find(
+                  (room) => room._id === showtime.room_id
+                );
+                return (
+                  room?.cinema.name === selectedCinema &&
                   new Date(showtime.showtime).toISOString().split("T")[0] ===
                     selectedDate
-              )
+                );
+              })
               .map((showtime) =>
                 new Date(showtime.showtime).toLocaleTimeString([], {
                   hour: "2-digit",
@@ -105,8 +139,7 @@ const QuickBook: React.FC = () => {
       setFilteredTimes([]);
     }
     setSelectedTime("");
-  }, [selectedDate, selectedCinema, selectedMovie, movies]);
-
+  }, [selectedDate, selectedCinema, selectedMovie, currentShowtime, rooms]);
 
   const handleMovieChange = (event: SelectChangeEvent<string>) => {
     setSelectedMovie(event.target.value);
@@ -154,6 +187,30 @@ const QuickBook: React.FC = () => {
     75% { transform: translateY(-10px); }
   `;
 
+  if (!isLoggedIn) {
+    return (
+      <div className="w-full px-[8%] h-[100px] z-30">
+        <Box
+          sx={{
+            borderColor: "#111",
+            borderWidth: "2px",
+            borderStyle: "solid",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "start",
+            padding: "16px",
+            backgroundColor: "#111",
+          }}
+        >
+          <div className="text-[#999] text-3xl ml-2 mr-4 font-regular font-['Poppins']">
+            Please sign in to use quick booking feature
+          </div>
+        </Box>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full px-[8%] h-[100px] z-30">
       <Box
@@ -172,7 +229,7 @@ const QuickBook: React.FC = () => {
           transition: "all 0.5s ease-in-out",
         }}
       >
-        <div className="text-white text-3xl ml-2 mr-4 font-semibold font-['Poppins']">
+        <div className="text-white text-3xl ml-2 mr-4 font-regular font-['Poppins']">
           QUICK BOOK
         </div>
         <FormControl variant="outlined" sx={{ width: 180 }}>
@@ -200,7 +257,7 @@ const QuickBook: React.FC = () => {
             <MenuItem value="">
               <em>Movie</em>
             </MenuItem>
-            {movies.map((movie) => (
+            {currentShowtime.map((movie) => (
               <MenuItem key={movie._id} value={movie._id}>
                 {movie.title}
               </MenuItem>

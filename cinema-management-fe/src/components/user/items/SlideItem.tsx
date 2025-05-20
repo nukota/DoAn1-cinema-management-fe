@@ -26,7 +26,12 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
   };
 
   const handleBuyTicketClicked = () => {
-    navigate(`/user/movie-detail/${movie._id}`)
+    const isLoggedIn = !!localStorage.getItem("accessToken");
+    if (!isLoggedIn) {
+      navigate("/login");
+    } else {
+      navigate(`/user/movie-detail/${movie._id}`);
+    }
   };
 
   const getEmbedUrl = (url: string) => {

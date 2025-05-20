@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { OrderType } from "../interfaces/types";
 
 interface OrdersContextType {
@@ -6,6 +12,7 @@ interface OrdersContextType {
   fetchOrdersData: () => Promise<void>;
   fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
   createOrder: (newOrder: OrderType) => Promise<void>;
+  createDetailedOrder: (newOrder: OrderType) => Promise<OrderType>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   loading: boolean;
@@ -13,7 +20,9 @@ interface OrdersContextType {
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
 
-export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -89,6 +98,32 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, []);
 
+  const createDetailedOrder = useCallback(async (newOrder: OrderType) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/order/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newOrder),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const createdOrder = await response.json();
+      setOrders((prevOrders) => [...prevOrders, createdOrder]);
+      return createdOrder; // Return the created order for further use
+    } catch (error) {
+      console.error("Failed to create detailed order:", error);
+      throw error; // Re-throw the error to handle it in the calling component
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Update an existing order
   const updateOrder = useCallback(async (updatedOrder: OrderType) => {
     setLoading(true);
@@ -149,6 +184,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         fetchOrdersData,
         fetchOrderDetails,
         createOrder,
+        createDetailedOrder,
         updateOrder,
         deleteOrder,
         loading,

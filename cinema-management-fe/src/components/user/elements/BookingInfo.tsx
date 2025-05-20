@@ -13,6 +13,7 @@ interface BookingInfoProps {
   seats: SeatType[];
   selectedSeats: SeatType[];
   setSelectedSeats: React.Dispatch<React.SetStateAction<SeatType[]>>;
+  price?: number;
   ticketCount: number;
   setTicketCount: React.Dispatch<React.SetStateAction<number>>;
   products: ProductType[];
@@ -23,6 +24,7 @@ const BookingInfo: React.FC<BookingInfoProps> = ({
   seats,
   selectedSeats,
   setSelectedSeats,
+  price,
   ticketCount,
   setTicketCount,
   products,
@@ -65,6 +67,7 @@ const BookingInfo: React.FC<BookingInfoProps> = ({
             seats={seats}
             selectedSeats={selectedSeats}
             setSelectedSeats={setSelectedSeats}
+            price={price}
             ticketCount={ticketCount}
             setTicketCount={setTicketCount}
           />
