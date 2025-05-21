@@ -172,7 +172,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                 </Typography>
               </Box>
             ) : (
-              <Typography>No tickets available.</Typography>
+              <Typography>No tickets bought.</Typography>
             )}
           </Box>
           <Table sx={{}} aria-label="simple table">
@@ -194,7 +194,9 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
               <TableRow>
                 <TableCell sx={{ width: "8%", padding: 1 }}>ID</TableCell>
                 <TableCell sx={{ width: "30%", padding: 1 }}>Name</TableCell>
-                <TableCell sx={{ width: "18%", padding: 1 }}>Quantity</TableCell>
+                <TableCell sx={{ width: "18%", padding: 1 }}>
+                  Quantity
+                </TableCell>
                 <TableCell sx={{ width: "22%", padding: 1 }}>Price</TableCell>
                 <TableCell sx={{ width: "22%", padding: 1 }}>Total</TableCell>
               </TableRow>
@@ -206,8 +208,12 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                     key={product.product_id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell sx={{ width: "8%", padding: 1 }}>{product.name}</TableCell>
-                    <TableCell sx={{ width: "30%", padding: 1 }}>Very Long Name</TableCell>
+                    <TableCell sx={{ width: "8%", padding: 1 }}>
+                      {product.name}
+                    </TableCell>
+                    <TableCell sx={{ width: "30%", padding: 1 }}>
+                      Very Long Name
+                    </TableCell>
                     <TableCell sx={{ width: "18%", padding: 1 }}>
                       {product.quantity}
                     </TableCell>
@@ -232,23 +238,23 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
           Total: {order.total_price}
         </Typography>
       </CustomDialogContent>
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          color="primary"
-          variant="text"
-          sx={{ width: 130 }}
-        >
-          Close
-        </Button>
+      <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button
           onClick={() => onDelete && onDelete(order._id)}
-          color="error"
-          variant="contained"
+          color="primary"
+          variant="outlined"
           sx={{ width: 130 }}
           disabled={order.status === "paid"}
         >
           Delete
+        </Button>
+        <Button
+          onClick={onClose}
+          color="primary"
+          variant="contained"
+          sx={{ width: 130 }}
+        >
+          Close
         </Button>
       </DialogActions>
     </Dialog>

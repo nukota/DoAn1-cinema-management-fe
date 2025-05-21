@@ -16,8 +16,6 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
-  FormControl,
-  FormLabel,
   Paper,
 } from "@mui/material";
 import {
@@ -824,15 +822,15 @@ const BuyTicket: React.FC = () => {
             )}
             {activeStep === 1 && (
               <div className="mr-auto flex flex-row items-center justify-items-start gap-2">
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 400, height: "auto" }}
-              >
-                Selected Seats:{" "}
-                {selectedSeats.length > 0
-                  ? selectedSeats.map((seat) => seat.seat_name).join(", ")
-                  : "None"}
-              </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 400, height: "auto" }}
+                >
+                  Selected Seats:{" "}
+                  {selectedSeats.length > 0
+                    ? selectedSeats.map((seat) => seat.seat_name).join(", ")
+                    : "None"}
+                </Typography>
               </div>
             )}
             {activeStep === 2 && (

@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -12,6 +16,10 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import VisaImg from "../../assets/images/visa.png";
+import MomoImg from "../../assets/images/momo.png";
+import BankingImg from "../../assets/images/banking.png";
 import { DiscountType, ProductType, SeatType } from "../../interfaces/types";
 import { useDiscounts } from "../../providers/DiscountsProvider";
 import { useLocation } from "react-router-dom";
@@ -31,7 +39,8 @@ const Payment: React.FC = () => {
     []
   );
   const [discount, setDiscount] = useState<DiscountType | null>(null);
-  const steps = ["Select Payment Method", "Scan QR Code", "Finish"];
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const steps = ["Payment Method", "Pay", "Finish"];
 
   useEffect(() => {
     const fetchDiscounts = async () => {
@@ -80,6 +89,17 @@ const Payment: React.FC = () => {
     return order.total_price;
   }, [order.total_price, discount]);
 
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const renderStepContent = (step: number) => {
     switch (step) {
       case 0:
@@ -88,44 +108,86 @@ const Payment: React.FC = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Select a Payment Method
             </Typography>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Discount</InputLabel>
-              <Select
-                value={discount?._id || ""}
-                onChange={handleDiscountChange}
-                disabled={discountsLoading || availableDiscounts.length === 0}
-              >
-                {availableDiscounts.map((d) => (
-                  <MenuItem key={d._id} value={d._id}>
-                    {d.code} -{" "}
-                    {d.discount_type === "percentage"
-                      ? `${d.value}%`
-                      : `$${d.value}`}{" "}
-                    (Min Purchase: ${d.min_purchase})
-                  </MenuItem>
-                ))}
-                {availableDiscounts.length === 0 && (
-                  <MenuItem disabled>No discounts available</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-            <Button variant="outlined" sx={{ mb: 2, width: "100%" }}>
-              Momo
-            </Button>
-            <Button variant="outlined" sx={{ mb: 2, width: "100%" }}>
-              Banking
-            </Button>
-            <Button variant="outlined" sx={{ mb: 2, width: "100%" }}>
-              Visa/Mastercard
-            </Button>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>
+                  {availableDiscounts.length === 0
+                    ? "No discounts available"
+                    : "Discount"}
+                </InputLabel>
+                <Select
+                  value={discount?._id || ""}
+                  label={
+                    availableDiscounts.length === 0
+                      ? "No discounts available"
+                      : "Discount"
+                  }
+                  onChange={handleDiscountChange}
+                  disabled={discountsLoading || availableDiscounts.length === 0}
+                >
+                  {availableDiscounts.map((d) => (
+                    <MenuItem key={d._id} value={d._id}>
+                      {d.code} -{" "}
+                      {d.discount_type === "percentage"
+                        ? `${d.value}%`
+                        : `$${d.value}`}{" "}
+                      (Min Purchase: ${d.min_purchase})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {discount && (
+                <ThumbUpIcon
+                  color="primary"
+                  sx={{ ml: 2, mb: 2, fontSize: 36, alignSelf: "center" }}
+                />
+              )}
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "row", gap: 2, mt: 2 }}>
+              {[
+                { label: "Momo", img: MomoImg, value: "momo" },
+                { label: "Banking", img: BankingImg, value: "banking" },
+                { label: "Visa/Mastercard", img: VisaImg, value: "visa" },
+              ].map((method) => (
+                <Card
+                  key={method.value}
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    borderRadius: 2,
+                    boxShadow: 1,
+                    border:
+                      paymentMethod === method.value
+                        ? "2px solid #1976d2"
+                        : "1px solid #e0e0e0",
+                    background:
+                      paymentMethod === method.value ? "#e3f2fd" : "#fafafa",
+                    transition: "border 0.2s, background 0.2s",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 120,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setPaymentMethod(method.value)}
+                >
+                  <img
+                    src={method.img}
+                    alt={method.label}
+                    style={{ width: 40, height: 40, marginBottom: 12 }}
+                  />
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {method.label}
+                  </Typography>
+                </Card>
+              ))}
+            </Box>
           </Box>
         );
       case 1:
         return (
-          <Box>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Scan the QR Code
-            </Typography>
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <Box
               sx={{
                 width: 200,
@@ -139,7 +201,16 @@ const Payment: React.FC = () => {
               }}
             >
               <Typography>QR Code</Typography>
-            </Box>
+            </Box>{" "}
+            <Typography sx={{ mt: 2, fontSize: 16, fontWeight: "medium" }}>
+              Scan QR Code to pay
+            </Typography>
+            <Typography sx={{ fontSize: 14}}>
+              Total: {order.total_price}
+            </Typography>
+            <Typography sx={{ fontSize: 14 }}>
+              Message: money transfer for ticket #id
+            </Typography>
           </Box>
         );
       case 2:
@@ -180,12 +251,14 @@ const Payment: React.FC = () => {
         sx={{
           flex: 1,
           maxWidth: 600,
+          height: 500,
           padding: 4,
           backgroundColor: "white",
           borderRadius: 2,
           boxShadow: 3,
           marginRight: 2,
           zIndex: 10,
+          position: "relative",
         }}
       >
         <Stepper activeStep={activeStep} alternativeLabel>
@@ -196,7 +269,16 @@ const Payment: React.FC = () => {
           ))}
         </Stepper>
         <Box sx={{ mt: 4 }}>{renderStepContent(activeStep)}</Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            position: "absolute",
+            bottom: 16,
+            left: 16,
+            right: 16,
+          }}
+        >
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
@@ -226,42 +308,97 @@ const Payment: React.FC = () => {
           zIndex: 10,
         }}
       >
-        <Typography variant="h5" sx={{ mb: 2 }}>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: "medium" }}>
           Order Information
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          Movie: {order.showtime.movie.title}
+        <Typography variant="body1" sx={{ mb: 0.5 }}>
+          Movie:{" "}
+          <span className="text-[#999]">{order.showtime.movie.title}</span>
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          Showtime: {order.showtime.showtime}
+        <Typography variant="body1" sx={{ mb: 0.5 }}>
+          Showtime:{" "}
+          <span className="text-[#999]">
+            {formatTime(order.showtime.showtime)}
+          </span>
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          Seats: {order.seats.length} x {order.showtime.price.toFixed(0)} vnd
+        <Typography variant="body1" sx={{ mb: 0.5 }}>
+          Seats:{" "}
+          <span className="text-[#999]">
+            {order.seats.length} x {order.showtime.price.toFixed(0)} vnd
+          </span>
         </Typography>
-        <Typography variant="body2" sx={{ ml: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <Typography
+          variant="body2"
+          sx={{
+            ml: 2,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           - {order.seats.map((seat: SeatType) => seat.seat_name).join(", ")}
         </Typography>
-        <Typography variant="body1" sx={{ mb: 2, mt: 2 }}>
+        <Typography variant="body1" sx={{ mb: 0.5, mt: 2 }}>
           Products:
         </Typography>
         {order.products.map(
           (product: { product: ProductType; amount: number }) => (
-            <Typography key={product.product._id} variant="body2" sx={{ ml: 2 }}>
-              - {product.product.name} x {product.amount}
+            <Typography
+              key={product.product._id}
+              variant="body2"
+              sx={{ ml: 2 }}
+            >
+              <span className="text-[#999]">
+                - {product.product.name} x {product.amount}
+              </span>
             </Typography>
           )
         )}
-        <Typography variant="body1" sx={{ mb: 1 }}>
-          Total Price: {order.total_price.toFixed(0)} vnd
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 1 }}>
-          Discount: -{" "}
-          {discount ? (order.total_price - discountedPrice).toFixed(0) : "0"}{" "}
-          vnd
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 1, fontWeight: "bold" }}>
-          Final Price: {discountedPrice.toFixed(0)} vnd
-        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", mt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body1">Total Price:</Typography>
+            <Typography variant="body1" color="#999">
+              {order.total_price.toFixed(0)} vnd
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body1">Discount:</Typography>
+            <Typography variant="body1" color="#999">
+              -{" "}
+              {discount
+                ? (order.total_price - discountedPrice).toFixed(0)
+                : "0"}{" "}
+              vnd
+            </Typography>
+          </Box>
+          <Divider sx={{ my: 0.5 }} />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              Final Price:
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              {discountedPrice.toFixed(0)} vnd
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
