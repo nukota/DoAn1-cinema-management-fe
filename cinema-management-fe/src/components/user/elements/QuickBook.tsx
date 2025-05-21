@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { keyframes } from "@emotion/react";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
 import { useRooms } from "../../../providers/RoomsProvider";
+import { useNavigate } from "react-router-dom";
 
 const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
@@ -24,6 +25,39 @@ const QuickBook: React.FC = () => {
   const [filteredCinemas, setFilteredCinemas] = useState<string[]>([]);
   const [filteredDates, setFilteredDates] = useState<string[]>([]);
   const [filteredTimes, setFilteredTimes] = useState<string[]>([]);
+  const navigate = useNavigate();
+
+  const handleBook = () => {
+    if (allSelected) {
+      const movie = currentShowtime.find((movie) => movie._id === selectedMovie);
+  
+      if (movie && movie.showtimes) {
+        const selectedShowtime = movie.showtimes.find((showtime) => {
+          const room = rooms.find((room) => room._id === showtime.room_id);
+          return (
+            room?.cinema.name === selectedCinema &&
+            new Date(showtime.showtime).toISOString().split("T")[0] ===
+              selectedDate &&
+            new Date(showtime.showtime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }) === selectedTime
+          );
+        });
+        if (selectedShowtime) {
+          navigate(`/user/movie-detail/${selectedMovie}`, {
+            state: { showtimeId: selectedShowtime._id },
+          });
+        } else {
+          alert("Selected showtime not found.");
+        }
+      } else {
+        alert("Movie or showtimes not found.");
+      }
+    } else {
+      alert("Please select all options before booking.");
+    }
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -381,6 +415,7 @@ const QuickBook: React.FC = () => {
             transition: "background-color 0.5s ease-in-out",
           }}
           variant="contained"
+          onClick={handleBook}
         >
           <Typography sx={{ fontSize: 24, fontWeight: "medium" }}>
             BOOK

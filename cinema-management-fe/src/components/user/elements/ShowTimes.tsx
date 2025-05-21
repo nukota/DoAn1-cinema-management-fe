@@ -37,6 +37,21 @@ const ShowTimes: React.FC<ShowtimesProps> = ({
     fetchRooms();
   }, []);
 
+  useEffect(() => {
+    if (selectedShowtime) {
+      const showtimeDate = new Date(selectedShowtime.showtime).toLocaleDateString(
+        "en-GB"
+      );
+      const index = Array.from({ length: 7 }).findIndex((_, i) => {
+        const tabDate = getFormattedDate(i).fullDate;
+        return tabDate === showtimeDate;
+      });
+      if (index !== -1) {
+        setValue(index);
+      }
+    }
+  }, [selectedShowtime]);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };

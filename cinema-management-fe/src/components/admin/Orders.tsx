@@ -1,23 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Order from "./items/Order";
-import { OrderProductType, OrderType, TicketType } from "../../interfaces/types";
+import { OrderType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
+import { useOrders } from "../../providers/OrdersProvider";
 
 const Orders: React.FC = () => {
+  const { fetchOrdersData, orders, loading } = useOrders();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
-  const [tickets, setTickets] = useState<TicketType[] | null>(null);
-  const [products, setProducts] = useState<OrderProductType[] | null>(null);
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        await fetchOrdersData();
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -42,10 +54,9 @@ const Orders: React.FC = () => {
 
   const handleInfoClick = (order: OrderType) => {
     setSelectedOrder(order);
-    setTickets(exampleTickets.filter((ticket) => ticket.order_id === order?._id));
-    setProducts(exampleOrderProducts.filter((product) => product.order_id === order?._id));
     setDetailDialogOpen(true);
   };
+
   const handleCheckConfirmDelete = (order: OrderType) => {
     setShowDeleteConfirm(true);
     setSelectedOrder(order);
@@ -60,15 +71,10 @@ const Orders: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueOrders = exampleOrders.filter(
-    (order, index, self) =>
-      index === self.findIndex((e) => e._id === order._id)
-  );
-
-  const filteredOrders = uniqueOrders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const searchTermLower = searchTerm.toLowerCase();
     const isDateMatch = selectedDate
-      ? order.created_at && order.created_at.startsWith(selectedDate)
+      ? order.ordered_at && order.ordered_at.startsWith(selectedDate)
       : true;
     const matchesTab = activeTab === "All" || activeTab === order.status;
     const matchesSearch =
@@ -76,8 +82,8 @@ const Orders: React.FC = () => {
       (order.user_id && order.user_id.toString().includes(searchTermLower)) ||
       (order.total_price &&
         order.total_price.toString().includes(searchTermLower)) ||
-      (order.created_at &&
-        order.created_at.toString().includes(searchTermLower)) ||
+      (order.ordered_at &&
+        order.ordered_at.toString().includes(searchTermLower)) ||
       (order.status && order.status.toLowerCase().includes(searchTermLower));
     return isDateMatch && matchesTab && matchesSearch;
   });
@@ -179,14 +185,11 @@ const Orders: React.FC = () => {
       </div>
       <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
         <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
-          {filteredOrders.map((order) => (
+          {currentOrders.map((order) => (
             <Order
               key={order._id}
               order={order}
-              ticketAmount={1}
-              productAmount={1}
               handleInfoClick={() => handleInfoClick(order)}
-              handleDeleteClick={() => handleCheckConfirmDelete(order)}
             />
           ))}
         </div>
@@ -204,10 +207,9 @@ const Orders: React.FC = () => {
       {selectedOrder && (
         <DetailOrder
           order={selectedOrder}
-          tickets={tickets!}
-          products={products!}
           open={DetailDialogOpen}
           onClose={handleCloseDialog}
+          onDelete={() => handleCheckConfirmDelete(selectedOrder) }  
         />
       )}
     </div>
