@@ -44,14 +44,16 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   const [expiryDate, setExpiryDate] = useState<String>("");
   const [value, setValue] = useState<Number>(0);
   const [minPurchase, setMinPurchase] = useState<Number>(0);
+  const [maxUsage, setMaxUsage] = useState<Number>(0);
 
   const handleAddClick = () => {
     const newDiscount = {
       code,
-      type,
-      minPurchase,
+      discount_type: type,
+      min_purchase: minPurchase,
+      max_usage: maxUsage,
       value,
-      expiryDate,
+      expiry_date: expiryDate,
     };
     onAdd(newDiscount);
     onClose();
@@ -119,6 +121,20 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
             margin="dense"
             size="small"
             value={minPurchase}
+            onChange={(e) => setMinPurchase(Number(e.target.value))}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+            Max usage:
+          </Typography>
+          <TextField
+            type="number"
+            fullWidth
+            margin="dense"
+            size="small"
+            value={maxUsage}
+            onChange={(e) => setMaxUsage(Number(e.target.value))}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

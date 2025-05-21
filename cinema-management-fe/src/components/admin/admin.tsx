@@ -14,9 +14,7 @@ import Movies from "./Movies";
 // import Rooms from "./Rooms";
 import Reviews from "./Reviews";
 import Settings from "./Settings";
-import Profile from "./Profile";
 import NavSelection from "./elements/NavSelection";
-import ProfileImg from "./../../assets/images/profile.png";
 import HomeImg from "./../../assets/images/home.svg";
 import EmployeesImg from "./../../assets/images/employees.svg";
 import CustomersImg from "./../../assets/images/customers.svg";
@@ -30,37 +28,14 @@ import DiscountsImg from "./../../assets/images/discounts.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
 import SettingsImg from "./../../assets/images/settings.svg";
 import ReviewsImg from "./../../assets/images/customerRatings.svg";
-// import Login from "./Login";
 import { Button } from "@mui/material";
-import { UserType } from "../../interfaces/types";
 import Rooms from "./Rooms";
 import Showtimes from "./Showtimes";
-
-const exampleAdmin: UserType = {
-  user_id: 1,
-  fullname: "John Doe",
-  email: "john.doe@example.com",
-  phone: "123-456-7890",
-  password_hash: "hashedpassword1",
-  dob: "1990-01-01",
-  cccd: "123456789",
-  role: "admin",
-  created_at: "2023-01-01T10:00:00",
-};
+import Profile from "./Profile";
 
 const Admin: React.FC = () => {
-  // const [isPopUpVisible, setIsPopUpVisible] = useState<boolean>(false);
-  const [isProfileVisible, setIsProfileVisible] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const location = useLocation();
-
-  // const handleOpenPopUpClick = () => {
-  //   setIsPopUpVisible(true);
-  // };
-
-  // const handleClosePopUpClick = () => {
-  //   setIsPopUpVisible(false);
-  // };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -70,25 +45,9 @@ const Admin: React.FC = () => {
     setIsSidebarOpen(false);
   };
 
-  const toggleProfileVisibility = () => {
-    setIsProfileVisible(!isProfileVisible); // Toggle Profile visibility
-  };
-
   return (
     <div className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] overflow-auto">
-      <Header
-        ProfileName={exampleAdmin.fullname}
-        ProfileRole={exampleAdmin.role}
-        ProfilePic={ProfileImg}
-        onArrowDownClick={toggleProfileVisibility}
-      />
-      {isProfileVisible && (
-        <Profile
-          user={exampleAdmin}
-          open={isProfileVisible}
-          onClose={toggleProfileVisibility}
-        />
-      )}
+      <Header />
       <div className="sidebar-toggle z-[1000] fixed md:hidden block">
         <Button
           sx={{
@@ -220,6 +179,10 @@ const Admin: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<AdminHome />} />
+            <Route
+              path="profile"
+              element={<Profile />}
+            />
             <Route path="cinemas" element={<Cinemas />} />
             <Route path="rooms" element={<Rooms />} />
             <Route path="customers" element={<Customers />} />

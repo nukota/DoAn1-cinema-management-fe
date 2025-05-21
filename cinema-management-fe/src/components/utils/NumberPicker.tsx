@@ -1,17 +1,23 @@
-import React from "react"
-import { Box, Button, Typography } from "@mui/material"
+import React from "react";
+import { Box, Button, Typography } from "@mui/material";
 
 interface NumberPickerProps {
-  value: number
-  onChange: (value: number) => void
+  value: number;
+  onChange: (value: number) => void;
+  theme?: "light" | "dark";
 }
-const NumberPicker: React.FC<NumberPickerProps> = ({ value, onChange }) => {
+const NumberPicker: React.FC<NumberPickerProps> = ({
+  value,
+  onChange,
+  theme = "dark",
+}) => {
+  const isDarkMode = theme === "dark";
   const handleIncrement = () => {
-    onChange(value + 1)
-  }
+    onChange(value + 1);
+  };
   const handleDecrement = () => {
-    onChange(value - 1)
-  }
+    onChange(value - 1);
+  };
   return (
     <Box
       sx={{
@@ -19,7 +25,7 @@ const NumberPicker: React.FC<NumberPickerProps> = ({ value, onChange }) => {
         height: "32px",
         display: "flex",
         alignItems: "center",
-        backgroundColor: "#222",
+        backgroundColor: isDarkMode ? "#222" : "#f0f0f0",
         borderRadius: 2,
       }}
     >
@@ -32,8 +38,8 @@ const NumberPicker: React.FC<NumberPickerProps> = ({ value, onChange }) => {
           fontSize: 30,
           pt: 0.25,
           fontWeight: "medium",
-          borderRight: "1px solid #444",
-          color: "gray",
+          borderRight: `1px solid ${isDarkMode ? "#444" : "#ccc"}`,
+          color: isDarkMode ? "gray" : "#333",
         }}
       >
         -
@@ -46,7 +52,7 @@ const NumberPicker: React.FC<NumberPickerProps> = ({ value, onChange }) => {
           fontWeight: "medium",
           fontSize: 18,
           pt: 0.25,
-          color: "white",
+          color: isDarkMode ? "white" : "#000",
           zIndex: 30,
         }}
       >
@@ -62,14 +68,14 @@ const NumberPicker: React.FC<NumberPickerProps> = ({ value, onChange }) => {
           fontSize: 24,
           pt: 0.25,
           fontWeight: "medium",
-          borderLeft: "1px solid #444",
-          color: "gray",
+          borderLeft: `1px solid ${isDarkMode ? "#444" : "#ccc"}`,
+          color: isDarkMode ? "gray" : "#333",
         }}
       >
         +
       </Button>
     </Box>
-  )
-}
+  );
+};
 
-export default NumberPicker
+export default NumberPicker;

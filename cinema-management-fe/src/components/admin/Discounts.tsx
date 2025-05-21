@@ -1,13 +1,22 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import Discount from "./items/Discount";
 import { DiscountType } from "../../interfaces/types";
-import { exampleDiscounts } from "../../data";
 import CreateDiscount from "./dialogs/CreateDiscount";
+import { useDiscounts } from "../../providers/DiscountsProvider";
+import DetailDiscount from "./dialogs/DetailDiscount";
 
 const Discounts: React.FC = () => {
+  const {
+    discounts,
+    fetchDiscountsData,
+    updateDiscount,
+    deleteDiscount,
+    createDiscount,
+    loading,
+  } = useDiscounts();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -16,9 +25,14 @@ const Discounts: React.FC = () => {
   );
 
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchDiscountsData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -41,9 +55,35 @@ const Discounts: React.FC = () => {
     setAddDialogOpen(true);
   };
 
-  const handleCheckConfirmDelete = (discount: DiscountType) => {
-    setShowDeleteConfirm(true);
+  const handleInfoClick = (discount: DiscountType) => {
     setSelectedDiscount(discount);
+    setDetailDialogOpen(true);
+  };
+
+  const handleDeleteDiscount = async (discountId: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this discount?"
+    );
+    if (!confirmed) return;
+    try {
+      await deleteDiscount(discountId);
+      await fetchDiscountsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error deleting discount:", error);
+      alert("An error occurred while deleting the discount. Please try again.");
+    }
+  };
+
+  const handleOnSave = async (newDiscount: DiscountType) => {
+    try {
+      await updateDiscount(newDiscount);
+      await fetchDiscountsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save Discount:", error);
+      alert("An error occurred while saving the Discount. Please try again.");
+    }
   };
 
   const handleCloseDialog = () => {
@@ -51,15 +91,24 @@ const Discounts: React.FC = () => {
     setSelectedDiscount(null);
   };
 
-  const handleAddNewDiscount = async (newDiscount: DiscountType) => {};
+  const handleAddNewDiscount = async (newDiscount: DiscountType) => {
+    try {
+      await createDiscount(newDiscount);
+      await fetchDiscountsData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new discount:", error);
+      alert("An error occurred while adding the new discount. Please try again.");
+    }
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueDiscounts = exampleDiscounts.filter(
+  const uniqueDiscounts = discounts.filter(
     (discount, index, self) =>
-      index === self.findIndex((e) => e.discount_id === discount.discount_id)
+      index === self.findIndex((e) => e._id === discount._id)
   );
 
   const filteredDiscounts = uniqueDiscounts.filter((discount) => {
@@ -70,8 +119,8 @@ const Discounts: React.FC = () => {
 
     return (
       (isDateMatch && // Filter by selectedDate
-        discount.discount_id &&
-        discount.discount_id.toString().includes(searchTermLower)) ||
+        discount._id &&
+        discount._id.toString().includes(searchTermLower)) ||
       (discount.code &&
         discount.code.toLowerCase().includes(searchTermLower)) ||
       (discount.discount_type &&
@@ -170,12 +219,13 @@ const Discounts: React.FC = () => {
       <div className="discounts-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
-          <div className="w-[10%] text-base">CODE</div>
-          <div className="w-[14%] text-base">Type</div>
+          <div className="w-[12%] text-base">CODE</div>
+          <div className="w-[12%] text-base">Type</div>
           <div className="w-[12%] text-base">Value</div>
-          <div className="w-[16%] text-base">Minium Purchase</div>
+          <div className="w-[12%] text-base">Min Purchase</div>
+          <div className="w-[12%] text-base">Max Usage</div>
           <div className="w-[20%] text-base">Expiry Date</div>
-          <div className="w-[20%] text-base">Discount Action</div>
+          <div className="w-[12%] text-base">Action</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
@@ -185,7 +235,11 @@ const Discounts: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentDiscounts.map((discount) => (
-            <Discount key={discount.discount_id} {...discount} />
+            <Discount
+              discount={discount}
+              handleInfoClick={() => handleInfoClick(discount)}
+              handleDeleteClick={() => handleDeleteDiscount(discount._id)}
+            />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">
@@ -221,13 +275,14 @@ const Discounts: React.FC = () => {
           )}
         </div>
       </div>
-      {/* {selectedDiscount && (
+      {selectedDiscount && (
         <DetailDiscount
           discount={selectedDiscount}
           open={DetailDialogOpen}
+          onSave={handleOnSave}
           onClose={handleCloseDialog}
         />
-      )} */}
+      )}
       <CreateDiscount
         open={AddDialogOpen}
         onClose={handleCloseDialog}

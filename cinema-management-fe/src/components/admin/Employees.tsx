@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Employee from "./items/Employee";
 import DetailEmployee from "./dialogs/DetailEmployee";
 import CreateEmployee from "./dialogs/CreateEmployee";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
-import { exampleEmployees } from "../../data";
 import { EmployeeType } from "../../interfaces/types";
+import { useEmployees } from "../../providers/EmployeesProvider";
 
 const Employees: React.FC = () => {
+  const {
+    employees,
+    fetchEmployeesData,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee,
+    loading,
+  } = useEmployees();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -22,6 +30,10 @@ const Employees: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchEmployeesData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -41,7 +53,7 @@ const Employees: React.FC = () => {
   };
 
   const uniqueCinemas = Array.from(
-    new Set(exampleEmployees.map((employee) => employee.cinema_id))
+    new Set(employees.map((employee) => employee.cinema_id))
   ).map((cinema_id) => ({
     cinema_id,
     name: `Cinema ${cinema_id}`,
@@ -61,8 +73,9 @@ const Employees: React.FC = () => {
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (employee: EmployeeType) => {
-    setShowDeleteConfirm(true);
-    setSelectedEmployee(employee);
+    handleDeleteEmployee(employee._id);
+    // setShowDeleteConfirm(true);
+    // setSelectedEmployee(employee);
   };
 
   const handleCloseDialog = () => {
@@ -71,31 +84,55 @@ const Employees: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {};
-  const handleOnSave = async (employee: EmployeeType) => {};
+  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {
+    try {
+      await createEmployee(newEmployee);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new Employee:", error);
+      alert("An error occurred while adding the Employee. Please try again.");
+    }
+  };
+
+  const handleOnSave = async (updatedEmployee: EmployeeType) => {
+    try {
+      await updateEmployee(updatedEmployee);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save Employee:", error);
+      alert("An error occurred while saving the Employee. Please try again.");
+    }
+  };
+
+  const handleDeleteEmployee = async (EmployeeId: string) => {
+    try {
+      await deleteEmployee(EmployeeId);
+      await fetchEmployeesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete Employee:", error);
+      alert("An error occurred while deleting the Employee. Please try again.");
+    }
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
-
-  const uniqueEmployees = exampleEmployees.filter(
-    (employee, index, self) =>
-      index === self.findIndex((e) => e.employee_id === employee.employee_id)
-  );
-
-  const filteredEmployees = uniqueEmployees.filter((employee) => {
+  const filteredEmployees = employees.filter((employee) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (employee.fullname &&
-        employee.fullname.toLowerCase().includes(searchTermLower)) ||
+      (employee.full_name &&
+        employee.full_name.toLowerCase().includes(searchTermLower)) ||
       (employee.cccd && employee.cccd.toString().includes(searchTermLower)) ||
       (employee.role &&
         employee.role.toLowerCase().includes(searchTermLower)) ||
-      (employee.dob && employee.dob.includes(searchTermLower));
-  
+      (employee.dateOfBirth && employee.dateOfBirth.includes(searchTermLower));
+
     const matchesCinema =
       !selectedCinema || employee.cinema_id.toString() === selectedCinema;
-  
+
     return matchesSearch && matchesCinema;
   });
 
@@ -220,7 +257,7 @@ const Employees: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentEmployees.map((employee) => (
             <Employee
-              key={employee.user_id}
+              key={employee._id}
               employee={employee}
               handleInfoClick={() => handleInfoClick(employee)}
               handleDeleteClick={() => handleCheckConfirmDelete(employee)}

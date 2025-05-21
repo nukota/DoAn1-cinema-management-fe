@@ -1,72 +1,129 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { exampleRooms, exampleShowtimes } from "../../data";
-import { Box, Button } from "@mui/material";
-import { MovieType, ShowtimeType } from "../../interfaces/types";
+import { Box } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RoomShowtimes from "./items/RoomShowtimes";
 import { Mousewheel, Navigation } from "swiper/modules";
 import theme from "../../main";
+import { ShowtimeType } from "../../interfaces/types";
+import { useRooms } from "../../providers/RoomsProvider";
+import { useShowtimes } from "../../providers/ShowtimesProvider";
+import { useMovies } from "../../providers/MoviesProvider";
 
 const Showtimes: React.FC = () => {
+  const { rooms, fetchRoomsData } = useRooms();
+  const {
+    showtimes,
+    fetchShowtimesData,
+    createShowtime,
+    updateShowtime,
+    deleteShowtime,
+  } = useShowtimes();
+  const { movies, fetchMoviesData } = useMovies();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedMovie, setSelectedMovie] = useState<string>("");
+
+  useEffect(() => {
+    fetchRoomsData();
+    console.log("Rooms data fetched:", rooms);
+    fetchShowtimesData();
+    console.log("Showtimes data fetched:", showtimes);
+    fetchMoviesData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(event.target.value);
-    };
-  
-    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSelectedDate(event.target.value);
-    };
-  
-    const handleCalendarClick = () => {
-      const datePicker = document.getElementById(
-        "date-picker"
-      ) as HTMLInputElement;
-      datePicker.focus();
-    };
-  
-    const uniqueCinemas = Array.from(
-      new Set(exampleRooms.map((room) => room.cinema_id))
-    ).map((cinema_id) => ({
-      cinema_id,
-      name: `Cinema ${cinema_id}`,
-    }));
-  
-    const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedCinema(event.target.value);
-    };
+    setSearchTerm(event.target.value);
+  };
 
-  const handleDeleteClick = () => {};
-  const handleAddNewClick = () => {};
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
+  };
 
-  const filteredShowtimes = exampleShowtimes.filter((showtime) => {
+  const handleCalendarClick = () => {
+    const datePicker = document.getElementById(
+      "date-picker"
+    ) as HTMLInputElement;
+    datePicker.focus();
+  };
+
+  const uniqueCinemas = Array.from(
+    new Set(rooms.map((room) => room.cinema.cinema_id))
+  ).map((cinema_id) => ({
+    cinema_id,
+    name: `Cinema ${cinema_id}`,
+  }));
+
+  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCinema(event.target.value);
+  };
+
+  const handleMovieChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMovie(event.target.value);
+  };
+
+  const handleAddShowtime = async (newShowtime: ShowtimeType) => {
+    try {
+      await createShowtime(newShowtime);
+    } catch (error) {
+      console.error("Failed to add showtime:", error);
+    }
+  };
+
+  const handleUpdateShowtime = async (updatedShowtime: ShowtimeType) => {
+    try {
+      await updateShowtime(updatedShowtime);
+    } catch (error) {
+      console.error("Failed to update showtime:", error);
+    }
+  };
+
+  const handleDeleteShowtime = async (showtimeId: string) => {
+    try {
+      await deleteShowtime(showtimeId);
+    } catch (error) {
+      console.error("Failed to delete showtime:", error);
+    }
+  };
+
+  const filteredShowtimes = showtimes.filter((showtime) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearchTerm =
-      (showtime.showtime_id &&
-        showtime.showtime_id.toString().includes(searchTermLower)) ||
-      (showtime.movie_id &&
-        showtime.movie_id.toString().includes(searchTermLower));
+      (showtime._id && showtime._id.toString().includes(searchTermLower)) ||
+      (showtime.movie.title &&
+        showtime.movie.title
+          .toString()
+          .toLowerCase()
+          .includes(searchTermLower));
 
-    const matchesDate =
-      !selectedDate || showtime.showtime.startsWith(selectedDate);
+    // Normalize showtime to local date
+    const showtimeDate = new Date(showtime.showtime);
+    const localShowtimeDate = `${showtimeDate.getFullYear()}-${String(
+      showtimeDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(showtimeDate.getDate()).padStart(2, "0")}`;
 
-    return matchesSearchTerm && matchesDate;
+    const matchesDate = !selectedDate || localShowtimeDate === selectedDate;
+
+    const matchesMovie =
+      !selectedMovie || showtime.movie.title === selectedMovie;
+
+    return matchesSearchTerm && matchesDate && matchesMovie;
   });
 
-  // Group filtered showtimes by room
-  const roomsWithShowtimes = exampleRooms
-    .filter((room) => !selectedCinema || room.cinema_id.toString() === selectedCinema)
+  const roomsWithShowtimes = rooms
+    .filter(
+      (room) =>
+        !selectedCinema || room.cinema.cinema_id.toString() === selectedCinema
+    )
     .map((room) => ({
       ...room,
       showtimes: filteredShowtimes.filter(
-        (showtime) => showtime.room_id === room.room_id
+        (showtime) => showtime.room.room_id === room._id
       ),
-    }));
-    console.log("Rooms with Showtimes:", roomsWithShowtimes);
+    }))
+    .sort((a, b) => a._id.localeCompare(b._id));
   return (
     <div className="showtimes flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Showtimes</div>
@@ -124,21 +181,26 @@ const Showtimes: React.FC = () => {
               className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
             />
           </div>
-        </div>
-        <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
-            sx={{
-              mt: 2,
-              ml: { 1270: 2 },
-              width: "114px",
-              height: "32px",
-            }}
-          >
-            Add New
-          </Button>
+          {/* Movie select */}
+          <div className="MovieFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
+            <select
+              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+              value={selectedMovie}
+              onChange={handleMovieChange}
+            >
+              <option value="">All Movies</option>
+              {movies.map((movie) => (
+                <option key={movie._id} value={movie.title}>
+                  {movie.title}
+                </option>
+              ))}
+            </select>
+            <img
+              src={SearchImg}
+              alt="Movie"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
+            />
+          </div>
         </div>
       </div>
 
@@ -146,7 +208,7 @@ const Showtimes: React.FC = () => {
         sx={{
           position: "relative",
           mt: 4,
-          width: { xs: "100%", md: "80%" },
+          width: "100%",
           maxWidth: { md: "960px", lg: "1200px", xl: "2000px" },
           px: 2,
           py: 2,
@@ -204,8 +266,15 @@ const Showtimes: React.FC = () => {
     `}
           </style>
           {roomsWithShowtimes.map((room) => (
-            <SwiperSlide key={room.room_id}>
-              <RoomShowtimes room={room} showtimes={room.showtimes} />
+            <SwiperSlide key={room._id}>
+              <RoomShowtimes
+                room={room}
+                showtimes={room.showtimes}
+                movies={movies}
+                onAddShowtime={handleAddShowtime}
+                onUpdateShowtime={handleUpdateShowtime}
+                onDeleteShowtime={handleDeleteShowtime}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

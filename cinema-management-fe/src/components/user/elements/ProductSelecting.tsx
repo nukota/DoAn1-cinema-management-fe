@@ -49,7 +49,7 @@ interface ProductSelectingProps {
           const amount = existingProduct ? existingProduct.amount : 0;
           return (
             <ProductItem
-              key={product.product_id}
+              key={product._id}
               product={product}
               amount={amount}
               setAmount={setAmount}

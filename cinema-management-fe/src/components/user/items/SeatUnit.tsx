@@ -1,43 +1,39 @@
-import { Box, Typography, useTheme } from "@mui/material";
-import React, { useState } from "react";
+import { Box } from "@mui/material";
+import React from "react";
 import { SeatType } from "../../../interfaces/types";
 
 interface SeatUnitProps {
   seat: SeatType;
-  status: "available" | "reserved" | "selected";
+  available: boolean;
+  isSelected: boolean;
   onSelect: (seat: SeatType) => void;
 }
-const SeatUnit: React.FC<SeatUnitProps> = ({ seat, status, onSelect }) => {
-  const [currentStatus, setCurrentStatus] = useState(status);
-
+const SeatUnit: React.FC<SeatUnitProps> = ({ seat, available, isSelected, onSelect }) => {
   const handleClick = () => {
-    if (currentStatus === "available") {
-      setCurrentStatus("selected");
-      onSelect(seat);
+    if (available) {
+      onSelect(seat); // Notify parent component of the selection
     }
   };
 
   const getBackgroundColor = () => {
-    switch (currentStatus) {
-      case "available":
-        return "#fafafa"; // Green for available
-      case "selected":
-        return "#b80007"; // Blue for selected
-      default:
-        return "#999999"; // Default background
+    if (isSelected) {
+      return "#c9a512"; // Red for selected
     }
+    if (available) {
+      return "#fafafa"; // Light gray for available
+    }
+    return "#999999"; // Gray for unavailable
   };
 
   const getTextColor = () => {
-    switch (currentStatus) {
-      case "available":
-        return "#000000"; // Black for available
-      case "selected":
-        return "#ffffff"; // White for selected
-      default:
-        return "#ffffff"; // Default text color
+    if (isSelected) {
+      return "#ffffff";
     }
-  }
+    if (available) {
+      return "#000000";
+    }
+    return "#ffffff";
+  };
 
   return (
     <Box
@@ -54,7 +50,7 @@ const SeatUnit: React.FC<SeatUnitProps> = ({ seat, status, onSelect }) => {
         fontSize: "12px",
         fontWeight: "bold",
         textAlign: "center",
-        cursor: currentStatus === "available" ? "pointer" : "not-allowed",
+        cursor: available ? "pointer" : "not-allowed",
         transition: "background-color 0.3s ease",
       }}
     >

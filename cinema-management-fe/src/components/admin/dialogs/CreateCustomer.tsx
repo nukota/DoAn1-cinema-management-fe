@@ -45,7 +45,7 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+  const [role, setRole] = useState<String>("customer");
   const [password, setPassword] = useState<String>("");
   const [confirmPassword, setConfirmPassword] = useState<String>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -59,7 +59,52 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
     setShowConfirmPassword((prev) => !prev);
   };
 
-  const handleAddClick = () => {};
+  const handleAddClick = async () => {
+    if (
+      !fullname ||
+      !cccd ||
+      !email ||
+      !phone ||
+      !dob ||
+      !password ||
+      !confirmPassword
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    const newCustomer = {
+      full_name: fullname,
+      email,
+      phone,
+      dateOfBirth: dob,
+      cccd,
+      role,
+      password,
+    };
+    try {
+      await onAdd(newCustomer);
+  
+      setFullname("");
+      setEmail("");
+      setPhone("");
+      setDob("");
+      setCccd("");
+      setRole("customer");
+      setPassword("");
+      setConfirmPassword("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to add customer:", error);
+      alert("An error occurred while adding the customer. Please try again.");
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -117,9 +162,9 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
             margin="dense"
             size="small"
             value={dob}
-            onChange={(e) => setDob(e.target.value)}
+            onChange={(e) => setDob(e.target.value)} 
           />
-        </Box>
+        </Box> 
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
             Phone Num:

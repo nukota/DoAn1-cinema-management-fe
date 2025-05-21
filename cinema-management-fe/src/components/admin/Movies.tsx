@@ -1,14 +1,15 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import Movie from "./items/Movie";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import addImg from "../../assets/images/add.svg";
-import { exampleMovies } from "../../data";
 import { MovieType } from "../../interfaces/types";
 import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
+import { useMovies } from "../../providers/MoviesProvider";
 
 const Movies: React.FC = () => {
+  const { movies, fetchMoviesData, createMovie, updateMovie, deleteMovie, loading } = useMovies();
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -16,6 +17,11 @@ const Movies: React.FC = () => {
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchMoviesData();
+  }
+  , []);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -51,20 +57,50 @@ const Movies: React.FC = () => {
     setSelectedMovie(null);
   };
 
-  const handleAddNewMovie = async (newMovie: MovieType) => {};
-  const handleOnSave = async (movie: MovieType) => {};
+  const handleAddNewMovie = async (newMovie: MovieType) => {
+    try {
+      await createMovie(newMovie);
+      await fetchMoviesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new movie:", error);
+      alert("An error occurred while adding the movie. Please try again.");
+    }
+  };
+  
+  const handleOnSave = async (updatedMovie: MovieType) => {
+    try {
+      await updateMovie(updatedMovie);
+      await fetchMoviesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save movie:", error);
+      alert("An error occurred while saving the movie. Please try again.");
+    }
+  };
+  
+  const handleDeleteMovie = async (movieId: string) => {
+    try {
+      await deleteMovie(movieId);
+      await fetchMoviesData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete movie:", error);
+      alert("An error occurred while deleting the movie. Please try again.");
+    }
+  };
 
-  const filteredMovies = exampleMovies.filter((movie) => {
+  const filteredMovies = movies.filter((movie) => {
     const matchesTab = activeTab === "All" || movie.status === activeTab;
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
-      (movie.name && movie.name.toLowerCase().includes(searchTermLower)) ||
+      (movie.title && movie.title.toLowerCase().includes(searchTermLower)) ||
       (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
-      (movie.releaseDate && movie.releaseDate.includes(searchTermLower)) ||
+      (movie.release_date && movie.release_date.includes(searchTermLower)) ||
       (movie.director && movie.director.includes(searchTermLower)) ||
-      (movie.cast && movie.cast.toLowerCase().includes(searchTermLower)) ||
-      (movie.genre && movie.genre.toLowerCase().includes(searchTermLower)) ||
-      (movie.nation && movie.nation.toLowerCase().includes(searchTermLower)) ||
+      (movie.actors && movie.actors.some((actor) => actor.toLowerCase().includes(searchTermLower))) ||
+      (movie.genre && movie.genre.some((genre) => genre.toLowerCase().includes(searchTermLower))) ||
+      (movie.country && movie.country.toLowerCase().includes(searchTermLower)) ||
       (movie.description &&
         movie.description.toLowerCase().includes(searchTermLower));
     return matchesTab && matchesSearch;
@@ -138,7 +174,7 @@ const Movies: React.FC = () => {
         <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6  2xl:grid-cols-8 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
           {filteredMovies.map((movie, index) => (
             <Movie
-              key={movie.movie_id}
+              key={movie._id}
               movie={movie}
               handleInfoClick={() => handleInfoClick(movie)}
             />
@@ -160,7 +196,7 @@ const Movies: React.FC = () => {
           open={DetailDialogOpen}
           movie={selectedMovie!}
           onClose={handleCloseDialog}
-          onDelete={handleCheckConfirmDelete}
+          onDelete={() => handleDeleteMovie(selectedMovie!._id)}
           onSave={handleOnSave}
         />
       )}

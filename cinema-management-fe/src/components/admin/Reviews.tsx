@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Review from "./items/Review";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { exampleReviews } from "../../data";
-import { Button } from "@mui/material";
 import { ReviewType } from "../../interfaces/types";
 import DetailReview from "./dialogs/DetailReview";
+import { useReviews } from "../../providers/ReviewsProvider";
 
 const Reviews: React.FC = () => {
+  const { reviews, fetchReviewsData, loading } = useReviews();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -16,6 +16,10 @@ const Reviews: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchReviewsData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -51,18 +55,12 @@ const Reviews: React.FC = () => {
     setSelectedReview(null);
   };
 
-  const uniqueReviews = exampleReviews.filter(
-    (review, index, self) =>
-      index === self.findIndex((e) => e.review_id === review.review_id)
-  );
-
-  const filteredReviews = uniqueReviews.filter((review) => {
+  const filteredReviews = reviews.filter((review) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (review.review_id &&
-        review.review_id.toString().includes(searchTermLower)) ||
-      (review.showtime_id &&
-        review.showtime_id.toString().includes(searchTermLower)) ||
+      (review._id && review._id.toString().includes(searchTermLower)) ||
+      (review.movie_id &&
+        review.movie_id.toString().includes(searchTermLower)) ||
       (review.user_id && review.user_id.toString().includes(searchTermLower)) ||
       (review.comment && review.comment.toLowerCase().includes(searchTermLower))
     );
@@ -153,12 +151,12 @@ const Reviews: React.FC = () => {
       </div>
       <div className="Reviews-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[10%] text-base">Review ID</div>
-          <div className="w-[10%] text-base">Showtime</div>
-          <div className="w-[20%] text-base">User ID</div>
-          <div className="w-[20%] text-base">Rating</div>
-          <div className="w-[20%] text-base">Comment</div>
-          <div className="w-[20%] text-base">Review Action</div>
+          <div className="w-[14%] text-base">Review ID</div>
+          <div className="w-[14%] text-base">Movie ID</div>
+          <div className="w-[14%] text-base">User ID</div>
+          <div className="w-[14%] text-base">Rating</div>
+          <div className="w-[28%] text-base">Comment</div>
+          <div className="w-[16%] text-base">Review Action</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />

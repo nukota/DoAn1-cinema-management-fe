@@ -1,121 +1,159 @@
 export type UserType = {
-  user_id: number;
-  fullname: string;
+  _id: string;
+  full_name: string;
   email: string;
   phone: string;
   password_hash: string;
-  dob: string;
+  dateOfBirth: string;
   cccd: string;
   role: "employee" | "admin" | "customer";
   created_at: string;
 };
 
 export type EmployeeType = UserType & {
-  employee_id: number;
-  cinema_id: number;
+  employee_id: string;
+  cinema_id: string;
   position: string;
   shift: string;
 };
 
 export type CinemaType = {
-  cinema_id: number;
+  _id: string;
   name: string;
   address: string;
 };
 
 export type MovieType = {
-  movie_id: number;
+  _id: string;
   status: "Stopped" | "Unknown" | "Now Playing" | "Coming Soon";
-  name: string;
-  poster: string;
-  genre: string;
-  duration: string;
-  nation: string;
-  ageLimit: number;
-  releaseDate: string;
+  title: string;
+  poster_url: string;
+  genre: string[];
+  duration: number;
+  country: string;
+  age_limit: number;
+  release_date: string;
   director: string;
-  cast: string;
+  actors: string[];
   description: string;
   rating: number;
-  trailer: string;
+  trailer_url: string;
+  showtimes?: {
+    _id: string;
+    room_id: string;
+    movie_id: string;
+    showtime: string;
+    price: number;
+  }[];
 };
 
 export type ProductType = {
-  product_id: number;
+  _id: string;
   image: string;
   name: string;
-  description?: string;
   price: number;
   category: string;
 };
 
 export type RoomType = {
-  room_id: number;
-  cinema_id: number;
+  _id: string;
   name: string;
   seat_count: number;
-  repairing: boolean;
+  cinema: {
+    cinema_id: string;
+    name: string;
+  };
+};
+
+export type RoomWithSeatsType = {
+  _id: string;
+  name: string;
+  cinema_id: string;
+  seats: { seat_name: string; seat_column: number }[];
 };
 
 export type ShowtimeType = {
-  showtime_id: number;
-  room_id: number;
-  movie_id: number;
+  _id: string;
+  room: {
+    room_id: string;
+    name: string;
+  };
+  room_id: string;
+  movie: {
+    movie_id: string;
+    title: string;
+  };
   showtime: string;
   price: number;
 };
 
 export type SeatType = {
-  room_id: number;
-  seat_id: number;
+  room_id: string;
+  _id: string;
   seat_column: number;
   seat_name: string;
+  available?: boolean;
 };
 
 export type TicketType = {
-  ticket_id: number;
-  showtime_id: number;
+  _id: string;
+  showtime_id: string;
   seat_id: string;
-  order_id: number;
+  order_id: string;
 };
 
 export type OrderType = {
-  order_id: number;
-  user_id: number;
+  _id: string;
+  ordercode: string;
+  user_id: string;
   total_price: number;
-  status: "pending" | "completed" | "cancelled";
-  created_at: string;
+  status: "pending" | "paid" | "cancelled";
+  ordered_at: string;
+  ticketCount?: number;
+  productCount?: number;
+  tickets?: {
+    title: string; //movie tiltle
+    showtime: string; //date time
+    price: number; //price of each ticket
+    seats: { seat_id: string; seat_name: string }[];
+  };
+  products?: {
+    product_id: string;
+    name: string;
+    quantity: number;
+  }[];
 };
 
 export type PaymentType = {
-  payment_id: number;
-  order_id: number;
+  _id: string;
+  order_id: string;
   amount: number;
   payment_method: string;
-  status: "pending" | "completed" | "cancelled";
-  discount_id: number;
+  status?: "pending" | "completed" | "cancelled";
+  discount_id: string;
   paid_at: string;
 };
 
 export type OrderProductType = {
-  order_id: number;
-  product_id: number;
+  order_id: string;
+  product_id: string;
   quantity: number;
 };
 
 export type DiscountType = {
-  discount_id: number;
+  _id: string;
   code: string;
   discount_type: "percentage" | "fixed";
   value: number;
   min_purchase: number;
+  max_usage: number;
   expiry_date: string;
 };
 
 export type ReviewType = {
-  review_id: number;
-  user_id: number;
-  showtime_id: number;
+  _id: string;
+  user_id: string;
+  showtime_id: string;
   rating: number;
   comment: string;
   created_at: string;

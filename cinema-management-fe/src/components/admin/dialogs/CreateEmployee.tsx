@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CinemaType } from "../../../interfaces/types";
-import { exampleCinemas } from "../../../data";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useCinemas } from "../../../providers/CinemasProvider";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -48,8 +48,8 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Employee");
-  const [cinemaId, setCinemaId] = useState<number>();
+  const [role, setRole] = useState<String>("employee");
+  const [cinemaId, setCinemaId] = useState<string>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
   const [password, setPassword] = useState<String>("");
@@ -57,16 +57,72 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
+  const { cinemas, fetchCinemasData } = useCinemas(); // Use the useCinemas hook
 
+  useEffect(() => {
+    fetchCinemasData();
+  }, []);
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev);
-  }
+  };
 
+  const handleAddClick = async () => {
+    if (
+      !fullname ||
+      !email ||
+      !phone ||
+      !dob ||
+      !password ||
+      !confirmPassword ||
+      !cccd ||
+      !cinemaId ||
+      !shift ||
+      !position
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
-  const handleAddClick = () => {};
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    const newEmployee = {
+      full_name: fullname,
+      email,
+      phone,
+      dateOfBirth: dob,
+      cccd,
+      cinema_id: cinemaId,
+      shift,
+      position,
+      password,
+    };
+    try {
+      await onAdd(newEmployee);
+
+      setFullname("");
+      setEmail("");
+      setPhone("");
+      setDob("");
+      setCccd("");
+      setRole("Employee");
+      setCinemaId(undefined);
+      setShift(null);
+      setPosition("");
+      setPassword("");
+      setConfirmPassword("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to add employee:", error);
+      alert("An error occurred while adding the employee. Please try again.");
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -176,10 +232,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
             onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               endAdornment: (
-                <IconButton
-                  onClick={togglePasswordVisibility}
-                  edge="end"
-                >
+                <IconButton onClick={togglePasswordVisibility} edge="end">
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               ),
@@ -224,13 +277,11 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
             Cinema:
           </Typography>
           <Autocomplete
-            options={exampleCinemas}
-            value={exampleCinemas.find((c) => c.cinema_id === cinemaId) || null}
+            options={cinemas}
+            value={cinemas.find((c) => c._id === cinemaId) || null}
             fullWidth
-            onChange={(event, newValue) => setCinemaId(newValue?.cinema_id)}
-            getOptionLabel={(option) =>
-              `(ID: ${option.cinema_id}) ${option.name}`
-            }
+            onChange={(event, newValue) => setCinemaId(newValue?._id)}
+            getOptionLabel={(option) => `(ID: ${option._id}) ${option.name}`}
             renderInput={(params) => (
               <TextField
                 {...params}

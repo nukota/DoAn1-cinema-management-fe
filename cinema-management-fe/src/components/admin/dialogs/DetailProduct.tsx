@@ -56,15 +56,14 @@ const DetailProduct: React.FC<DetailProductProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [image, setImage] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [category, setCategory] = useState<string>("");
 
   useEffect(() => {
+    console.log("Product: ", product);
     if (product) {
       setName(product.name);
       setImage(product.image);
-      setDescription(product.description || "");
       setPrice(product.price);
       setCategory(product.category);
     }
@@ -78,6 +77,13 @@ const DetailProduct: React.FC<DetailProductProps> = ({
   };
 
   const handleSaveClick = () => {
+    onSave({
+      ...product,
+      name,
+      image,
+      price,
+      category,
+    });
     setIsEditing(false);
   };
 
@@ -115,23 +121,23 @@ const DetailProduct: React.FC<DetailProductProps> = ({
                 margin="dense"
                 sx={{ width: 240 }}
                 size="small"
-                value={product.product_id}
+                value={product._id}
                 disabled
                 onChange={(e) => setName(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
               <Typography sx={{ mr: 2, marginTop: 1, width: 100 }}>
-                Description:
+                Name:
               </Typography>
               <TextField
-                placeholder="Description"
+                placeholder="Name"
+                sx={{ width: 240 }}
                 margin="dense"
                 size="small"
-                sx={{ width: 240 }}
-                value={description}
                 disabled={!isEditing}
-                onChange={(e) => setDescription(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -160,7 +166,6 @@ const DetailProduct: React.FC<DetailProductProps> = ({
               </Typography>
               <TextField
                 placeholder="Image"
-                type="number"
                 sx={{ width: 240 }}
                 margin="dense"
                 size="small"
@@ -226,20 +231,20 @@ const DetailProduct: React.FC<DetailProductProps> = ({
         ) : (
           <Box display="flex" gap={2}>
             <Button
-              onClick={onDelete}
-              color="primary"
-              variant="outlined"
-              sx={{ width: 130 }}
-            >
-              Delete
-            </Button>
-            <Button
               onClick={onClose}
               color="primary"
               variant="outlined"
               sx={{ width: 130 }}
             >
               Close
+            </Button>
+            <Button
+              onClick={onDelete}
+              color="primary"
+              variant="outlined"
+              sx={{ width: 130 }}
+            >
+              Delete
             </Button>
             <Button
               onClick={handleModifyClick}

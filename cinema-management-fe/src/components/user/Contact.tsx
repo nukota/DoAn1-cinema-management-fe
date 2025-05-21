@@ -6,14 +6,14 @@ const Contact: React.FC = () => {
   return (
     <div className="bg-black w-full h-full flex flex-col justify-center relative">
       <img
-        className="absolute w-full h-[820px] top-[60px] z-0 opacity-20"
+        className="absolute w-full h-full top-0 z-0 opacity-20"
         src={wallPaperImg}
       />
       <Box
         sx={{
           width: "72%",
           marginLeft: "14%",
-          minWidth: "200px",
+          minWidth: "840px",
           typography: "body1",
           backgroundColor: "white",
           marginTop: "120px",
@@ -117,7 +117,8 @@ const Contact: React.FC = () => {
               Contact Information
             </h2>
             <p className="mb-2">
-              <strong>Address:</strong> Long Thanh My, TP.Thu Duc, Ho Chi Minh, VietNam
+              <strong>Address:</strong> Long Thanh My, TP.Thu Duc, Ho Chi Minh,
+              VietNam
             </p>
             <p className="mb-2">
               <strong>Phone:</strong> IDK
@@ -128,8 +129,7 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </Box>
-      <div className="w-full bg-black z-20">
-      </div>
+      <div className="w-full bg-black z-20"></div>
     </div>
   );
 };

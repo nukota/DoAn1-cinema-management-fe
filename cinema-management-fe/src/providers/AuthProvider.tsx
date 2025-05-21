@@ -6,19 +6,11 @@ import React, {
   useEffect,
 } from "react";
 import axios from "axios";
-
-interface UserProfile {
-  email: string;
-  name: string;
-  phone: string;
-  dateOfBirth: string;
-  cccd: string;
-  role: string;
-}
+import { UserType } from "../interfaces/types";
 
 export interface AuthContextType {
   isLoggedIn: boolean;
-  userProfile: UserProfile | null;
+  userProfile: UserType | null;
   accessToken: string | null;
   handleLogin: (email: string, password: string) => Promise<void>;
   handleLogout: () => void;
@@ -45,13 +37,11 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserType | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // Base URL from .env file
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Function to fetch user profile
   const fetchUserProfile = async (token: string, email: string) => {
     try {
       const response = await axios.get(`${baseURL}/user/email?email=${email}`, {
@@ -62,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
-      handleLogout(); // Clear invalid token
+      handleLogout();
     }
   };
 
@@ -75,12 +65,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
       });
 
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken, user_id } = response.data;
 
       // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("email", email);
+      localStorage.setItem("user_id", user_id);
 
       // Fetch user profile
       await fetchUserProfile(accessToken, email);
@@ -114,6 +105,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Clear tokens and user state
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("email"); 
+    localStorage.removeItem("user_id"); 
     setUserProfile(null);
     setAccessToken(null);
     setIsLoggedIn(false);

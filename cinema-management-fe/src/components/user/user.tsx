@@ -10,13 +10,17 @@ import TermsOfService from "./TermsOfService";
 import AboutUs from "./AboutUs";
 import UserHeader from "./elements/Header";
 import Footer from "./elements/Footer";
+import UserProfile from "./Profile";
+import Payment from "./Payment";
 
 const User: React.FC = () => {
   return (
-    <div className="bg-black min-h-screen w-full h-auto">
+    <div className="bg-black min-h-screen w-full h-auto relative">
       <UserHeader />
+      <div className="z-[99] bg-black w-full relative">
       <Routes>
         <Route path="/" element={<UserHome />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="/home" element={<UserHome />} />
         <Route path="/contact" element={<Contact />} />   
         <Route path="/login" element={<Login />} />
@@ -26,8 +30,13 @@ const User: React.FC = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/payment" element={<Payment />} />
       </Routes>
-      <Footer />
+      </div>
+      <div className="z-[100] bg-black w-full">
+        <Footer />
+      </div>
+      
     </div>
   );
 }

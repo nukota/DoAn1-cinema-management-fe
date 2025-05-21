@@ -49,16 +49,16 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("Customer");
+  const [role, setRole] = useState<String>("customer");
   const [password, setPassword] = useState<String>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (customer) {
-      setFullname(customer.fullname);
+      setFullname(customer.full_name);
       setEmail(customer.email);
       setPhone(customer.phone);
-      setDob(customer.dob);
+      setDob(customer.dateOfBirth ? customer.dateOfBirth.split("T")[0] : "");
       setCccd(customer.cccd);
     }
     if (!open) {
@@ -71,7 +71,17 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
   };
 
   const handleSaveClick = () => {
-    setIsEditing(false);
+    const updatedCustomer = {
+      ...customer,
+      full_name: fullname,
+      email,
+      phone,
+      dateOfBirth: dob,
+      cccd,
+      role,
+      password: password || undefined,
+    };
+    onSave(updatedCustomer);
   };
 
   const togglePasswordVisibility = () => {
@@ -104,7 +114,7 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
           <TextField
             placeholder="Auto generated"
             fullWidth
-            value={customer.user_id}
+            value={customer._id}
             disabled
             margin="dense"
             size="small"

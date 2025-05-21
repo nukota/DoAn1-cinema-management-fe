@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Customer from "./items/Customer";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
-import { exampleCustomers } from "../../data";
+import { useCustomers } from "../../providers/CustomersProvider";
 import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
 
 const Customers: React.FC = () => {
+  const { customers, fetchCustomersData, createCustomer, updateCustomer, deleteCustomer, loading } = useCustomers();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -20,6 +21,10 @@ const Customers: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchCustomersData();
+  },  []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -47,8 +52,9 @@ const Customers: React.FC = () => {
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (customer: UserType) => {
-    setShowDeleteConfirm(true);
-    setSelectedCustomer(customer);
+    handleDeleteCustomer(customer._id);
+    // setShowDeleteConfirm(true);
+    // setSelectedCustomer(customer);
   };
 
   const handleCloseDialog = () => {
@@ -57,26 +63,56 @@ const Customers: React.FC = () => {
     setSelectedCustomer(null);
   };
 
-  const handleAddNewCustomer = async (newCustomer: UserType) => {};
-  const handleOnSave = async (customer: UserType) => {};
+  const handleAddNewCustomer = async (newCustomer: UserType) => {
+    try {
+      await createCustomer(newCustomer);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to add new customer:", error);
+      alert("An error occurred while adding the customer. Please try again.");
+    }
+  };
+
+  const handleOnSave = async (updatedCustomer: UserType) => {
+    try {
+      await updateCustomer(updatedCustomer);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to save customer:", error);
+      alert("An error occurred while saving the customer. Please try again.");
+    }
+  };
+
+  const handleDeleteCustomer = async (customerId: string) => {
+    try {
+      await deleteCustomer(customerId);
+      await fetchCustomersData();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Failed to delete customer:", error);
+      alert("An error occurred while deleting the customer. Please try again.");
+    }
+  };
 
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniqueEmployees = exampleCustomers.filter(
+  const uniqueEmployees = customers.filter(
     (user, index, self) =>
-      index === self.findIndex((e) => e.user_id === user.user_id)
+      index === self.findIndex((e) => e._id === user._id)
   );
 
   const filteredCustomers = uniqueEmployees.filter((user) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (user.fullname &&
-        user.fullname.toLowerCase().includes(searchTermLower)) ||
+      (user.full_name &&
+        user.full_name.toLowerCase().includes(searchTermLower)) ||
       (user.cccd && user.cccd.toString().includes(searchTermLower)) ||
       (user.role && user.role.toLowerCase().includes(searchTermLower)) ||
-      (user.dob && user.dob.includes(searchTermLower))
+      (user.dateOfBirth && user.dateOfBirth.includes(searchTermLower))
     );
   });
 
@@ -181,7 +217,7 @@ const Customers: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentCustomers.map((customer) => (
             <Customer
-              key={customer.user_id}
+              key={customer._id}
               customer={customer}
               handleInfoClick={() => handleInfoClick(customer)}
               handleDeleteClick={() => handleCheckConfirmDelete(customer)}

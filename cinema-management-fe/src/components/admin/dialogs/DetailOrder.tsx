@@ -70,7 +70,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
         }}
       >
         <Typography color="gray" sx={{ fontWeight: "medium" }}>
-          #{order.order_id}
+          #{order._id}
         </Typography>
         <Typography
           sx={{
@@ -78,7 +78,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
             fontWeight: "regular",
             opacity: 0.5,
             color:
-              order.status === "completed"
+              order.status === "paid"
                 ? "green"
                 : order.status === "pending"
                 ? "gray"
@@ -98,7 +98,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
         <Typography sx={{ mr: 2, mt: 2 }} color="gray">
           User: {`(ID: ${order.user_id}) Nguyen Van A`}
         </Typography>
-        <Typography sx={{ mr: 2 }} color="gray">Date: {order.created_at}</Typography>
+        <Typography sx={{ mr: 2 }} color="gray">Date: {order.ordered_at}</Typography>
 
         <TableContainer
           component={Paper}
@@ -136,13 +136,13 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
             <TableBody>
               {tickets.map((ticket) => (
                 <TableRow
-                  key={ticket.ticket_id}
+                  key={ticket._id}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
                 >
                   <TableCell sx={{ width: "10%" }}>
-                    {ticket.ticket_id}
+                    {ticket._id}
                   </TableCell>
                   <TableCell sx={{ width: "30%" }}>No info</TableCell>
                   <TableCell sx={{ width: "30%" }}>No info</TableCell>

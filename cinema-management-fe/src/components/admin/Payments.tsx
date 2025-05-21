@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
-import { examplePayments } from "../../data";
 import { PaymentType } from "../../interfaces/types";
 import DetailPayment from "./dialogs/DetailPayment";
+import { usePayments } from "../../providers/PaymentsProvider";
 
 const Payments: React.FC = () => {
+  const { payments, fetchPaymentsData, loading } = usePayments();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedPayment, setSelectedPayment] = useState<PaymentType | null>(
@@ -17,6 +18,10 @@ const Payments: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    fetchPaymentsData();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -49,9 +54,9 @@ const Payments: React.FC = () => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
 
-  const uniquePayments = examplePayments.filter(
+  const uniquePayments = payments.filter(
     (payment, index, self) =>
-      index === self.findIndex((e) => e.payment_id === payment.payment_id)
+      index === self.findIndex((e) => e._id === payment._id)
   );
 
   const filteredPayments = uniquePayments.filter((payment) => {
@@ -62,8 +67,8 @@ const Payments: React.FC = () => {
 
     return (
       (isDateMatch && // Filter by selectedDate
-        payment.payment_id &&
-        payment.payment_id.toString().includes(searchTermLower)) ||
+        payment._id &&
+        payment._id.toString().includes(searchTermLower)) ||
       (payment.order_id &&
         payment.order_id.toString().includes(searchTermLower)) ||
       (payment.payment_method &&
@@ -145,9 +150,9 @@ const Payments: React.FC = () => {
       </div>
       <div className="Payments-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[12%] text-base">Payment ID</div>
-          <div className="w-[12%] text-base">Order ID</div>
-          <div className="w-[20%] text-base">Amount</div>
+          <div className="w-[14%] text-base">Payment ID</div>
+          <div className="w-[14%] text-base">Order ID</div>
+          <div className="w-[16%] text-base">Amount</div>
           <div className="w-[20%] text-base">Paid at</div>
           <div className="w-[16%] text-base">Status</div>
           <div className="w-[20%] text-base">Payment Action</div>
@@ -161,7 +166,7 @@ const Payments: React.FC = () => {
         <div className="-mt-[450px] text-base">
           {currentPayments.map((payment) => (
             <Payment
-              key={payment.payment_id}
+              key={payment._id}
               payment={payment}
               handleInfoClick={() => handleInfoClick(payment)}
             />

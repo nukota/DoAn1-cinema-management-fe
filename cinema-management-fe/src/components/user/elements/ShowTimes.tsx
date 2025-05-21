@@ -1,10 +1,9 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { ShowtimeType } from "../../../interfaces/types";
-import { exampleShowtimes } from "../../../data";
+import { useRooms } from "../../../providers/RoomsProvider";
 
-// const theme = useTheme();
 const CustomTab = styled(Tab)(({ theme }) => ({
   minWidth: 0,
   width: 96,
@@ -14,10 +13,29 @@ const CustomTab = styled(Tab)(({ theme }) => ({
 
 interface ShowtimesProps {
   showtimes: ShowtimeType[];
+  selectedShowtime: ShowtimeType | null;
+  onSelectShowtime: (showtime: ShowtimeType) => void;
 }
 
-const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
+const ShowTimes: React.FC<ShowtimesProps> = ({
+  showtimes,
+  selectedShowtime,
+  onSelectShowtime,
+}) => {
   const [value, setValue] = useState(0);
+  const { rooms, fetchRoomsData } = useRooms();
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        await fetchRoomsData();
+      } catch (error) {
+        console.error("Failed to fetch rooms:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -59,6 +77,22 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
     return showtimeDate < new Date();
   };
 
+  const groupedShowtimes = rooms.reduce((acc, room) => {
+    const cinemaName = room.cinema.name;
+    const roomShowtimes = showtimesForSelectedDate.filter(
+      (showtime) => showtime.room.room_id === room._id
+    );
+
+    if (roomShowtimes.length > 0) {
+      if (!acc[cinemaName]) {
+        acc[cinemaName] = [];
+      }
+      acc[cinemaName].push(...roomShowtimes);
+    }
+
+    return acc;
+  }, {} as Record<string, ShowtimeType[]>);
+
   return (
     <Box
       sx={{
@@ -77,51 +111,33 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
         TabIndicatorProps={{ style: { display: "none" } }}
         sx={{ display: "flex", justifyContent: "space-between" }}
       >
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(0)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(1)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
-        <CustomTab
-          label={<CustomTabLabel {...getFormattedDate(2)} />}
-          sx={{
-            marginRight: 2,
-            backgroundColor: (theme) => theme.palette.secondary.main,
-            "&.Mui-selected": {
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              color: (theme) => theme.palette.common.black,
-            },
-            "&:not(.Mui-selected)": {
-              color: (theme) => theme.palette.secondary.main,
-              border: (theme) => `1px solid ${theme.palette.secondary.main}`,
-            },
-          }}
-        />
+        {Array.from({ length: 7 }).map((_, index) => (
+          <CustomTab
+            key={index}
+            label={<CustomTabLabel {...getFormattedDate(index)} />}
+            sx={{
+              marginRight: 2,
+              backgroundColor: (theme) =>
+                value === index ? theme.palette.secondary.main : "transparent",
+              color: (theme) =>
+                value === index
+                  ? theme.palette.common.black
+                  : theme.palette.secondary.main,
+              border: (theme) =>
+                value === index
+                  ? "none"
+                  : `1px solid ${theme.palette.secondary.main}`,
+              "&.Mui-selected": {
+                backgroundColor: (theme) => theme.palette.secondary.main,
+                color: (theme) => theme.palette.common.black,
+              },
+              "&:not(.Mui-selected)": {
+                color: (theme) => theme.palette.secondary.main,
+                border: (theme) => `1px solid ${theme.palette.secondary.main}`,
+              },
+            }}
+          />
+        ))}
       </Tabs>
       <Box
         sx={{
@@ -145,53 +161,79 @@ const ShowTimes: React.FC<ShowtimesProps> = ({ showtimes }) => {
         >
           Showtimes
         </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {showtimesForSelectedDate.map((showtime) => (
-            <Box
-              key={showtime.showtime_id}
-              sx={{
-                border: "1px solid",
-                borderColor: isPastShowtime(showtime.showtime)
-                  ? "gray"
-                  : (theme) => theme.palette.secondary.main,
-                padding: 1,
-                borderRadius: 1,
-                transition: "transform 0.1s",
-                cursor: isPastShowtime(showtime.showtime)
-                  ? "default"
-                  : "pointer",
-                "&:hover": {
-                  transform: isPastShowtime(showtime.showtime)
-                    ? "none"
-                    : "translateY(-4px)",
-                },
-              }}
-            >
+        {Object.entries(groupedShowtimes).map(
+          ([cinemaName, cinemaShowtimes]) => (
+            <Box key={cinemaName} sx={{ marginBottom: 4 }}>
               <Typography
                 sx={{
-                  // color: "gray",
-                  fontSize: 14,
-                  color: isPastShowtime(showtime.showtime)
-                    ? "gray"
-                    : (theme) => theme.palette.secondary.main,
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "gold",
+                  marginBottom: 2,
                 }}
               >
-                {new Date(showtime.showtime).toLocaleTimeString("en-GB", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {cinemaName}
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: 12,
-                  color: "lightgray",
-                }}
-              >
-                ${showtime.price.toFixed(2)}
-              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                {cinemaShowtimes.map((showtime) => (
+                  <Box
+                    key={showtime._id}
+                    sx={{
+                      border: "2px solid",
+                      borderColor:
+                        selectedShowtime?._id === showtime._id
+                          ? "gold"
+                          : isPastShowtime(showtime.showtime)
+                          ? "gray"
+                          : (theme) => theme.palette.secondary.main,
+                      padding: 1,
+                      borderRadius: 1,
+                      transition: "transform 0.1s",
+                      cursor: isPastShowtime(showtime.showtime)
+                        ? "default"
+                        : "pointer",
+                      backgroundColor:
+                        selectedShowtime?._id === showtime._id
+                          ? "rgba(255, 215, 0, 0.2)"
+                          : "transparent",
+                      "&:hover": {
+                        transform: isPastShowtime(showtime.showtime)
+                          ? "none"
+                          : "translateY(-4px)",
+                      },
+                    }}
+                    onClick={() =>
+                      !isPastShowtime(showtime.showtime) &&
+                      onSelectShowtime(showtime)
+                    }
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 14,
+                        color: isPastShowtime(showtime.showtime)
+                          ? "gray"
+                          : (theme) => theme.palette.secondary.main,
+                      }}
+                    >
+                      {new Date(showtime.showtime).toLocaleTimeString("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: 12,
+                        color: "lightgray",
+                      }}
+                    >
+                      {showtime.price.toFixed(0)} vnd
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
-          ))}
-        </Box>
+          )
+        )}
       </Box>
     </Box>
   );
@@ -202,7 +244,9 @@ const CustomTabLabel: React.FC<{ displayDate: string; weekday: string }> = ({
   weekday,
 }) => (
   <Box>
-    <Typography sx={{ fontWeight: "bold", fontSize: 18 }}>{displayDate}</Typography>
+    <Typography sx={{ fontWeight: "bold", fontSize: 18 }}>
+      {displayDate}
+    </Typography>
     <Typography sx={{ fontWeight: "normal", fontSize: 12, marginTop: 1 }}>
       {weekday}
     </Typography>

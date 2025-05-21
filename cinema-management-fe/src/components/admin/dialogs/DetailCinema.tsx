@@ -8,7 +8,6 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { CinemaType } from "../../../interfaces/types";
@@ -32,7 +31,8 @@ interface DetailCinemaProps {
   cinema: CinemaType;
   open: boolean;
   onClose: () => void;
-  onSave: (newCinema: any) => void;
+  onSave: (newCinema: CinemaType) => void;
+  onDelete: () => void;
 }
 
 const DetailCinema: React.FC<DetailCinemaProps> = ({
@@ -40,6 +40,7 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
   open,
   onClose,
   onSave,
+  onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -60,6 +61,11 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
   };
 
   const handleSaveClick = () => {
+    onSave({
+      ...cinema,
+      name,
+      address,
+    });
     setIsEditing(false);
   };
 
@@ -89,7 +95,7 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
           <TextField
             placeholder="Auto generated"
             fullWidth
-            value={cinema.cinema_id}
+            value={cinema._id}
             disabled
             margin="dense"
             size="small"
@@ -143,14 +149,24 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
             Save
           </Button>
         ) : (
-          <Button
-            onClick={handleModifyClick}
-            color="primary"
-            variant="contained"
-            sx={{ width: 130 }}
-          >
-            Modify
-          </Button>
+          <>
+            <Button
+              onClick={onDelete}
+              color="primary"
+              variant="outlined"
+              sx={{ width: 130 }}
+            >
+              Delete
+            </Button>
+            <Button
+              onClick={handleModifyClick}
+              color="primary"
+              variant="contained"
+              sx={{ width: 130 }}
+            >
+              Modify
+            </Button>
+          </>
         )}
       </DialogActions>
     </Dialog>

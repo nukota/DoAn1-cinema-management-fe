@@ -1,32 +1,41 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
-import { exampleRooms } from "../../data";
 import { Button } from "@mui/material";
-import { RoomType } from "../../interfaces/types";
+import { CinemaType, RoomType, RoomWithSeatsType } from "../../interfaces/types";
 import DetailRoom from "./dialogs/DetailRoom";
+import { useRooms } from "../../providers/RoomsProvider";
+import { useCinemas } from "../../providers/CinemasProvider";
+import CreateRoom from "./dialogs/CreateRoom";
 
 const Rooms: React.FC = () => {
+  const { rooms, fetchRoomsData, createRoomWithSeats, updateRoom, deleteRoom, loading } =
+    useRooms();
+  const { cinemas, fetchCinemasData } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
-  const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
+
+  useEffect(() => {
+    fetchRoomsData();
+    fetchCinemasData();
+  }, []);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const uniqueCinemas = Array.from(
-    new Set(exampleRooms.map((room) => room.cinema_id))
-  ).map((cinema_id) => ({
-    cinema_id,
-    name: `Cinema ${cinema_id}`,
-  }));
-
   const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCinema(event.target.value);
+    const cinemaId = event.target.value;
+    if (!cinemaId) {
+      setSelectedCinema(null);
+    } else {
+      const found = cinemas.find((cinema) => cinema._id === cinemaId);
+      setSelectedCinema(found || null);
+    }
   };
 
   const handleInfoClick = (room: RoomType) => {
@@ -45,17 +54,49 @@ const Rooms: React.FC = () => {
     setSelectedRoom(room);
   };
 
-  const handleDeleteClick = () => {};
+  const handleDeleteClick = async () => {
+    if (selectedRoom) {
+      try {
+        await deleteRoom(selectedRoom._id);
+        setShowDeleteConfirm(false);
+        setSelectedRoom(null);
+      } catch (error) {
+        console.error("Failed to delete room:", error);
+      }
+    }
+  };
 
-  const handleAddNewClick = () => {};
+  const handleAddNewClick = () => {
+    setShowAddDialog(true);
+  };
 
-  const filteredRooms = exampleRooms.filter((room) => {
+  const handleAddNewRoom = async (newRoom: RoomWithSeatsType) => {
+    try {
+      await createRoomWithSeats(newRoom);
+      setShowAddDialog(false);
+    } catch (error) {
+      console.error("Failed to add new room:", error);
+    }
+  };
+
+  const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType) => {
+    try {
+      await updateRoom(updatedRoom);
+      setDetailDialogOpen(false);
+      setSelectedRoom(null);
+      fetchRoomsData();
+    } catch (error) {
+      console.error("Failed to update room:", error);
+    }
+  };
+
+  const filteredRooms = rooms.filter((room) => {
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       room.name.toLowerCase().includes(searchTermLower) ||
-      room.cinema_id.toString().includes(searchTermLower);
+      room.cinema?.cinema_id.toString().includes(searchTermLower);
     const matchesCinema = selectedCinema
-      ? room.cinema_id.toString() === selectedCinema
+      ? room.cinema?.cinema_id.toString() === selectedCinema._id
       : true;
     return matchesSearch && matchesCinema;
   });
@@ -81,12 +122,12 @@ const Rooms: React.FC = () => {
         <div className="SearchBar relative w-full max-w-[240px] h-8 ml-4">
           <select
             className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            value={selectedCinema}
+            value={selectedCinema?._id || ""}
             onChange={handleCinemaChange}
           >
             <option value="">All Cinemas</option>
-            {uniqueCinemas.map((cinema) => (
-              <option key={cinema.cinema_id} value={cinema.cinema_id}>
+            {cinemas.map((cinema) => (
+              <option key={cinema._id} value={cinema._id}>
                 {cinema.name}
               </option>
             ))}
@@ -117,11 +158,11 @@ const Rooms: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white border-[3px] border-light-gray rounded-xl pl-4 sm:pl-12 py-6 pr-4 overflow-scroll">
+      <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
         <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip">
           {filteredRooms.map((room, index) => (
             <Room
-              key={room.room_id}
+              key={room._id}
               room={room}
               handleInfoClick={() => handleInfoClick(room)}
             />
@@ -134,8 +175,14 @@ const Rooms: React.FC = () => {
           onDelete={handleDeleteClick}
           onClose={handleCloseDialog}
           room={selectedRoom!}
+          onSave={handleUpdateRoom}
         />
       )}
+      <CreateRoom
+        open={showAddDialog}
+        onAdd={handleAddNewRoom}
+        onClose={() => setShowAddDialog(false)}
+      />
     </div>
   );
 };

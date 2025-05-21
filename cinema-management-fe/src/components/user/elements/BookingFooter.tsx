@@ -1,183 +1,231 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { ProductType } from "../../../interfaces/types";
+import {
+  MovieType,
+  OrderType,
+  ProductType,
+  SeatType,
+  ShowtimeType,
+} from "../../../interfaces/types";
+import { useNavigate } from "react-router-dom";
 
 interface BookingFooterProps {
-  movie: {
-    name: string;
-  };
+  movie: MovieType;
+  totalPrice: number;
   selectedProducts: {
     product: ProductType;
     amount: number;
   }[];
+  selectedShowtime: ShowtimeType | null;
+  selectedSeats: SeatType[];
 }
 
 const BookingFooter: React.FC<BookingFooterProps> = ({
   movie,
+  totalPrice,
   selectedProducts,
+  selectedShowtime,
+  selectedSeats,
 }) => {
   const theme = useTheme();
-  const [isAboveFooter, setIsAboveFooter] = React.useState(false);
-  const productText = selectedProducts
-    .filter((product) => product.amount > 0)
-    .map((product) => `${product.amount} ${product.product.name}`)
-    .join(", ");
-
-  const handleBuyTicketClick = () => {
-    console.log("Navigating to payment...");
-  };
+  const [isAboveFooter, setIsAboveFooter] = useState(false);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => {
-      const footer = document.querySelector("footer"); // Select the Footer element
-      if (footer) {
-        const footerRect = footer.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAboveFooter(entry.isIntersecting);
+      },
+      { root: null, threshold: 0.1 }
+    );
 
-        // Check if the footer is visible in the viewport
-        if (footerRect.top <= windowHeight) {
-          setIsAboveFooter(true); // Move BookingFooter above the Footer
-        } else {
-          setIsAboveFooter(false); // Keep BookingFooter fixed at the bottom
-        }
-      }
-    };
+    if (footerRef.current) {
+      observer.observe(footerRef.current);
+    }
 
-    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (footerRef.current) {
+        observer.unobserve(footerRef.current);
+      }
     };
   }, []);
 
+  const handleBuyTicket = () => {
+    const userId = localStorage.getItem("user_id");
+    const email = localStorage.getItem("email");
+
+    if (!userId || !email) {
+      alert("User is not logged in.");
+      return;
+    }
+
+    // Combine the necessary data into the OrderType object
+    const order: any = {
+      user_id: userId,
+      email: email,
+      total_price: totalPrice,
+      showtime: selectedShowtime,
+      products: selectedProducts,
+      seats: selectedSeats
+    };
+
+    navigate("/user/payment", { state: { order } });
+  };
+
   return (
-    <Box
-      sx={{
-        zIndex: 100,
-        width: "100vw",
-        height: "110px",
-        background: "black",
-        borderTop: "3px solid #222",
-        position: isAboveFooter ? "" : "fixed", // Change position dynamically
-        bottom: isAboveFooter ? "" : 0, // Fixed at bottom unless above Footer
-        top: isAboveFooter ? "" : "unset", // Adjust top when above Footer
-        paddingY: 1,
-        paddingX: "10%",
-        display: "flex",
-        flexDirection: "row",
-      }}
-    >
+    <>
+      {/* Main Footer (for Intersection Observer) */}
+      <div
+        ref={footerRef}
+        style={{ height: "1px", background: "transparent" }}
+      />
+
+      {/* Booking Footer */}
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          width: "64%",
-        }}
-      >
-        <Typography sx={{ color: "white", fontSize: 22, fontWeight: 500 }}>
-          {movie.name}
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            color: "lightgray",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {productText}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
+          zIndex: 100,
+          width: "100vw",
+          height: "110px",
+          background: "black",
+          borderTop: "3px solid #222",
+          position: isAboveFooter ? "relative" : "fixed", // Change position dynamically
+          bottom: isAboveFooter ? "unset" : 0, // Fixed at bottom unless above Footer
+          top: isAboveFooter ? "unset" : "auto",
+          paddingY: 1,
+          paddingX: "10%",
           display: "flex",
           flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "36%",
         }}
       >
         <Box
           sx={{
-            width: "150px",
-            height: "76px",
-            borderRadius: "10px",
-            backgroundColor: theme.palette.secondary.main,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            alignItems: "center",
-            paddingTop: 1,
+            alignItems: "flex-start",
+            width: "64%",
           }}
         >
-          <Typography
-            sx={{
-              color: "black",
-              width: "100%",
-              textAlign: "center",
-              fontSize: 13,
-              fontWeight: 500,
-              letterSpacing: "0.06em",
-            }}
-            variant="body1"
-          >
-            Ticket hold time
+          <Typography sx={{ color: "white", fontSize: 22, fontWeight: 500 }}>
+            {movie.title}
           </Typography>
+          {selectedShowtime && (
+            <Typography
+              variant="body2"
+              sx={{ color: "gray", fontSize: 16, mt: 0.5 }}
+            >
+              {new Date(selectedShowtime.showtime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Typography>
+          )}
           <Typography
-            sx={{ color: "black", fontSize: 30, fontWeight: 700, pl: 1 }}
+            variant="body1"
+            sx={{
+              color: "lightgray",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              mt: 1,
+            }}
           >
-            5:00
+            {selectedProducts
+              .filter((product) => product.amount > 0)
+              .map((product) => `${product.amount} ${product.product.name}`)
+              .join(", ")}
           </Typography>
         </Box>
         <Box
           sx={{
-            width: "150px",
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            ml: 4,
+            width: "36%",
           }}
         >
-          <Typography
+          <Box
             sx={{
-              color: "white",
-              fontSize: 20,
-              fontWeight: 500,
-              letterSpacing: "0.06em",
+              width: "150px",
+              height: "76px",
+              borderRadius: "10px",
+              backgroundColor: theme.palette.secondary.main,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingTop: 1,
             }}
-            variant="body1"
           >
-            Total price
-          </Typography>
-          <Typography
-            sx={{ color: "#999", fontSize: 18, fontWeight: 500, mt: 1 }}
+            <Typography
+              sx={{
+                color: "black",
+                width: "100%",
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 500,
+                letterSpacing: "0.06em",
+              }}
+              variant="body1"
+            >
+              Ticket hold time
+            </Typography>
+            <Typography
+              sx={{ color: "black", fontSize: 30, fontWeight: 700, pl: 1 }}
+            >
+              5:00
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "150px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              ml: 4,
+            }}
           >
-            200 dollars
-          </Typography>
+            <Typography
+              sx={{
+                color: "white",
+                fontSize: 20,
+                fontWeight: 500,
+                letterSpacing: "0.06em",
+              }}
+              variant="body1"
+            >
+              Total price
+            </Typography>
+            <Typography
+              sx={{ color: "#999", fontSize: 18, fontWeight: 500, mt: 1 }}
+            >
+              {totalPrice} vnd
+            </Typography>
+          </Box>
+          {/* Buy Ticket Button */}
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={handleBuyTicket}
+            sx={{
+              ml: 4,
+              height: "50px",
+              alignSelf: "center",
+              fontWeight: 600,
+              fontSize: "16px",
+            }}
+          >
+            Buy Ticket
+          </Button>
         </Box>
-        {/* Buy Ticket Button */}
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={handleBuyTicketClick}
-          sx={{
-            ml: 4,
-            height: "50px",
-            alignSelf: "center",
-            fontWeight: 600,
-            fontSize: "16px",
-          }}
-        >
-          Buy Ticket
-        </Button>
       </Box>
-    </Box>
+    </>
   );
 };
 

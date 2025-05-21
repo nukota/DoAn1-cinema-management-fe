@@ -18,11 +18,11 @@ const Review: React.FC<ReviewProps> = ({
   return (
     <div
       className="review grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
-      style={{ gridTemplateColumns: "0.5fr 0.5fr 1fr 1fr 1fr 1fr" }}
+      style={{ gridTemplateColumns: "0.7fr 0.7fr 0.7fr 0.7fr 1.4fr 0.8fr" }}
     >
-      <p className="text-sm font-normal">{review.review_id}</p>
-      <p className="text-sm font-normal">{review.showtime_id}</p>
-      <p className="text-sm font-normal">{review.user_id}</p>
+      <p className="text-sm font-normal truncate pr-4">{review._id}</p>
+      <p className="text-sm font-normal truncate pr-4">{review.movie_id}</p>
+      <p className="text-sm font-normal truncate pr-4">{review.user_id}</p>
       <Rating value={review.rating} readOnly />
       <p className="text-sm font-normal truncate pr-4">{review.comment}</p>
       <div className="flex flex-row">

@@ -50,11 +50,16 @@ const config: Config = {
       screens: {
         '1270-break-point': '1270px', // Custom breakpoint
       },
+      lineClamp: {
+        2: '2',
+        3: '3',
+      },
     },
   },
   plugins: [
     require('@tailwindcss/aspect-ratio'),
     require("tailwind-scrollbar-hide"),
+    require('@tailwindcss/line-clamp'),
   ],
 };
 

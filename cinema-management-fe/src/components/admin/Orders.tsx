@@ -1,12 +1,7 @@
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Order from "./items/Order";
-import {
-  exampleOrders,
-  exampleTickets,
-  exampleOrderProducts,
-} from "../../data";
 import { OrderProductType, OrderType, TicketType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 
@@ -47,8 +42,8 @@ const Orders: React.FC = () => {
 
   const handleInfoClick = (order: OrderType) => {
     setSelectedOrder(order);
-    setTickets(exampleTickets.filter((ticket) => ticket.order_id === order?.order_id));
-    setProducts(exampleOrderProducts.filter((product) => product.order_id === order?.order_id));
+    setTickets(exampleTickets.filter((ticket) => ticket.order_id === order?._id));
+    setProducts(exampleOrderProducts.filter((product) => product.order_id === order?._id));
     setDetailDialogOpen(true);
   };
   const handleCheckConfirmDelete = (order: OrderType) => {
@@ -67,7 +62,7 @@ const Orders: React.FC = () => {
 
   const uniqueOrders = exampleOrders.filter(
     (order, index, self) =>
-      index === self.findIndex((e) => e.order_id === order.order_id)
+      index === self.findIndex((e) => e._id === order._id)
   );
 
   const filteredOrders = uniqueOrders.filter((order) => {
@@ -77,7 +72,7 @@ const Orders: React.FC = () => {
       : true;
     const matchesTab = activeTab === "All" || activeTab === order.status;
     const matchesSearch =
-      (order.order_id && order.order_id.toString().includes(searchTermLower)) ||
+      (order._id && order._id.toString().includes(searchTermLower)) ||
       (order.user_id && order.user_id.toString().includes(searchTermLower)) ||
       (order.total_price &&
         order.total_price.toString().includes(searchTermLower)) ||
@@ -186,7 +181,7 @@ const Orders: React.FC = () => {
         <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
           {filteredOrders.map((order) => (
             <Order
-              key={order.order_id}
+              key={order._id}
               order={order}
               ticketAmount={1}
               productAmount={1}
