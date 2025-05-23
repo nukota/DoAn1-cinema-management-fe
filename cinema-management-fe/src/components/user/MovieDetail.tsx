@@ -53,8 +53,8 @@ const MovieDetail: React.FC = () => {
     );
     return seatPrice + productPrice;
   }, [selectedSeats, selectedShowtime, selectedProducts]);
-
   const showtimeIdFromState = location.state?.showtimeId || null;
+  
   useEffect(() => {
     if (showtimeIdFromState && showtimesByMovieId.length > 0) {
       const matchedShowtime = showtimesByMovieId.find(

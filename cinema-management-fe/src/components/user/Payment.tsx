@@ -3,8 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
-  CardContent,
   Divider,
   FormControl,
   InputLabel,
@@ -21,25 +19,28 @@ import VisaImg from "../../assets/images/visa.png";
 import MomoImg from "../../assets/images/momo.png";
 import BankingImg from "../../assets/images/banking.png";
 import { DiscountType, ProductType, SeatType } from "../../interfaces/types";
-import { useDiscounts } from "../../providers/DiscountsProvider";
 import { useLocation } from "react-router-dom";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
+import { useDiscounts } from "../../providers/DiscountsProvider";
+import { useOrders } from "../../providers/OrdersProvider";
+import { toast } from "react-toastify";
 
 const Payment: React.FC = () => {
   const location = useLocation();
   const { order } = location.state as { order: any };
-
   const [activeStep, setActiveStep] = useState(0);
   const {
     discounts,
     fetchDiscountsData,
     loading: discountsLoading,
   } = useDiscounts();
+  const { createDetailedOrder } = useOrders();
   const [availableDiscounts, setAvailableDiscounts] = useState<DiscountType[]>(
     []
   );
   const [discount, setDiscount] = useState<DiscountType | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const steps = ["Payment Method", "Pay", "Finish"];
 
   useEffect(() => {
@@ -61,8 +62,44 @@ const Payment: React.FC = () => {
     setAvailableDiscounts(filteredDiscounts);
   }, [discounts, order.total_price]);
 
-  const handleNext = () => {
-    setActiveStep((prevStep) => prevStep + 1);
+  const handleNext = async () => {
+    if (activeStep === 1) {
+      const data = {
+        total_price: discountedPrice,
+        user_id: order.user_id,
+        email: order.email,
+        payment_method: paymentMethod,
+        discount_id: discount ? discount._id : null,
+        amount: discountedPrice,
+        products: order.products.map((p: any) => ({
+          product_id: p.product._id,
+          quantity: p.amount,
+        })),
+        tickets: {
+          showtime_id: order.showtime._id,
+          price: order.showtime.price,
+          seats: order.seats.map((seat: any) => ({
+            seat_id: seat._id,
+          })),
+        },
+      };
+      try {
+        setActiveStep((prevStep) => prevStep + 1);
+        const pdfBlob = await createDetailedOrder(data);
+        const url = URL.createObjectURL(pdfBlob);
+        console.log("PDF Blob URL:", url);
+        setPdfUrl(url);
+        // setActiveStep((prevStep) => prevStep + 1);
+      } catch (error) {
+        toast.error(
+          `Failed to create order: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
+    } else {
+      setActiveStep((prevStep) => prevStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -147,7 +184,11 @@ const Payment: React.FC = () => {
               {[
                 { label: "Momo", img: MomoImg, value: "momo" },
                 { label: "Banking", img: BankingImg, value: "banking" },
-                { label: "Visa/Mastercard", img: VisaImg, value: "visa" },
+                {
+                  label: "Visa/Mastercard",
+                  img: VisaImg,
+                  value: "visa/mastercard",
+                },
               ].map((method) => (
                 <Card
                   key={method.value}
@@ -187,7 +228,14 @@ const Payment: React.FC = () => {
         );
       case 1:
         return (
-          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <Box
               sx={{
                 width: 200,
@@ -205,7 +253,7 @@ const Payment: React.FC = () => {
             <Typography sx={{ mt: 2, fontSize: 16, fontWeight: "medium" }}>
               Scan QR Code to pay
             </Typography>
-            <Typography sx={{ fontSize: 14}}>
+            <Typography sx={{ fontSize: 14 }}>
               Total: {order.total_price}
             </Typography>
             <Typography sx={{ fontSize: 14 }}>
@@ -222,6 +270,20 @@ const Payment: React.FC = () => {
             <Typography variant="body1" sx={{ textAlign: "center" }}>
               Your payment was successful. Enjoy your movie!
             </Typography>
+            <Typography variant="body1" sx={{ textAlign: "center" }}>
+              Please check your email to see the order details.
+            </Typography>
+            {pdfUrl && (
+              <Box sx={{ mt: 2, width: "100%", height: 500 }}>
+                <iframe
+                  src={pdfUrl}
+                  title="Order PDF"
+                  width="100%"
+                  height="100%"
+                  style={{ border: "none" }}
+                />
+              </Box>
+            )}
           </Box>
         );
       default:
@@ -229,7 +291,6 @@ const Payment: React.FC = () => {
     }
   };
 
-  console.log("Order:", order);
   return (
     <Box
       sx={{
@@ -286,13 +347,27 @@ const Payment: React.FC = () => {
           >
             Back
           </Button>
-          <Button
-            onClick={handleNext}
-            variant="contained"
-            disabled={activeStep === steps.length - 1}
-          >
-            {activeStep === steps.length - 1 ? "Finish" : "Next"}
-          </Button>
+          {activeStep !== 1 && (
+            <Button
+              onClick={handleNext}
+              variant="contained"
+              disabled={
+                (activeStep === 0 && !paymentMethod) ||
+                activeStep === steps.length - 1
+              }
+            >
+              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+            </Button>
+          )}
+          {activeStep === 1 && (
+            <Button
+              onClick={handleNext}
+              variant="outlined"
+              disabled={activeStep === steps.length - 1}
+            >
+              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+            </Button>
+          )}
         </Box>
       </Box>
 

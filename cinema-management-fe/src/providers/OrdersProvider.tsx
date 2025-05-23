@@ -12,7 +12,7 @@ interface OrdersContextType {
   fetchOrdersData: () => Promise<void>;
   fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
   createOrder: (newOrder: OrderType) => Promise<void>;
-  createDetailedOrder: (newOrder: OrderType) => Promise<OrderType>;
+  createDetailedOrder: (newOrder: any) => Promise<Blob>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   loading: boolean;
@@ -100,7 +100,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, []);
 
-  const createDetailedOrder = useCallback(async (newOrder: OrderType) => {
+  const createDetailedOrder = useCallback(async (newOrder: any) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -116,9 +116,8 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         const errorText = await response.text();
         throw new Error(errorText || "Creating detailed order failed.");
       }
-      const createdOrder = await response.json();
-      setOrders((prevOrders) => [...prevOrders, createdOrder]);
-      return createdOrder;
+      const blob = await response.blob();
+      return blob;
     } catch (error) {
       console.error("Failed to create detailed order:", error);
       throw error;
