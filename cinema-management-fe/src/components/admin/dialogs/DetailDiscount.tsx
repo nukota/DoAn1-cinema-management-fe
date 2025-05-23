@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DiscountType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -32,7 +33,7 @@ interface DetailDiscountProps {
   discount: DiscountType;
   open: boolean;
   onClose: () => void;
-  onSave: (newDiscount: any) => void;
+  onSave: (newDiscount: any) => Promise<boolean>;
 }
 const types: String[] = ["percentage", "fixed"];
 
@@ -69,6 +70,10 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
   };
 
   const handleSaveClick = () => {
+    if (!code || !type || !value || !minPurchase || !maxUsage) {
+      toast.error("All fields are required");
+      return;
+    }
     const updatedDiscount = {
       ...discount,
       code,

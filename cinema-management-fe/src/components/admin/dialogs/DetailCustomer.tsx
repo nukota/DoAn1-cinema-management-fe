@@ -14,6 +14,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { UserType } from "../../../interfaces/types";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -34,7 +35,7 @@ interface DetailCustomerProps {
   customer: UserType;
   open: boolean;
   onClose: () => void;
-  onSave: (newCustomer: any) => void;
+  onSave: (newCustomer: any) => Promise<boolean>;
 }
 
 const DetailCustomer: React.FC<DetailCustomerProps> = ({
@@ -70,12 +71,16 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
     setIsEditing(true);
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
+    if (!fullname || !email || !phone) {
+      toast.error("All fields are required");
+      return;
+    }
     const updatedCustomer = {
       ...customer,
-      full_name: fullname,
-      email,
-      phone,
+      full_name: fullname.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
       dateOfBirth: dob,
       cccd,
       role,

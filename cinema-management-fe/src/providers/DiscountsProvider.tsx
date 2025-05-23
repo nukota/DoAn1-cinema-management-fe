@@ -30,12 +30,14 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching discounts failed.");
       }
       const data = await response.json();
       setDiscounts(data);
     } catch (error) {
       console.error("Failed to fetch discounts:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -49,12 +51,15 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching discount by ID failed.");
+      }
       const discount = await response.json();
-      // You can set a selected discount state here if needed
       return discount;
     } catch (error) {
       console.error("Failed to get discount by id:", error);
+      throw error;
     }
   }, [baseURL]);
 
@@ -66,12 +71,15 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching discount by code failed.");
+      }
       const discount = await response.json();
-      // You can set a selected discount state here if needed
       return discount;
     } catch (error) {
       console.error("Failed to get discount by code:", error);
+      throw error;
     }
   }, [baseURL]);
 
@@ -86,11 +94,15 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
         body: JSON.stringify(newDiscount),
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating discount failed.");
+      }
       const createdDiscount = await response.json();
       setDiscounts((prev) => [...prev, createdDiscount]);
     } catch (error) {
       console.error("Failed to create discount:", error);
+      throw error;
     }
   }, [baseURL]);
 
@@ -105,13 +117,17 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
         body: JSON.stringify(newDiscount),
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating discount failed.");
+      }
       const updatedDiscount = await response.json();
       setDiscounts((prev) =>
         prev.map((d) => (d._id === newDiscount._id ? updatedDiscount : d))
       );
     } catch (error) {
       console.error("Failed to update discount:", error);
+      throw error;
     }
   }, [baseURL]);
 
@@ -124,10 +140,14 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting discount failed.");
+      }
       setDiscounts((prev) => prev.filter((d) => d._id !== id));
     } catch (error) {
       console.error("Failed to delete discount:", error);
+      throw error;
     }
   }, [baseURL]);
 

@@ -10,11 +10,12 @@ import {
   Typography,
 } from "@mui/material";
 import { ShowtimeType, MovieType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 
 interface DetailShowtimeProps {
   open: boolean;
   onClose: () => void;
-  onSave: (updatedShowtime: ShowtimeType) => void;
+  onSave: (updatedShowtime: ShowtimeType) => Promise<boolean>;
   showtime: ShowtimeType;
   movies: MovieType[];
 }
@@ -42,7 +43,7 @@ const DetailShowtime: React.FC<DetailShowtimeProps> = ({
 
   const handleSaveClick = () => {
     if (!movieId || !showtimeDate || price <= 0) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 

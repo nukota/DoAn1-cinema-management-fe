@@ -29,19 +29,21 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
   const fetchCinemasData = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("accessToken"); // Retrieve the token from localStorage
+      const token = localStorage.getItem("accessToken");
       const response = await fetch(`${baseURL}/cinema`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching cinemas failed.");
       }
       const data = await response.json();
       setCinemas(data);
     } catch (error) {
       console.error("Failed to fetch cinemas:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -50,13 +52,17 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
   const fetchCinemaDetails = useCallback(async (cinemaId: string) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/cinema/employeeandroom/${cinemaId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${baseURL}/cinema/employeeandroom/${cinemaId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
       const data = await response.json();
       return data;
@@ -78,12 +84,14 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newCinema),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating cinema failed.");
       }
       const createdCinema = await response.json();
       setCinemas((prevCinemas) => [...prevCinemas, createdCinema]);
     } catch (error) {
       console.error("Failed to create cinema:", error);
+      throw error;
     }
   }, []);
 
@@ -99,7 +107,8 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedCinema),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating cinema failed.");
       }
       const updatedData = await response.json();
       setCinemas((prevCinemas) =>
@@ -109,6 +118,7 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
       );
     } catch (error) {
       console.error("Failed to update cinema:", error);
+      throw error;
     }
   }, []);
 
@@ -122,13 +132,15 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting cinema failed.");
       }
       setCinemas((prevCinemas) =>
         prevCinemas.filter((cinema) => cinema._id !== _id)
       );
     } catch (error) {
       console.error("Failed to delete cinema:", error);
+      throw error;
     }
   }, []);
 

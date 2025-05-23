@@ -12,9 +12,9 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { CinemaType } from "../../../interfaces/types";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCinemas } from "../../../providers/CinemasProvider";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -34,7 +34,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface CreateEmployeeProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newEmployee: any) => void;
+  onAdd: (newEmployee: any) => Promise<boolean>;
 }
 const shifts: string[] = ["Morning", "Afternoon", "Evening"];
 
@@ -82,12 +82,12 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       !shift ||
       !position
     ) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -102,25 +102,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       position,
       password,
     };
-    try {
-      await onAdd(newEmployee);
-
-      setFullname("");
-      setEmail("");
-      setPhone("");
-      setDob("");
-      setCccd("");
-      setRole("Employee");
-      setCinemaId(undefined);
-      setShift(null);
-      setPosition("");
-      setPassword("");
-      setConfirmPassword("");
-      onClose();
-    } catch (error) {
-      console.error("Failed to add employee:", error);
-      alert("An error occurred while adding the employee. Please try again.");
-    }
+    onAdd(newEmployee);
   };
 
   return (

@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { RoomType, RoomWithSeatsType } from "../interfaces/types";
 
 interface RoomsContextType {
@@ -13,7 +19,9 @@ interface RoomsContextType {
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);
 
-export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [rooms, setRooms] = useState<RoomType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -29,12 +37,14 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching rooms failed.");
       }
       const data = await response.json();
       setRooms(data);
     } catch (error) {
       console.error("Failed to fetch rooms:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -53,12 +63,14 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         body: JSON.stringify(newRoom),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating room failed.");
       }
       const createdRoom = await response.json();
       setRooms((prevRooms) => [...prevRooms, createdRoom]);
     } catch (error) {
       console.error("Failed to create room:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -77,11 +89,13 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         body: JSON.stringify(room),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating room with seats failed.");
       }
       await fetchRoomsData();
     } catch (error) {
       console.error("Failed to create room with seats:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -100,11 +114,13 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         body: JSON.stringify(updatedRoom),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating room failed.");
       }
       await fetchRoomsData();
     } catch (error) {
       console.error("Failed to update room:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -121,18 +137,30 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting room failed.");
       }
       setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
     } catch (error) {
       console.error("Failed to delete room:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
   return (
-    <RoomsContext.Provider value={{ rooms, fetchRoomsData, createRoom, createRoomWithSeats, updateRoom, deleteRoom, loading }}>
+    <RoomsContext.Provider
+      value={{
+        rooms,
+        fetchRoomsData,
+        createRoom,
+        createRoomWithSeats,
+        updateRoom,
+        deleteRoom,
+        loading,
+      }}
+    >
       {children}
     </RoomsContext.Provider>
   );

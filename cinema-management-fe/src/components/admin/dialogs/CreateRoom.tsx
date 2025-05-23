@@ -17,6 +17,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { RoomWithSeatsType } from "../../../interfaces/types";
 import { useCinemas } from "../../../providers/CinemasProvider";
+import { toast } from "react-toastify";
 
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -36,7 +37,7 @@ const CustomDialogContent = styled(DialogContent)({
 
 interface CreateRoomsProps {
   open: boolean;
-  onAdd: (newRoom: RoomWithSeatsType) => void;
+  onAdd: (newRoom: RoomWithSeatsType) => Promise<boolean>;
   onClose: () => void;
 }
 const ROWS = 14;
@@ -69,7 +70,6 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
   }, []);
 
   const handleSeatClick = (row: number, col: number) => {
-    // Always recalculate seat names for the row after selection change
     const rowLetter = String.fromCharCode(65 + row - 1);
     const seat_column = col;
     const isAlreadySelected = selectedSeats.some(
@@ -151,6 +151,10 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
   };
 
   const handleAddClick = () => {
+    if (!name || !cinemaId) {
+      toast.error("Name and cinema are required");
+      return;
+    }
     const newRoomData: RoomWithSeatsType = {
       name,
       cinema_id: cinemaId,
@@ -158,9 +162,6 @@ const CreateRoom: React.FC<CreateRoomsProps> = ({ open, onAdd, onClose }) => {
       _id: "",
     };
     onAdd(newRoomData);
-    setName("");
-    setCinemaId("");
-    setSelectedSeats([]);
   };
 
   return (

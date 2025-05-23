@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { UserType } from "../interfaces/types";
 
 interface CustomersContextType {
@@ -10,15 +16,18 @@ interface CustomersContextType {
   loading: boolean;
 }
 
-const CustomersContext = createContext<CustomersContextType | undefined>(undefined);
+const CustomersContext = createContext<CustomersContextType | undefined>(
+  undefined
+);
 
-export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CustomersProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [customers, setCustomers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all customers
   const fetchCustomersData = async () => {
     setLoading(true);
     try {
@@ -29,18 +38,19 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching customers failed.");
       }
       const data = await response.json();
       setCustomers(data);
     } catch (error) {
       console.error("Failed to fetch customers:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new customer
   const createCustomer = useCallback(async (newCustomer: UserType) => {
     setLoading(true);
     try {
@@ -54,18 +64,19 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(newCustomer),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating customer failed.");
       }
       const createdCustomer = await response.json();
       setCustomers((prevCustomers) => [...prevCustomers, createdCustomer]);
     } catch (error) {
       console.error("Failed to create customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing customer
   const updateCustomer = useCallback(async (updatedCustomer: UserType) => {
     setLoading(true);
     try {
@@ -79,7 +90,8 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(updatedCustomer),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating customer failed.");
       }
       const updatedData = await response.json();
       setCustomers((prevCustomers) =>
@@ -89,12 +101,12 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       );
     } catch (error) {
       console.error("Failed to update customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a customer
   const deleteCustomer = useCallback(async (customerId: string) => {
     setLoading(true);
     try {
@@ -106,13 +118,15 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting customer failed.");
       }
       setCustomers((prevCustomers) =>
         prevCustomers.filter((customer) => customer._id !== customerId)
       );
     } catch (error) {
       console.error("Failed to delete customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

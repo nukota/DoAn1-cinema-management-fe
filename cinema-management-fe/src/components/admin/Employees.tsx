@@ -7,6 +7,7 @@ import CalendarImg from "../../assets/images/calendar.svg";
 import { Button } from "@mui/material";
 import { EmployeeType } from "../../interfaces/types";
 import { useEmployees } from "../../providers/EmployeesProvider";
+import { toast } from "react-toastify";
 
 const Employees: React.FC = () => {
   const {
@@ -84,25 +85,29 @@ const Employees: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  const handleAddNewEmployee = async (newEmployee: EmployeeType) => {
+  const handleAddNewEmployee = async (newEmployee: EmployeeType): Promise<boolean> => {
     try {
       await createEmployee(newEmployee);
       await fetchEmployeesData();
       handleCloseDialog();
+      toast.success("Employee added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new Employee:", error);
-      alert("An error occurred while adding the Employee. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
-  const handleOnSave = async (updatedEmployee: EmployeeType) => {
+  const handleOnSave = async (updatedEmployee: EmployeeType): Promise<boolean> => {
     try {
       await updateEmployee(updatedEmployee);
       await fetchEmployeesData();
       handleCloseDialog();
+      toast.success("Employee updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save Employee:", error);
-      alert("An error occurred while saving the Employee. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -111,9 +116,9 @@ const Employees: React.FC = () => {
       await deleteEmployee(EmployeeId);
       await fetchEmployeesData();
       handleCloseDialog();
+      toast.success("Employee deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete Employee:", error);
-      alert("An error occurred while deleting the Employee. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 

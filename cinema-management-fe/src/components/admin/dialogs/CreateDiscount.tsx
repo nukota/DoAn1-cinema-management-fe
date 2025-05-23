@@ -11,6 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -30,7 +31,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface CreateDiscountProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newDiscount: any) => void;
+  onAdd: (newDiscount: any) => Promise<boolean>;
 }
 const types: String[] = ["percentage", "fixed"];
 
@@ -47,6 +48,20 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   const [maxUsage, setMaxUsage] = useState<Number>(0);
 
   const handleAddClick = () => {
+    if (
+      !code ||
+      !type ||
+      !expiryDate ||
+      value === 0 ||
+      isNaN(Number(value)) ||
+      minPurchase === 0 ||
+      isNaN(Number(minPurchase)) ||
+      maxUsage === 0 ||
+      isNaN(Number(maxUsage))
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
     const newDiscount = {
       code,
       discount_type: type,
@@ -56,6 +71,12 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       expiry_date: expiryDate,
     };
     onAdd(newDiscount);
+    setCode("");
+    setType("");
+    setValue(0);
+    setMinPurchase(0);
+    setMaxUsage(0);
+    setExpiryDate("");
     onClose();
   };
 

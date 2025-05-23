@@ -153,7 +153,7 @@ export type DiscountType = {
 export type ReviewType = {
   _id: string;
   user_id: string;
-  showtime_id: string;
+  movie_id: string;
   rating: number;
   comment: string;
   created_at: string;

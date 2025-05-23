@@ -12,9 +12,10 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { EmployeeType, CinemaType } from "../../../interfaces/types";
+import { EmployeeType } from "../../../interfaces/types";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCinemas } from "../../../providers/CinemasProvider";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -35,7 +36,7 @@ interface DetailEmployeeProps {
   employee: EmployeeType;
   open: boolean;
   onClose: () => void;
-  onSave: (newEmployee: any) => void;
+  onSave: (newEmployee: any) => Promise<boolean>;
 }
 const shifts: string[] = ["Morning", "Afternoon", "Evening"];
 
@@ -58,7 +59,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   const [password, setPassword] = useState<String>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const { cinemas, fetchCinemasData } = useCinemas(); // Use the useCinemas hook
+  const { cinemas, fetchCinemasData } = useCinemas();
 
   useEffect(() => {
     fetchCinemasData();
@@ -86,6 +87,10 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
   };
 
   const handleSaveClick = () => {
+    if (!fullname || !email || !phone) {
+      toast.error("All fields are required");
+      return;
+    }
     const updatedEmployee = {
       ...employee,
       full_name: fullname,

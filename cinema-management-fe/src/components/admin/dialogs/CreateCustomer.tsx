@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -32,7 +33,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface CreateCustomerProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newCustomer: any) => void;
+  onAdd: (newCustomer: any) => Promise<boolean>;
 }
 
 const CreateCustomer: React.FC<CreateCustomerProps> = ({
@@ -69,12 +70,12 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
       !password ||
       !confirmPassword
     ) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -87,22 +88,7 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
       role,
       password,
     };
-    try {
-      await onAdd(newCustomer);
-  
-      setFullname("");
-      setEmail("");
-      setPhone("");
-      setDob("");
-      setCccd("");
-      setRole("customer");
-      setPassword("");
-      setConfirmPassword("");
-      onClose();
-    } catch (error) {
-      console.error("Failed to add customer:", error);
-      alert("An error occurred while adding the customer. Please try again.");
-    }
+    onAdd(newCustomer);
   };
 
   return (
@@ -162,9 +148,9 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
             margin="dense"
             size="small"
             value={dob}
-            onChange={(e) => setDob(e.target.value)} 
+            onChange={(e) => setDob(e.target.value)}
           />
-        </Box> 
+        </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
           <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
             Phone Num:

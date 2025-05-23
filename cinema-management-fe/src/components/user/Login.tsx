@@ -277,7 +277,7 @@ const Login: React.FC = () => {
               </Typography>
               <TextField
                 placeholder="Name"
-                name="name"
+                name="full_name"
                 size="small"
                 value={signUpData.full_name}
                 onChange={handleSignUpChange}
@@ -325,7 +325,7 @@ const Login: React.FC = () => {
               </Typography>
               <TextField
                 placeholder="Date of Birth"
-                name="dob"
+                name="dateOfBirth"
                 type="date"
                 size="small"
                 value={signUpData.dateOfBirth}

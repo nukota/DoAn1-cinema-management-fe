@@ -2,15 +2,26 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
 import { Button } from "@mui/material";
-import { CinemaType, RoomType, RoomWithSeatsType } from "../../interfaces/types";
+import {
+  CinemaType,
+  RoomType,
+  RoomWithSeatsType,
+} from "../../interfaces/types";
 import DetailRoom from "./dialogs/DetailRoom";
 import { useRooms } from "../../providers/RoomsProvider";
 import { useCinemas } from "../../providers/CinemasProvider";
 import CreateRoom from "./dialogs/CreateRoom";
+import { toast } from "react-toastify";
 
 const Rooms: React.FC = () => {
-  const { rooms, fetchRoomsData, createRoomWithSeats, updateRoom, deleteRoom, loading } =
-    useRooms();
+  const {
+    rooms,
+    fetchRoomsData,
+    createRoomWithSeats,
+    updateRoom,
+    deleteRoom,
+    loading,
+  } = useRooms();
   const { cinemas, fetchCinemasData } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
@@ -60,8 +71,9 @@ const Rooms: React.FC = () => {
         await deleteRoom(selectedRoom._id);
         setShowDeleteConfirm(false);
         setSelectedRoom(null);
+        toast.success("Room deleted successfully");
       } catch (error) {
-        console.error("Failed to delete room:", error);
+        toast.error(error instanceof Error ? error.message : String(error));
       }
     }
   };
@@ -70,23 +82,31 @@ const Rooms: React.FC = () => {
     setShowAddDialog(true);
   };
 
-  const handleAddNewRoom = async (newRoom: RoomWithSeatsType) => {
+  const handleAddNewRoom = async (newRoom: RoomWithSeatsType): Promise<boolean> => {
     try {
       await createRoomWithSeats(newRoom);
       setShowAddDialog(false);
+      toast.success("Room added successfully");
+      fetchRoomsData();
+      return true;
     } catch (error) {
-      console.error("Failed to add new room:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
+      setShowAddDialog(false);
+      return false;
     }
   };
 
-  const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType) => {
+  const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType): Promise<boolean> => {
     try {
       await updateRoom(updatedRoom);
       setDetailDialogOpen(false);
       setSelectedRoom(null);
       fetchRoomsData();
+      toast.success("Room updated successfully");
+      return true;
     } catch (error) {
-      console.error("Failed to update room:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 

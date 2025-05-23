@@ -16,8 +16,6 @@ const Orders: React.FC = () => {
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
-  const itemsPerPage = 10;
-  const pageRangeDisplayed = 5;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -67,10 +65,6 @@ const Orders: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  const handlePageChange = (pageNumber: number | string) => {
-    if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
-  };
-
   const filteredOrders = orders.filter((order) => {
     const searchTermLower = searchTerm.toLowerCase();
     const isDateMatch = selectedDate
@@ -87,34 +81,6 @@ const Orders: React.FC = () => {
       (order.status && order.status.toLowerCase().includes(searchTermLower));
     return isDateMatch && matchesTab && matchesSearch;
   });
-
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentOrders = filteredOrders.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const getPageNumbers = () => {
-    const pageNumbers: (number | string)[] = [];
-    const startPage = Math.max(
-      1,
-      currentPage - Math.floor(pageRangeDisplayed / 2)
-    );
-    const endPage = Math.min(totalPages, startPage + pageRangeDisplayed - 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-    if (
-      pageNumbers.length < pageRangeDisplayed &&
-      pageRangeDisplayed < totalPages
-    ) {
-      if (startPage > 1) pageNumbers.unshift("...");
-      else if (endPage < totalPages) pageNumbers.push("...");
-    }
-    return pageNumbers;
-  };
 
   return (
     <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">
@@ -185,7 +151,7 @@ const Orders: React.FC = () => {
       </div>
       <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
         <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
-          {currentOrders.map((order) => (
+          {filteredOrders.map((order) => (
             <Order
               key={order._id}
               order={order}
@@ -209,7 +175,7 @@ const Orders: React.FC = () => {
           order={selectedOrder}
           open={DetailDialogOpen}
           onClose={handleCloseDialog}
-          onDelete={() => handleCheckConfirmDelete(selectedOrder) }  
+          onDelete={() => handleCheckConfirmDelete(selectedOrder)}
         />
       )}
     </div>

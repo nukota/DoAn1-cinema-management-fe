@@ -18,7 +18,6 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all reviews
   const fetchReviewsData = async () => {
     setLoading(true);
     try {
@@ -29,18 +28,19 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching reviews failed.");
       }
       const data = await response.json();
       setReviews(data);
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new review
   const createReview = useCallback(async (newReview: ReviewType) => {
     setLoading(true);
     try {
@@ -54,18 +54,19 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
         body: JSON.stringify(newReview),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating review failed.");
       }
       const createdReview = await response.json();
       setReviews((prevReviews) => [...prevReviews, createdReview]);
     } catch (error) {
       console.error("Failed to create review:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing review
   const updateReview = useCallback(async (updatedReview: ReviewType) => {
     setLoading(true);
     try {
@@ -79,7 +80,8 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
         body: JSON.stringify(updatedReview),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating review failed.");
       }
       const updatedData = await response.json();
       setReviews((prevReviews) =>
@@ -89,12 +91,12 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
       );
     } catch (error) {
       console.error("Failed to update review:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a review
   const deleteReview = useCallback(async (reviewId: string) => {
     setLoading(true);
     try {
@@ -106,13 +108,15 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting review failed.");
       }
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review._id !== reviewId)
       );
     } catch (error) {
       console.error("Failed to delete review:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

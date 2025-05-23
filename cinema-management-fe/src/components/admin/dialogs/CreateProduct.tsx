@@ -11,6 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -30,7 +31,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface CreateProductProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newProduct: any) => boolean | Promise<boolean>;
+  onAdd: (newProduct: any) => Promise<boolean>;
 }
 const types: string[] = ["Food", "Drink", "Souvenir", "Combo", "Other"];
 
@@ -46,7 +47,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
   const handleSubmit = async () => {
     if (!name || !image || !price || !type) {
-      console.error("All fields are required");
+      toast.error("All fields are required");
       return;
     }
     const productData = {
@@ -55,21 +56,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
       price,
       category: type,
     };
-
-    try {
-      const success = (await onAdd(productData)) || false;
-      if (success) {
-        setName("");
-        setImage("");
-        setPrice("");
-        setType("");
-        onClose();
-      } else {
-        console.error("Failed to add product");
-      }
-    } catch (error) {
-      console.error("An error occurred while adding the product:", error);
-    }
+    onAdd(productData);
   };
   return (
     <Dialog

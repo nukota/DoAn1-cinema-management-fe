@@ -7,9 +7,17 @@ import { useCustomers } from "../../providers/CustomersProvider";
 import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
+import { toast } from "react-toastify";
 
 const Customers: React.FC = () => {
-  const { customers, fetchCustomersData, createCustomer, updateCustomer, deleteCustomer, loading } = useCustomers();
+  const {
+    customers,
+    fetchCustomersData,
+    createCustomer,
+    updateCustomer,
+    deleteCustomer,
+    loading,
+  } = useCustomers();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -24,7 +32,7 @@ const Customers: React.FC = () => {
 
   useEffect(() => {
     fetchCustomersData();
-  },  []);
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -63,25 +71,29 @@ const Customers: React.FC = () => {
     setSelectedCustomer(null);
   };
 
-  const handleAddNewCustomer = async (newCustomer: UserType) => {
+  const handleAddNewCustomer = async (newCustomer: UserType): Promise<boolean> => {
     try {
       await createCustomer(newCustomer);
       await fetchCustomersData();
       handleCloseDialog();
+      toast.success("Customer added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new customer:", error);
-      alert("An error occurred while adding the customer. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
-  const handleOnSave = async (updatedCustomer: UserType) => {
+  const handleOnSave = async (updatedCustomer: UserType): Promise<boolean> => {
     try {
       await updateCustomer(updatedCustomer);
       await fetchCustomersData();
       handleCloseDialog();
+      toast.success("Customer updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save customer:", error);
-      alert("An error occurred while saving the customer. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -90,9 +102,9 @@ const Customers: React.FC = () => {
       await deleteCustomer(customerId);
       await fetchCustomersData();
       handleCloseDialog();
+      toast.success("Customer deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete customer:", error);
-      alert("An error occurred while deleting the customer. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -101,8 +113,7 @@ const Customers: React.FC = () => {
   };
 
   const uniqueEmployees = customers.filter(
-    (user, index, self) =>
-      index === self.findIndex((e) => e._id === user._id)
+    (user, index, self) => index === self.findIndex((e) => e._id === user._id)
   );
 
   const filteredCustomers = uniqueEmployees.filter((user) => {

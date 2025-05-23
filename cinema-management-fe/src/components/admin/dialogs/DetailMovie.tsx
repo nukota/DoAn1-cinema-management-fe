@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { MovieType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -41,7 +42,7 @@ interface DetailMovieProps {
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
-  onSave: (newMovie: any) => void;
+  onSave: (newMovie: any) => Promise<boolean>;
 }
 
 const DetailMovie: React.FC<DetailMovieProps> = ({
@@ -93,6 +94,24 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   };
 
   const handleSaveClick = () => {
+    if (
+      !title ||
+      !status ||
+      !posterURL ||
+      !genre ||
+      !duration ||
+      !country ||
+      !ageLimit ||
+      !releaseDate ||
+      !director ||
+      !actors ||
+      !description ||
+      rating === 0 ||
+      !trailerURL
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
     onSave({
       ...movie,
       title,
@@ -173,6 +192,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 sx={{ width: 280 }}
                 margin="dense"
                 size="small"
+                disabled={!isEditing}
                 value={posterURL}
                 onChange={(e) => setPosterURL(e.target.value)}
               />
@@ -311,6 +331,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                   sx={{ width: 280 }}
                   margin="dense"
                   size="small"
+                  disabled={!isEditing}
                   value={actors}
                   onChange={(e) => setActors(e.target.value)}
                 />

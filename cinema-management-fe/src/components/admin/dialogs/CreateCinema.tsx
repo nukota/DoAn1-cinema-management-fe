@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { CinemaType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -30,7 +30,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface CreateCinemaProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newCinema: any) => void;
+  onAdd: (newCinema: any) => Promise<boolean>;
 }
 
 const CreateCinema: React.FC<CreateCinemaProps> = ({
@@ -40,17 +40,24 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
 }) => {
   const [formValues, setFormValues] = useState({ name: "", address: "" });
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     if (!formValues.name || !formValues.address) {
-      console.error("Name and address are required");
+      toast.error("Name and address are required");
       return;
     }
     const cinemaData = {
       name: formValues.name,
       address: formValues.address,
     };
-    onAdd(cinemaData as CinemaType); // Pass the cleaned object to the parent
-    onClose(); // Close the dialog after submission
+    try {
+      const success = await onAdd(cinemaData);
+      if (success) {
+        setFormValues({ name: "", address: "" });
+        onClose();
+      }
+    } catch (error) {
+      toast.error("Failed to add cinema");
+    }
   };
 
   return (
@@ -84,7 +91,9 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
             margin="dense"
             size="small"
             value={formValues.name}
-            onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
+            onChange={(e) =>
+              setFormValues({ ...formValues, name: e.target.value })
+            }
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -97,7 +106,9 @@ const CreateCinema: React.FC<CreateCinemaProps> = ({
             margin="dense"
             size="small"
             value={formValues.address}
-            onChange={(e) => setFormValues({ ...formValues, address: e.target.value })}
+            onChange={(e) =>
+              setFormValues({ ...formValues, address: e.target.value })
+            }
           />
         </Box>
       </CustomDialogContent>

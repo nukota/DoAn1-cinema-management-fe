@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ProductType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -29,19 +30,12 @@ const CustomDialogContent = styled(DialogContent)({
   overflowX: "hidden",
 });
 
-const statusOptions: string[] = [
-  "Coming Soon",
-  "Now Playing",
-  "Stopped",
-  "Unknown",
-];
-
 interface DetailProductProps {
   product: ProductType;
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
-  onSave: (newProduct: any) => void;
+  onSave: (newProduct: any) => Promise<boolean>;
 }
 
 const categories: string[] = ["Food", "Drink", "Souvenir", "Combo", "Other"];
@@ -77,13 +71,18 @@ const DetailProduct: React.FC<DetailProductProps> = ({
   };
 
   const handleSaveClick = () => {
-    onSave({
+    if (!name || !image || !price || !category) {
+      toast.error("All fields are required");
+      return;
+    }
+    const updatedProduct: ProductType = {
       ...product,
       name,
       image,
       price,
       category,
-    });
+    };
+    onSave(updatedProduct);
     setIsEditing(false);
   };
 
