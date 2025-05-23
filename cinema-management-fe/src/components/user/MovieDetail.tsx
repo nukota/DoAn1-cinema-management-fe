@@ -177,13 +177,15 @@ const MovieDetail: React.FC = () => {
         </div>
       </div>
       <div className="w-full bg-black z-20 mt-32"></div>
-      <BookingFooter
-        movie={movie}
-        totalPrice={totalPrice}
-        selectedProducts={selectedProducts}
-        selectedShowtime={selectedShowtime}
-        selectedSeats={selectedSeats}
-      />
+      <div className="overflow-hidden">
+        <BookingFooter
+          movie={movie}
+          totalPrice={totalPrice}
+          selectedProducts={selectedProducts}
+          selectedShowtime={selectedShowtime}
+          selectedSeats={selectedSeats}
+        />
+      </div>
     </div>
   );
 };

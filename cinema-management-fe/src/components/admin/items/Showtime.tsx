@@ -8,7 +8,7 @@ import DetailShowtime from "../dialogs/DetailShowtime";
 interface ShowtimeProps {
   showtime: ShowtimeType;
   movies: MovieType[];
-  onUpdateShowtime: (showtime: ShowtimeType) => void;
+  onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
   onDeleteShowtime: (showtimeId: string) => void;
 }
 const Showtime: React.FC<ShowtimeProps> = ({

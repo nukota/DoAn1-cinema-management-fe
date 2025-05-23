@@ -9,8 +9,8 @@ interface RoomShowtimesProps {
   room: RoomType;
   showtimes: ShowtimeType[];
   movies: MovieType[];
-  onAddShowtime: (roomId: ShowtimeType) => void;
-  onUpdateShowtime: (showtime: ShowtimeType) => void;
+  onAddShowtime: (roomId: ShowtimeType) => Promise<boolean>;
+  onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
   onDeleteShowtime: (showtimeId: string) => void;
 }
 
