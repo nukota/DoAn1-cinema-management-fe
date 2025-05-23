@@ -22,6 +22,7 @@ import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
 import { SeatProvider } from "./providers/SeatProvider";
 import Showtime from "./components/admin/items/Showtime";
+import { SettingProvider } from "./providers/SettingProvider";
 
 const App: React.FC = () => {
   return (
@@ -39,15 +40,23 @@ const App: React.FC = () => {
                           <DiscountsProvider>
                             <RoomsProvider>
                               <SeatProvider>
-                                <Routes>
-                                  <Route
-                                    path="/"
-                                    element={<Navigate to="/user" />}
-                                  />
-                                  <Route path="/admin/*" element={<Admin />} />
-                                  <Route path="/user/*" element={<User />} />
-                                  <Route path="/employee/*" element={<Employee />} />
-                                </Routes>
+                                <SettingProvider>
+                                  <Routes>
+                                    <Route
+                                      path="/"
+                                      element={<Navigate to="/user" />}
+                                    />
+                                    <Route
+                                      path="/admin/*"
+                                      element={<Admin />}
+                                    />
+                                    <Route path="/user/*" element={<User />} />
+                                    <Route
+                                      path="/employee/*"
+                                      element={<Employee />}
+                                    />
+                                  </Routes>
+                                </SettingProvider>
                               </SeatProvider>
                             </RoomsProvider>
                           </DiscountsProvider>

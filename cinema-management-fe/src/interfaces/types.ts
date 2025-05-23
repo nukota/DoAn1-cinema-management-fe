@@ -158,3 +158,13 @@ export type ReviewType = {
   comment: string;
   created_at: string;
 };
+
+export type SettingType = {
+  _id: string;
+  min_price: number;
+  max_price: number;
+  time_skip: number;
+  max_order_seat: number;
+  reservation_time: number;
+  __v: number;
+};
