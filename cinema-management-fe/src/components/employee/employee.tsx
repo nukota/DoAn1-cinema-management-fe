@@ -3,10 +3,11 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Header from "../admin/elements/Header";
 import NavBar from "../admin/elements/NavBar";
 import NavSelection from "../admin/elements/NavSelection";
-import HomeImg from "../../assets/images/home.svg";
 import OrdersImg from "../../assets/images/orders.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
 import SettingsImg from "../../assets/images/settings.svg";
+import BuyTicketImg from "../../assets/images/buyTicket.svg";
+import PrintTicketImg from "../../assets/images/printTicket.svg";
 import { Button } from "@mui/material";
 import Profile from "../admin/Profile";
 import BuyTicket from "./BuyTicket";
@@ -58,14 +59,14 @@ const Employee: React.FC = () => {
             topChildren={[
               <NavSelection
                 key="buy-ticket"
-                icon={HomeImg}
+                icon={BuyTicketImg}
                 title="Buy Ticket"
                 to="/employee/"
                 isSelected={location.pathname === "/employee"}
               />,
               <NavSelection
                 key="print-ticket"
-                icon={HomeImg}
+                icon={PrintTicketImg}
                 title="Print Ticket"
                 to="/employee/print-ticket"
                 isSelected={location.pathname === "/employee/print-ticket"}

@@ -11,6 +11,7 @@ interface OrdersContextType {
   orders: OrderType[];
   fetchOrdersData: () => Promise<void>;
   fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
+  getOrderByCode: (code: string) => Promise<OrderType | undefined>;
   createOrder: (newOrder: OrderType) => Promise<void>;
   createDetailedOrder: (newOrder: any) => Promise<Blob>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
@@ -68,6 +69,29 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
       return data;
     } catch (error) {
       console.error("Failed to fetch order details:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getOrderByCode = useCallback(async (code: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/order/code/${code}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching order by code failed.");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch order by code:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -187,6 +211,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         orders,
         fetchOrdersData,
         fetchOrderDetails,
+        getOrderByCode,
         createOrder,
         createDetailedOrder,
         updateOrder,

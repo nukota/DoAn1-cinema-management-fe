@@ -32,9 +32,12 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
     setIsDialogOpen(false);
   };
 
-  const handleAddShowtime = (newShowtime: ShowtimeType) => {
-    onAddShowtime(newShowtime);
-    setIsDialogOpen(false);
+  const handleAddShowtime = async (newShowtime: ShowtimeType) => {
+    const result = await onAddShowtime(newShowtime);
+    if (result) {
+      setIsDialogOpen(false);
+    }
+    return result;
   };
 
   return (
