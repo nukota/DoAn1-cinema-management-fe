@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
@@ -11,8 +11,28 @@ import { useAuth } from "../../../providers/AuthProvider";
 
 const Header: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { isLoggedIn, userProfile, handleLogout } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { isLoggedIn, fetchUserProfile, userProfile, handleLogout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        if (!userProfile) {
+          const token = localStorage.getItem("accessToken");
+          const email = localStorage.getItem("email");
+          if (token && email) {
+            await fetchUserProfile(token, email);
+          }
+        }
+        setIsAdmin(userProfile?.role === "admin");
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+      }
+    };
+
+    checkAdminRole();
+  }, [fetchUserProfile, userProfile]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,6 +61,15 @@ const Header: React.FC = () => {
       handleMenuClose();
     }
   };
+
+  const handleGoToEmployeePage = () => {
+    navigate("/employee");
+  };
+
+  const handleGoToAdminPage = () => {
+    navigate("/admin");
+  };
+
   const handleCalendarClick = () => {
     // alert("Calendar clicked")
   };
@@ -50,7 +79,7 @@ const Header: React.FC = () => {
   const handleNotificationClick = () => {
     // alert("Notification clicked")
   };
-  
+
   return (
     <header
       className={`header fixed top-0 left-0 z-[999] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray`}
@@ -60,6 +89,38 @@ const Header: React.FC = () => {
       </Link>
       <div className="md:block hidden border-l-[2px] border-light-gray absolute left-56 h-[48px]" />
       <div className="flex items-center ml-auto mr-3 w-[calc(100vw - 240px)] space-x-2 flex-shrink-0">
+        {isAdmin && location.pathname.startsWith("/employee") && (
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            sx={{
+              borderRadius: "20px",
+              fontSize: "14px",
+              textTransform: "none",
+              marginRight: "16px",
+            }}
+            onClick={handleGoToAdminPage}
+          >
+            Admin Page
+          </Button>
+        )}
+        {isAdmin && location.pathname.startsWith("/admin") && (
+          <Button
+            variant="outlined"
+            size="small"
+            color="primary"
+            sx={{
+              borderRadius: "20px",
+              fontSize: "14px",
+              textTransform: "none",
+              marginRight: "16px",
+            }}
+            onClick={handleGoToEmployeePage}
+          >
+            Employee Page
+          </Button>
+        )}
         <div className="space-x-3">
           <button
             className="header-calendar hover:transform hover:-translate-y-1 transition-transform duration-200"

@@ -19,7 +19,7 @@ const User: React.FC = () => {
       <UserHeader />
       <div className="z-[99] bg-black w-full relative">
       <Routes>
-        <Route path="/" element={<UserHome />} />
+        <Route path="/*" element={<UserHome />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/home" element={<UserHome />} />
         <Route path="/contact" element={<Contact />} />   

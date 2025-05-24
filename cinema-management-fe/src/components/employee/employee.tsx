@@ -108,6 +108,7 @@ const Employee: React.FC = () => {
             <Route path="/print-ticket" element={<PrintTicket />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/payments" element={<Payments />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="/settings" element={<div />} />
           </Routes>
         </div>

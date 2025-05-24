@@ -60,10 +60,10 @@ const Rooms: React.FC = () => {
     setSelectedRoom(null);
   };
 
-  const handleCheckConfirmDelete = (room: RoomType) => {
-    setShowDeleteConfirm(true);
-    setSelectedRoom(room);
-  };
+  // const handleCheckConfirmDelete = (room: RoomType) => {
+  //   setShowDeleteConfirm(true);
+  //   setSelectedRoom(room);
+  // };
 
   const handleDeleteClick = async () => {
     if (selectedRoom) {
@@ -120,6 +120,10 @@ const Rooms: React.FC = () => {
       : true;
     return matchesSearch && matchesCinema;
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading rooms data...</div>;
+  }
 
   return (
     <div className="rooms flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
@@ -180,7 +184,7 @@ const Rooms: React.FC = () => {
 
       <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
         <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip">
-          {filteredRooms.map((room, index) => (
+          {filteredRooms.map((room) => (
             <Room
               key={room._id}
               room={room}

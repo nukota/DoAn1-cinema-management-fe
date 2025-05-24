@@ -46,9 +46,10 @@ const Products: React.FC = () => {
     setSelectedProduct(product);
     setDetailDialogOpen(true);
   };
-  const handleCheckConfirmDelete = () => {
-    setShowDeleteConfirm(true);
-  };
+
+  // const handleCheckConfirmDelete = () => {
+  //   setShowDeleteConfirm(true);
+  // };
 
   const handleCloseDialog = () => {
     setCreateDialogOpen(false);
@@ -110,6 +111,10 @@ const Products: React.FC = () => {
       (product.price && product.price.toString().includes(searchTermLower));
     return matchesTab && matchesSearch;
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading products data...</div>;
+  }
 
   return (
     <div className="products flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">

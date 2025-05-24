@@ -11,7 +11,6 @@ const Orders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
@@ -31,12 +30,10 @@ const Orders: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1);
   };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
-    setCurrentPage(1);
   };
 
   const handleCalendarClick = () => {
@@ -81,6 +78,10 @@ const Orders: React.FC = () => {
       (order.status && order.status.toLowerCase().includes(searchTermLower));
     return isDateMatch && matchesTab && matchesSearch;
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading orders data...</div>;
+  }
 
   return (
     <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">

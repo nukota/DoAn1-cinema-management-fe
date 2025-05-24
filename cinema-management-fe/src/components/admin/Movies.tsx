@@ -126,6 +126,10 @@ const Movies: React.FC = () => {
     return matchesTab && matchesSearch;
   });
 
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading movies data...</div>;
+  }
+
   return (
     <div className="movies flex flex-col h-[673px]">
       <div className="text-40px font-medium text-dark-gray">Movies</div>

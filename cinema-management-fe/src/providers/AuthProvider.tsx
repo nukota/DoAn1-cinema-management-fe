@@ -12,6 +12,7 @@ export interface AuthContextType {
   isLoggedIn: boolean;
   userProfile: UserType | null;
   accessToken: string | null;
+  fetchUserProfile: (token: string, email: string) => Promise<void>;
   handleLogin: (email: string, password: string) => Promise<void>;
   handleLogout: () => void;
   handleSignUp: (data: SignUpData) => Promise<void>;
@@ -126,6 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isLoggedIn,
         userProfile,
         accessToken,
+        fetchUserProfile,
         handleLogin,
         handleLogout,
         handleSignUp,

@@ -169,6 +169,10 @@ const Employees: React.FC = () => {
     return pageNumbers;
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading employees data...</div>;
+  } 
+
   return (
     <div className="employees flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Employees</div>

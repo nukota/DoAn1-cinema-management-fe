@@ -19,6 +19,7 @@ interface BookingInfoProps {
   products: ProductType[];
   selectedProducts: { product: ProductType, amount: number }[];
   setSelectedProducts: React.Dispatch<React.SetStateAction<{ product: ProductType, amount: number }[]>>;
+  reservationTime: number;
 }
 const BookingInfo: React.FC<BookingInfoProps> = ({
   seats,
@@ -30,6 +31,7 @@ const BookingInfo: React.FC<BookingInfoProps> = ({
   products,
   selectedProducts,
   setSelectedProducts,
+  reservationTime,
 }) => {
   return (
     <div className="flex flex-col mt-12 z-30 bg-black my-10">
@@ -70,6 +72,7 @@ const BookingInfo: React.FC<BookingInfoProps> = ({
             price={price}
             ticketCount={ticketCount}
             setTicketCount={setTicketCount}
+            reservationTime={reservationTime} 
           />
         </AccordionDetails>
       </Accordion>

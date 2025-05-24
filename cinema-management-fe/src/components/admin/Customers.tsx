@@ -59,6 +59,7 @@ const Customers: React.FC = () => {
     setSelectedCustomer(customer);
     setDetailDialogOpen(true);
   };
+
   const handleCheckConfirmDelete = (customer: UserType) => {
     handleDeleteCustomer(customer._id);
     // setShowDeleteConfirm(true);
@@ -154,6 +155,10 @@ const Customers: React.FC = () => {
     }
     return pageNumbers;
   };
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading customers data...</div>;
+  }
 
   return (
     <div className="customers flex flex-col w-full min-w-[1000px] h-[100%] overflow-x-auto relative">

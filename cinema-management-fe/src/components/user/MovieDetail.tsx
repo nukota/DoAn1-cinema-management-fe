@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import StyleIcon from "@mui/icons-material/Style";
 import PublicIcon from "@mui/icons-material/Public";
@@ -19,9 +19,14 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useSeats } from "../../providers/SeatProvider";
 import { useProducts } from "../../providers/ProductsProvider";
+import { useTimer } from "../../providers/page/TimerProvider";
+import { useSetting } from "../../providers/SettingProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
+  const { stopTimer } = useTimer();
+  const { setting } = useSetting();
+  const navigate = useNavigate();
   const location = useLocation();
   const { fetchMovieById, loading: movieLoading } = useMovies();
   const {
@@ -116,6 +121,14 @@ const MovieDetail: React.FC = () => {
     fetchSeats();
   }, [selectedShowtime]);
 
+  // useEffect(() => {
+  //   return () => {
+  //     if (!location.pathname.startsWith("/payment")) {
+  //       stopTimer();
+  //     }
+  //   };
+  // }, [stopTimer, navigate]);
+
   if (movieLoading || showtimesLoading || productsLoading) {
     return (
       <div className="text-white text-center text-xl mt-10">
@@ -172,6 +185,7 @@ const MovieDetail: React.FC = () => {
               products={products}
               selectedProducts={selectedProducts}
               setSelectedProducts={setSelectedProducts}
+              reservationTime={setting?.reservation_time || 10}
             />
           </div>
         </div>

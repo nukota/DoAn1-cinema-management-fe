@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
@@ -107,6 +107,10 @@ const Payments: React.FC = () => {
     }
     return pageNumbers;
   };
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading payments data...</div>;
+  }
 
   return (
     <div className="payments flex flex-col w-full min-w-[1000px] h-[100%] relative ">

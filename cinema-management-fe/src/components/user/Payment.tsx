@@ -19,14 +19,17 @@ import VisaImg from "../../assets/images/visa.png";
 import MomoImg from "../../assets/images/momo.png";
 import BankingImg from "../../assets/images/banking.png";
 import { DiscountType, ProductType, SeatType } from "../../interfaces/types";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import { useDiscounts } from "../../providers/DiscountsProvider";
 import { useOrders } from "../../providers/OrdersProvider";
 import { toast } from "react-toastify";
+import { useTimer } from "../../providers/page/TimerProvider";
 
 const Payment: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { timeLeft, stopTimer } = useTimer();
   const { order } = location.state as { order: any };
   const [activeStep, setActiveStep] = useState(0);
   const {
@@ -61,6 +64,14 @@ const Payment: React.FC = () => {
     );
     setAvailableDiscounts(filteredDiscounts);
   }, [discounts, order.total_price]);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      toast.error("Reservation time expired. Redirecting to home...");
+      stopTimer();
+      navigate("/");
+    }
+  }, [timeLeft, stopTimer, navigate]);
 
   const handleNext = async () => {
     if (activeStep === 1) {
