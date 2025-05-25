@@ -176,3 +176,15 @@ export type SettingType = {
   reservation_time: number;
   __v: number;
 };
+
+export type MovieRevenueType = {
+  date: string;
+  ticketRevenue: number;
+  ticketCount: number;
+}
+
+export type PrductRevenueType = {
+  date: string;
+  productRevenue: number;
+  productCount: number;
+}

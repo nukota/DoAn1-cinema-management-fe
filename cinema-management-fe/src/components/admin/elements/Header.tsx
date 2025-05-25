@@ -84,7 +84,10 @@ const Header: React.FC = () => {
     <header
       className={`header fixed top-0 left-0 z-[999] bg-white w-[100vw] h-[48px] flex items-center p-4 border-b-[2px] border-light-gray`}
     >
-      <Link to="/admin" className="logo pl-3 shrink-0 w-60 md:block hidden">
+      <Link
+        to={isAdmin ? "/admin" : "/employee"}
+        className="logo pl-3 shrink-0 w-60 md:block hidden"
+      >
         <img src={logo} alt="Clinic logo" />
       </Link>
       <div className="md:block hidden border-l-[2px] border-light-gray absolute left-56 h-[48px]" />

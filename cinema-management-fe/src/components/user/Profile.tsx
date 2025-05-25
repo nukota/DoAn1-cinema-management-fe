@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
+import { formatToDateInput } from "../../utils/formatUtils";
+import { useOrders } from "../../providers/OrdersProvider";
 
 const UserProfile: React.FC = () => {
   const { userProfile } = useAuth();
   const { updateCustomer } = useCustomers();
+  const { getOrderByUserId } = useOrders();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     _id: userProfile?._id || "",
@@ -21,58 +24,21 @@ const UserProfile: React.FC = () => {
     created_at: userProfile?.created_at || "",
   });
   const navigate = useNavigate();
+  const [bookingHistory, setBookingHistory] = useState<any[]>([]);
 
-  // Mock booking history data
-  const bookingHistory = [
-    {
-      id: 1,
-      movieTitle: "Avengers: Endgame",
-      dateTime: "2025-05-12 19:30",
-      seats: ["A1", "A2", "A3"],
-    },
-    {
-      id: 2,
-      movieTitle: "Inception",
-      dateTime: "2025-05-10 21:00",
-      seats: ["B5", "B6"],
-    },
-    {
-      id: 3,
-      movieTitle: "The Dark Knight",
-      dateTime: "2025-05-08 18:00",
-      seats: ["C1", "C2", "C3", "C4"],
-    },
-    {
-      id: 4,
-      movieTitle: "Interstellar",
-      dateTime: "2025-05-15 20:00",
-      seats: ["D1", "D2"],
-    },
-    {
-      id: 5,
-      movieTitle: "The Matrix",
-      dateTime: "2025-05-20 22:00",
-      seats: ["E1", "E2", "E3"],
-    },
-    {
-      id: 6,
-      movieTitle: "Titanic",
-      dateTime: "2025-05-25 17:00",
-      seats: ["F1", "F2", "F3", "F4"],
-    },
-    {
-      id: 7,
-      movieTitle: "Avatar",
-      dateTime: "2025-05-30 19:00",
-      seats: ["G1", "G2"],
-    },
-    {
-      id: 8,
-      movieTitle: "Jurassic Park",
-      dateTime: "2025-06-01 21:30",
-      seats: ["H1", "H2", "H3"],
-    },
-  ];
+  useEffect(() => {
+    const fetchBookingHistory = async () => {
+      if (userProfile?._id) {
+        try {
+          const orders = await getOrderByUserId(userProfile._id);
+          setBookingHistory(orders || []);
+        } catch (error) {
+          setBookingHistory([]);
+        }
+      }
+    };
+    fetchBookingHistory();
+  }, [userProfile, getOrderByUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -170,7 +136,7 @@ const UserProfile: React.FC = () => {
                   placeholder="Date of Birth"
                   name="dateOfBirth"
                   type="date"
-                  value={formData.dateOfBirth}
+                  value={formatToDateInput(formData.dateOfBirth)}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   fullWidth
@@ -269,23 +235,33 @@ const UserProfile: React.FC = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <div className="flex flex-col gap-2 h-[420px] overflow-y-scroll custom-scrollbar">
-            {bookingHistory.map((booking) => (
-              <div
-                key={booking.id}
-                className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1"
-              >
-                <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
-                  {booking.movieTitle}
-                </Typography>
-                <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                  {booking.dateTime}
-                </Typography>
-                <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                  Seats: {booking.seats.join(", ")} ({booking.seats.length}{" "}
-                  {booking.seats.length > 1 ? "seats" : "seat"})
-                </Typography>
-              </div>
-            ))}
+            {bookingHistory.length === 0 && (
+              <Typography color="gray">No booking history found.</Typography>
+            )}
+            {bookingHistory.map((order) =>
+              order.tickets?.map((ticket: any, idx: number) => (
+                <div
+                  key={order._id + "-" + idx}
+                  className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1"
+                >
+                  <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
+                    {ticket.title}
+                  </Typography>
+                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                    {new Date(ticket.showtime).toLocaleString()}
+                  </Typography>
+                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                    Seats:{" "}
+                    {ticket.seats.map((s: any) => s.seat_name).join(", ")} (
+                    {ticket.seats.length}{" "}
+                    {ticket.seats.length > 1 ? "seats" : "seat"})
+                  </Typography>
+                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                    Order Code: {order.ordercode}
+                  </Typography>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
