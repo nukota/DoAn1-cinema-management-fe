@@ -12,7 +12,11 @@ export type UserType = {
 
 export type EmployeeType = UserType & {
   employee_id: string;
-  cinema_id: string;
+  cinema_id?: string;
+  cinema?: {
+    cinema_id: string;
+    name: string;
+  };
   position: string;
   shift: string;
 };
@@ -129,7 +133,6 @@ export type PaymentType = {
   order_id: string;
   amount: number;
   payment_method: string;
-  status?: "pending" | "completed" | "cancelled";
   discount_id: string;
   paid_at: string;
 };

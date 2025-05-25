@@ -136,7 +136,7 @@ const Employees: React.FC = () => {
       (employee.dateOfBirth && employee.dateOfBirth.includes(searchTermLower));
 
     const matchesCinema =
-      !selectedCinema || employee.cinema_id.toString() === selectedCinema;
+      !selectedCinema || employee.cinema?.cinema_id.toString() === selectedCinema;
 
     return matchesSearch && matchesCinema;
   });

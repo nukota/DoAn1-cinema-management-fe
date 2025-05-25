@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type TimerContextType = {
   timeLeft: number | null;
@@ -9,27 +15,38 @@ type TimerContextType = {
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
 
-export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const startTimer = useCallback((duration: number) => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    setTimeLeft(duration);
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(timerRef.current!);
-          navigate("/");
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [navigate]);
+  const startTimer = useCallback(
+    (duration: number) => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setTimeLeft(duration);
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(timerRef.current!);
+            if (
+              location.pathname.startsWith("/user/movie-detail") ||
+              location.pathname.startsWith("/user/payment")
+            ) {
+              navigate("/");
+            }
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    },
+    [navigate]
+  );
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
