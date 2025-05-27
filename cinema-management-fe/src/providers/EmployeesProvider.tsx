@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { EmployeeType } from "../interfaces/types";
 
 interface EmployeesContextType {
@@ -10,15 +16,18 @@ interface EmployeesContextType {
   loading: boolean;
 }
 
-const EmployeesContext = createContext<EmployeesContextType | undefined>(undefined);
+const EmployeesContext = createContext<EmployeesContextType | undefined>(
+  undefined
+);
 
-export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [employees, setEmployees] = useState<EmployeeType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all Employees
   const fetchEmployeesData = async () => {
     setLoading(true);
     try {
@@ -29,18 +38,19 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching Employees failed.");
       }
       const data = await response.json();
       setEmployees(data);
     } catch (error) {
       console.error("Failed to fetch Employees:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new Employee
   const createEmployee = useCallback(async (newEmployee: EmployeeType) => {
     setLoading(true);
     try {
@@ -54,32 +64,37 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(newEmployee),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating Employee failed.");
       }
       const createdEmployee = await response.json();
       setEmployees((prevEmployees) => [...prevEmployees, createdEmployee]);
     } catch (error) {
       console.error("Failed to create Employee:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing Employee
   const updateEmployee = useCallback(async (updatedEmployee: EmployeeType) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/employee/${updatedEmployee._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedEmployee),
-      });
+      const response = await fetch(
+        `${baseURL}/employee/${updatedEmployee._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedEmployee),
+        }
+      );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating Employee failed.");
       }
       const updatedData = await response.json();
       setEmployees((prevEmployees) =>
@@ -89,12 +104,12 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
       );
     } catch (error) {
       console.error("Failed to update Employee:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a Employee
   const deleteEmployee = useCallback(async (EmployeeId: string) => {
     setLoading(true);
     try {
@@ -106,13 +121,15 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting Employee failed.");
       }
       setEmployees((prevEmployees) =>
         prevEmployees.filter((Employee) => Employee._id !== EmployeeId)
       );
     } catch (error) {
       console.error("Failed to delete Employee:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

@@ -6,9 +6,18 @@ import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
 import { Button } from "@mui/material";
 import { useCinemas } from "../../providers/CinemasProvider";
+import { toast } from "react-toastify";
 
 const Cinemas: React.FC = () => {
-  const { cinemas, fetchCinemasData, fetchCinemaDetails, createCinema, updateCinema, deleteCinema, loading } = useCinemas();
+  const {
+    cinemas,
+    fetchCinemasData,
+    fetchCinemaDetails,
+    createCinema,
+    updateCinema,
+    deleteCinema,
+    loading,
+  } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
@@ -16,7 +25,7 @@ const Cinemas: React.FC = () => {
   const [cinemaDetails, setCinemaDetails] = useState<{
     [key: string]: { employeeCount: number; roomCount: number };
   }>({});
-  
+
   useEffect(() => {
     fetchCinemasData();
   }, []);
@@ -29,9 +38,9 @@ const Cinemas: React.FC = () => {
         [cinemaId]: details,
       }));
     } catch (error) {
-      console.error("Failed to fetch cinema details:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
     }
-  }
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -52,7 +61,9 @@ const Cinemas: React.FC = () => {
     setSelectedCinema(null);
   };
 
-  const handleAddNewCinema = async (newCinema: CinemaType) => {
+  const handleAddNewCinema = async (
+    newCinema: CinemaType
+  ): Promise<boolean> => {
     try {
       const cinemaData = {
         name: newCinema.name,
@@ -60,39 +71,43 @@ const Cinemas: React.FC = () => {
       };
       await createCinema(cinemaData as CinemaType);
       await fetchCinemasData();
+      handleCloseDialog();
+      toast.success("Cinema added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new cinema:", error);
-      alert("An error occurred while adding the cinema. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
-  
-  const handleOnSave = async (updatedCinema: CinemaType) => {
+
+  const handleOnSave = async (updatedCinema: CinemaType): Promise<boolean> => {
     try {
       await updateCinema(updatedCinema);
       await fetchCinemasData();
-      handleCloseDialog(); 
+      handleCloseDialog();
+      toast.success("Cinema updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save cinema:", error);
-      alert("An error occurred while saving the cinema. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
-  
+
   const handleDeleteCinema = async (cinemaId: string) => {
     try {
       await deleteCinema(cinemaId);
       await fetchCinemasData();
       handleCloseDialog();
+      toast.success("Cinema deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete cinema:", error);
-      alert("An error occurred while deleting the cinema. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 
   const filteredCinemas = cinemas.filter((cinema) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
-      (cinema._id &&
-        cinema._id.toString().includes(searchTermLower)) ||
+      (cinema._id && cinema._id.toString().includes(searchTermLower)) ||
       (cinema.address &&
         cinema.address.toLowerCase().includes(searchTermLower)) ||
       (cinema.name && cinema.name.toLowerCase().includes(searchTermLower))

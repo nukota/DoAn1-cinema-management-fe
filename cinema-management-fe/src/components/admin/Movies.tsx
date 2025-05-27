@@ -7,9 +7,17 @@ import { MovieType } from "../../interfaces/types";
 import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
+import { toast } from "react-toastify";
 
 const Movies: React.FC = () => {
-  const { movies, fetchMoviesData, createMovie, updateMovie, deleteMovie, loading } = useMovies();
+  const {
+    movies,
+    fetchMoviesData,
+    createMovie,
+    updateMovie,
+    deleteMovie,
+    loading,
+  } = useMovies();
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -20,8 +28,7 @@ const Movies: React.FC = () => {
 
   useEffect(() => {
     fetchMoviesData();
-  }
-  , []);
+  }, []);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -57,36 +64,42 @@ const Movies: React.FC = () => {
     setSelectedMovie(null);
   };
 
-  const handleAddNewMovie = async (newMovie: MovieType) => {
+  const handleAddNewMovie = async (newMovie: MovieType): Promise<boolean> => {
     try {
       await createMovie(newMovie);
       await fetchMoviesData();
       handleCloseDialog();
+      toast.success("Movie added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new movie:", error);
-      alert("An error occurred while adding the movie. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
-  
-  const handleOnSave = async (updatedMovie: MovieType) => {
+
+  const handleOnSave = async (updatedMovie: MovieType): Promise<boolean> => {
     try {
       await updateMovie(updatedMovie);
       await fetchMoviesData();
       handleCloseDialog();
+      toast.success("Movie updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save movie:", error);
-      alert("An error occurred while saving the movie. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
-  
-  const handleDeleteMovie = async (movieId: string) => {
+
+  const handleDeleteMovie = async (movieId: string): Promise<boolean> => {
     try {
       await deleteMovie(movieId);
       await fetchMoviesData();
       handleCloseDialog();
+      toast.success("Movie deleted successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to delete movie:", error);
-      alert("An error occurred while deleting the movie. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -98,13 +111,24 @@ const Movies: React.FC = () => {
       (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
       (movie.release_date && movie.release_date.includes(searchTermLower)) ||
       (movie.director && movie.director.includes(searchTermLower)) ||
-      (movie.actors && movie.actors.some((actor) => actor.toLowerCase().includes(searchTermLower))) ||
-      (movie.genre && movie.genre.some((genre) => genre.toLowerCase().includes(searchTermLower))) ||
-      (movie.country && movie.country.toLowerCase().includes(searchTermLower)) ||
+      (movie.actors &&
+        movie.actors.some((actor) =>
+          actor.toLowerCase().includes(searchTermLower)
+        )) ||
+      (movie.genre &&
+        movie.genre.some((genre) =>
+          genre.toLowerCase().includes(searchTermLower)
+        )) ||
+      (movie.country &&
+        movie.country.toLowerCase().includes(searchTermLower)) ||
       (movie.description &&
         movie.description.toLowerCase().includes(searchTermLower));
     return matchesTab && matchesSearch;
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading movies data...</div>;
+  }
 
   return (
     <div className="movies flex flex-col h-[673px]">
@@ -172,7 +196,7 @@ const Movies: React.FC = () => {
       </div>
       <div className="content relative -mt-[2px]  min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
         <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6  2xl:grid-cols-8 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
-          {filteredMovies.map((movie, index) => (
+          {filteredMovies.map((movie) => (
             <Movie
               key={movie._id}
               movie={movie}

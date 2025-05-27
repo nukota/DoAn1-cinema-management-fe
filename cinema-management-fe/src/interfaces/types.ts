@@ -12,7 +12,11 @@ export type UserType = {
 
 export type EmployeeType = UserType & {
   employee_id: string;
-  cinema_id: string;
+  cinema_id?: string;
+  cinema?: {
+    cinema_id: string;
+    name: string;
+  };
   position: string;
   shift: string;
 };
@@ -129,7 +133,6 @@ export type PaymentType = {
   order_id: string;
   amount: number;
   payment_method: string;
-  status?: "pending" | "completed" | "cancelled";
   discount_id: string;
   paid_at: string;
 };
@@ -153,8 +156,35 @@ export type DiscountType = {
 export type ReviewType = {
   _id: string;
   user_id: string;
-  showtime_id: string;
+  movie_id: string;
   rating: number;
   comment: string;
   created_at: string;
 };
+
+export type SettingType = {
+  _id: string;
+  min_ticket_price: number;
+  max_ticket_price: number;
+  min_product_price: number;
+  max_product_price: number;
+  close_time: string;
+  open_time: string;  
+  time_gap: number;
+  employee_min_age: number;
+  employee_max_age: number;
+  reservation_time: number;
+  __v: number;
+};
+
+export type MovieRevenueType = {
+  date: string;
+  ticketRevenue: number;
+  ticketCount: number;
+}
+
+export type PrductRevenueType = {
+  date: string;
+  productRevenue: number;
+  productCount: number;
+}

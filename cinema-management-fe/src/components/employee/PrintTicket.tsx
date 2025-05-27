@@ -9,26 +9,10 @@ import {
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import CheckIcon from "@mui/icons-material/Check";
-
-// Dummy API call, replace with your real API
-const fetchOrderByCode = async (orderCode: string) => {
-  // Simulate API delay
-  await new Promise((res) => setTimeout(res, 800));
-  // Replace this with your actual API logic
-  if (orderCode === "ORDER123") {
-    return {
-      code: "ORDER123",
-      customerName: "Nguyen Van A",
-      movieTitle: "Avengers: Endgame",
-      showtime: "2025-06-01 19:00",
-      seats: ["A01", "A02"],
-      products: [{ name: "Popcorn", quantity: 2 }],
-    };
-  }
-  return null;
-};
+import { useOrders } from "../../providers/OrdersProvider";
 
 const PrintTicket: React.FC = () => {
+  const { getOrderByCode } = useOrders();
   const [orderCode, setOrderCode] = useState("");
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -39,7 +23,7 @@ const PrintTicket: React.FC = () => {
     setError("");
     setOrder(null);
     try {
-      const result = await fetchOrderByCode(orderCode.trim());
+      const result = await getOrderByCode(orderCode.trim());
       if (result) {
         setOrder(result);
       } else {
@@ -69,7 +53,7 @@ const PrintTicket: React.FC = () => {
           elevation={3}
           sx={{
             width: "100%",
-            minHeight: 400,
+            minHeight: 560,
             p: 4,
             display: "flex",
             flexDirection: "column",

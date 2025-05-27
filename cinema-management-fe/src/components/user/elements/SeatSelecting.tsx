@@ -5,6 +5,7 @@ import { SeatType } from "../../../interfaces/types";
 import SeatUnit from "../items/SeatUnit";
 import NumberPicker from "../../utils/NumberPicker";
 import { useSeats } from "../../../providers/SeatProvider";
+import { useTimer } from "../../../providers/page/TimerProvider";
 
 interface SeatSelectingProps {
   seats: SeatType[];
@@ -13,6 +14,7 @@ interface SeatSelectingProps {
   price?: number;
   ticketCount: number;
   setTicketCount: React.Dispatch<React.SetStateAction<number>>;
+  reservationTime: number;
 }
 const SeatSelecting: React.FC<SeatSelectingProps> = ({
   seats,
@@ -21,8 +23,10 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
   price,
   ticketCount,
   setTicketCount,
+  reservationTime,
 }) => {
   const theme = useTheme();
+  const { startTimer } = useTimer();
   const { loading } = useSeats();
   const rows = "ABCDEFGHIJKLMN".split("");
 
@@ -79,10 +83,13 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
   }
 
   const handleSeatClick = (seat: SeatType) => {
-    setSelectedSeats((prevSelectedSeats) => {
+    setSelectedSeats((prevSelectedSeats: SeatType[]) => {
       if (prevSelectedSeats.some((s) => s._id === seat._id)) {
         return prevSelectedSeats.filter((s) => s._id !== seat._id);
       } else if (prevSelectedSeats.length < ticketCount) {
+        if (prevSelectedSeats.length === 0) {
+          startTimer(reservationTime);
+        }
         return [...prevSelectedSeats, seat];
       }
       return prevSelectedSeats;
@@ -148,7 +155,7 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
               value={ticketCount}
               onChange={(value) => {
                 if (value < selectedSeats.length) {
-                  setSelectedSeats((prevSelectedSeats) =>
+                  setSelectedSeats((prevSelectedSeats: SeatType[]) =>
                     prevSelectedSeats.slice(0, value)
                   );
                 }

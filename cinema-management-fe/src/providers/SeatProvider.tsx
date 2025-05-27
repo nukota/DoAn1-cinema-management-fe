@@ -28,7 +28,6 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all seats
   const fetchSeatsData = async () => {
     setLoading(true);
     try {
@@ -39,18 +38,19 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching seats failed.");
       }
       const data = await response.json();
       setSeats(data);
     } catch (error) {
       console.error("Failed to fetch seats:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch seats by room ID
   const fetchSeatsByRoomId = async (roomId: string) => {
     setLoading(true);
     try {
@@ -61,18 +61,19 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching seats by room ID failed.");
       }
       const data = await response.json();
       setSeats(data);
     } catch (error) {
       console.error("Failed to fetch seats by room ID:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Add fetchSeatsByShowtimeId function
   const fetchSeatsByShowtimeId = async (showtimeId: string) => {
     setLoading(true);
     try {
@@ -83,18 +84,19 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching seats by showtime ID failed.");
       }
       const { data } = await response.json();
       setSeats(data);
     } catch (error) {
       console.error("Failed to fetch seats by showtime ID:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new seat
   const createSeat = useCallback(async (newSeat: SeatType) => {
     setLoading(true);
     try {
@@ -108,18 +110,19 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newSeat),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating seat failed.");
       }
       const createdSeat = await response.json();
       setSeats((prevSeats) => [...prevSeats, createdSeat]);
     } catch (error) {
       console.error("Failed to create seat:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing seat
   const updateSeat = useCallback(async (updatedSeat: SeatType) => {
     setLoading(true);
     try {
@@ -133,7 +136,8 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedSeat),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating seat failed.");
       }
       const updatedData = await response.json();
       setSeats((prevSeats) =>
@@ -143,12 +147,12 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
       );
     } catch (error) {
       console.error("Failed to update seat:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a seat
   const deleteSeat = useCallback(async (seatId: string) => {
     setLoading(true);
     try {
@@ -160,11 +164,13 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting seat failed.");
       }
       setSeats((prevSeats) => prevSeats.filter((seat) => seat._id !== seatId));
     } catch (error) {
       console.error("Failed to delete seat:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

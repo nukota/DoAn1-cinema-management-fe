@@ -1,32 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Order from "./items/Order";
-import { OrderProductType, OrderType, TicketType } from "../../interfaces/types";
+import { OrderType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
+import { useOrders } from "../../providers/OrdersProvider";
 
 const Orders: React.FC = () => {
+  const { fetchOrdersData, orders, loading } = useOrders();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
-  const [tickets, setTickets] = useState<TicketType[] | null>(null);
-  const [products, setProducts] = useState<OrderProductType[] | null>(null);
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
-  const itemsPerPage = 10;
-  const pageRangeDisplayed = 5;
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        await fetchOrdersData();
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1);
   };
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
-    setCurrentPage(1);
   };
 
   const handleCalendarClick = () => {
@@ -42,10 +49,9 @@ const Orders: React.FC = () => {
 
   const handleInfoClick = (order: OrderType) => {
     setSelectedOrder(order);
-    setTickets(exampleTickets.filter((ticket) => ticket.order_id === order?._id));
-    setProducts(exampleOrderProducts.filter((product) => product.order_id === order?._id));
     setDetailDialogOpen(true);
   };
+
   const handleCheckConfirmDelete = (order: OrderType) => {
     setShowDeleteConfirm(true);
     setSelectedOrder(order);
@@ -56,19 +62,10 @@ const Orders: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  const handlePageChange = (pageNumber: number | string) => {
-    if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
-  };
-
-  const uniqueOrders = exampleOrders.filter(
-    (order, index, self) =>
-      index === self.findIndex((e) => e._id === order._id)
-  );
-
-  const filteredOrders = uniqueOrders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const searchTermLower = searchTerm.toLowerCase();
     const isDateMatch = selectedDate
-      ? order.created_at && order.created_at.startsWith(selectedDate)
+      ? order.ordered_at && order.ordered_at.startsWith(selectedDate)
       : true;
     const matchesTab = activeTab === "All" || activeTab === order.status;
     const matchesSearch =
@@ -76,39 +73,15 @@ const Orders: React.FC = () => {
       (order.user_id && order.user_id.toString().includes(searchTermLower)) ||
       (order.total_price &&
         order.total_price.toString().includes(searchTermLower)) ||
-      (order.created_at &&
-        order.created_at.toString().includes(searchTermLower)) ||
+      (order.ordered_at &&
+        order.ordered_at.toString().includes(searchTermLower)) ||
       (order.status && order.status.toLowerCase().includes(searchTermLower));
     return isDateMatch && matchesTab && matchesSearch;
   });
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentOrders = filteredOrders.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const getPageNumbers = () => {
-    const pageNumbers: (number | string)[] = [];
-    const startPage = Math.max(
-      1,
-      currentPage - Math.floor(pageRangeDisplayed / 2)
-    );
-    const endPage = Math.min(totalPages, startPage + pageRangeDisplayed - 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-    if (
-      pageNumbers.length < pageRangeDisplayed &&
-      pageRangeDisplayed < totalPages
-    ) {
-      if (startPage > 1) pageNumbers.unshift("...");
-      else if (endPage < totalPages) pageNumbers.push("...");
-    }
-    return pageNumbers;
-  };
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading orders data...</div>;
+  }
 
   return (
     <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">
@@ -183,10 +156,7 @@ const Orders: React.FC = () => {
             <Order
               key={order._id}
               order={order}
-              ticketAmount={1}
-              productAmount={1}
               handleInfoClick={() => handleInfoClick(order)}
-              handleDeleteClick={() => handleCheckConfirmDelete(order)}
             />
           ))}
         </div>
@@ -204,10 +174,9 @@ const Orders: React.FC = () => {
       {selectedOrder && (
         <DetailOrder
           order={selectedOrder}
-          tickets={tickets!}
-          products={products!}
           open={DetailDialogOpen}
           onClose={handleCloseDialog}
+          onDelete={() => handleCheckConfirmDelete(selectedOrder)}
         />
       )}
     </div>

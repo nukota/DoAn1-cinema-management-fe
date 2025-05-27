@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import logo from "../../../assets/images/logo.svg";
@@ -11,13 +11,34 @@ import { IconButton, Menu, MenuItem } from "@mui/material";
 
 const UserHeader: React.FC = () => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
-  const { isLoggedIn, userProfile, handleLogout } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { isLoggedIn, fetchUserProfile, userProfile, handleLogout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        if (!userProfile) {
+          const token = localStorage.getItem("accessToken");
+          const email = localStorage.getItem("email");
+          if (token && email) {
+            await fetchUserProfile(token, email);
+          }
+        }
+        setIsAdmin(userProfile?.role === "admin");
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+      }
+    };
+
+    checkAdminRole();
+  }, [fetchUserProfile, userProfile]);
 
   const handleSearchClick = () => {
     if (searchPhrase.trim()) {
-      navigate(`/user/movie-search?query=${encodeURIComponent(searchPhrase)}`);
+      navigate(`/user/movie-list?query=${encodeURIComponent(searchPhrase)}`);
     }
   };
 
@@ -84,33 +105,38 @@ const UserHeader: React.FC = () => {
       </Button>
 
       <div className="flex items-center ml-auto mr-6 w-[calc(100vw - 240px)] space-x-4 flex-shrink-0">
-        <TextField
-          variant="outlined"
-          placeholder="Search..."
-          size="small"
-          value={searchPhrase}
-          onChange={(e) => setSearchPhrase(e.target.value)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Button onClick={handleSearchClick} sx={{ minWidth: 0, padding: 0 }}>
-                  <SearchIcon />
-                </Button>
-              </InputAdornment>
-            ),
-            sx: {
-              padding: "0 8px",
-              height: "100%",
-              fontSize: "0.875rem",
-            },
-          }}
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "99px",
-            height: "30px",
-            width: "200px",
-          }}
-        />
+        {location.pathname !== "/user/movie-list" && (
+          <TextField
+            variant="outlined"
+            placeholder="Search..."
+            size="small"
+            value={searchPhrase}
+            onChange={(e) => setSearchPhrase(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    onClick={handleSearchClick}
+                    sx={{ minWidth: 0, padding: 0 }}
+                  >
+                    <SearchIcon />
+                  </Button>
+                </InputAdornment>
+              ),
+              sx: {
+                padding: "0 8px",
+                height: "100%",
+                fontSize: "0.875rem",
+              },
+            }}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "99px",
+              height: "30px",
+              width: "200px",
+            }}
+          />
+        )}
         <button
           className="header-notification hover:transform hover:-translate-y-1 transition-transform duration-200"
           onClick={handleNotificationClick}
@@ -140,6 +166,16 @@ const UserHeader: React.FC = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
+              {isAdmin && (
+                <MenuItem
+                  onClick={() => {
+                    navigate("/admin");
+                    handleMenuClose();
+                  }}
+                >
+                  Admin Page
+                </MenuItem>
+              )}
               <MenuItem onClick={handleSeeProfile}>See Profile</MenuItem>
               <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
             </Menu>

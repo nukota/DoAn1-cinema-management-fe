@@ -6,9 +6,17 @@ import { ProductType } from "../../interfaces/types";
 import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
+import { toast } from "react-toastify";
 
 const Products: React.FC = () => {
-  const { products, fetchProductsData, createProduct, updateProduct, deleteProduct, loading } = useProducts();
+  const {
+    products,
+    fetchProductsData,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    loading,
+  } = useProducts();
   const [activeTab, setActiveTab] = useState<string>("All");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
@@ -20,8 +28,7 @@ const Products: React.FC = () => {
 
   useEffect(() => {
     fetchProductsData();
-  }
-  , []);
+  }, []);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -39,9 +46,10 @@ const Products: React.FC = () => {
     setSelectedProduct(product);
     setDetailDialogOpen(true);
   };
-  const handleCheckConfirmDelete = () => {
-    setShowDeleteConfirm(true);
-  };
+
+  // const handleCheckConfirmDelete = () => {
+  //   setShowDeleteConfirm(true);
+  // };
 
   const handleCloseDialog = () => {
     setCreateDialogOpen(false);
@@ -53,46 +61,48 @@ const Products: React.FC = () => {
     try {
       await createProduct(newProduct);
       await fetchProductsData();
-      return true;
       handleCloseDialog();
+      toast.success("Product added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new product:", error);
-      alert("An error occurred while adding the product. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
       return false;
     }
   };
-  
-  const handleOnSave = async (updatedProduct: ProductType) => {
+
+  const handleOnSave = async (updatedProduct: ProductType): Promise<boolean> => {
     try {
       await updateProduct(updatedProduct);
       await fetchProductsData();
       handleCloseDialog();
+      toast.success("Product updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save product:", error);
-      alert("An error occurred while saving the product. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
-  
+
   const handleDeleteProduct = async (productId: string) => {
     try {
       await deleteProduct(productId);
       await fetchProductsData();
       handleCloseDialog();
+      toast.success("Product deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete product:", error);
-      alert("An error occurred while deleting the product. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
   const filteredProducts = products.filter((product) => {
     const matchesTab =
-    activeTab === "All" ||
-    (activeTab === "Food and Drinks"
-      ? product.category === "Food" || product.category === "Drink"
-      : activeTab === "Others"
-      ? product.category !== "Food" &&
-        product.category !== "Drink" &&
-        product.category !== "Souvenirs"
-      : product.category === activeTab);
+      activeTab === "All" ||
+      (activeTab === "Food and Drinks"
+        ? product.category === "Food" || product.category === "Drink"
+        : activeTab === "Others"
+        ? product.category !== "Food" &&
+          product.category !== "Drink" &&
+          product.category !== "Souvenirs"
+        : product.category === activeTab);
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
       (product.name && product.name.toLowerCase().includes(searchTermLower)) ||
@@ -101,6 +111,10 @@ const Products: React.FC = () => {
       (product.price && product.price.toString().includes(searchTermLower));
     return matchesTab && matchesSearch;
   });
+
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading products data...</div>;
+  }
 
   return (
     <div className="products flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
@@ -167,7 +181,7 @@ const Products: React.FC = () => {
             alt="Add New"
           />
         </button>
-      </div>         
+      </div>
       {selectedProduct && (
         <DetailProduct
           product={selectedProduct}

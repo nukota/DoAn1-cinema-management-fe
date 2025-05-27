@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
@@ -75,8 +75,7 @@ const Payments: React.FC = () => {
         payment.payment_method.toLowerCase().includes(searchTermLower)) ||
       (payment.paid_at &&
         payment.paid_at.toString().includes(searchTermLower)) ||
-      (payment.amount && payment.amount.toString().includes(searchTermLower)) ||
-      (payment.status && payment.status.toLowerCase().includes(searchTermLower))
+      (payment.amount && payment.amount.toString().includes(searchTermLower))
     );
   });
 
@@ -107,6 +106,12 @@ const Payments: React.FC = () => {
     }
     return pageNumbers;
   };
+
+  if (loading) {
+    return (
+      <div className="text-center text-gray-500">Loading payments data...</div>
+    );
+  }
 
   return (
     <div className="payments flex flex-col w-full min-w-[1000px] h-[100%] relative ">
@@ -150,12 +155,12 @@ const Payments: React.FC = () => {
       </div>
       <div className="Payments-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[14%] text-base">Payment ID</div>
-          <div className="w-[14%] text-base">Order ID</div>
+          <div className="w-[10%] text-base">Payment ID</div>
+          <div className="w-[10%] text-base">Order ID</div>
           <div className="w-[16%] text-base">Amount</div>
-          <div className="w-[20%] text-base">Paid at</div>
-          <div className="w-[16%] text-base">Status</div>
-          <div className="w-[20%] text-base">Payment Action</div>
+          <div className="w-[20%] text-base">Payment Method</div>
+          <div className="w-[16%] text-base">Discount ID</div>
+          <div className="w-[28%] text-base">Paid at</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
@@ -165,11 +170,7 @@ const Payments: React.FC = () => {
         <div className="h-[45px] mb-[45px] ml-[10px] mr-[10px] bg-[#f2f2f2]" />
         <div className="-mt-[450px] text-base">
           {currentPayments.map((payment) => (
-            <Payment
-              key={payment._id}
-              payment={payment}
-              handleInfoClick={() => handleInfoClick(payment)}
-            />
+            <Payment {...payment} />
           ))}
         </div>
         <div className="pagination-controls text-white absolute bottom-8 right-24 items-center justify-center">

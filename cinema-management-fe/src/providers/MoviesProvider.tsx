@@ -36,12 +36,14 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching movies failed.");
       }
       const data = await response.json();
       setMovies(data);
     } catch (error) {
       console.error("Failed to fetch movies:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -56,19 +58,19 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching movie by ID failed.");
       }
       const data = await response.json();
-      return data; // Return the fetched movie
+      return data;
     } catch (error) {
       console.error(`Failed to fetch movie with ID "${movieId}":`, error);
-      return null;
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Fetch movies by status
   const fetchMovieByStatus = useCallback(async (status: string) => {
     setLoading(true);
     try {
@@ -81,13 +83,14 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching movies by status failed.");
       }
       const data = await response.json();
-      return data; // Return the fetched movies
+      return data;
     } catch (error) {
       console.error(`Failed to fetch movies with status "${status}":`, error);
-      return [];
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -104,12 +107,14 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newMovie),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating movie failed.");
       }
       const createdMovie = await response.json();
       setMovies((prevMovies) => [...prevMovies, createdMovie]);
     } catch (error) {
       console.error("Failed to create movie:", error);
+      throw error;
     }
   }, []);
 
@@ -124,7 +129,8 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedMovie),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating movie failed.");
       }
       const updatedData = await response.json();
       setMovies((prevMovies) =>
@@ -134,6 +140,7 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
       );
     } catch (error) {
       console.error("Failed to update movie:", error);
+      throw error;
     }
   }, []);
 
@@ -146,13 +153,15 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting movie failed.");
       }
       setMovies((prevMovies) =>
         prevMovies.filter((movie) => movie._id !== movieId)
       );
     } catch (error) {
       console.error("Failed to delete movie:", error);
+      throw error;
     }
   }, []);
 

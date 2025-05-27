@@ -179,10 +179,7 @@ const Admin: React.FC = () => {
         >
           <Routes>
             <Route path="/" element={<AdminHome />} />
-            <Route
-              path="profile"
-              element={<Profile />}
-            />
+            <Route path="profile" element={<Profile />} />
             <Route path="cinemas" element={<Cinemas />} />
             <Route path="rooms" element={<Rooms />} />
             <Route path="customers" element={<Customers />} />
@@ -197,22 +194,7 @@ const Admin: React.FC = () => {
             <Route path="settings" element={<Settings />} />
           </Routes>
         </div>
-        {/* <div
-          className="fixed top-[3%] left-[20%] bg-gray text-white"
-          onClick={handleOpenPopUpClick}
-        >
-          Open Login
-        </div> */}
       </div>
-      {/* {isPopUpVisible && (
-        <>
-          <div className="overlay"></div>
-          <Login
-            handleCloseClick={handleClosePopUpClick}
-            handleLoginClick={handleClosePopUpClick}
-          />
-        </>
-      )} */}
     </div>
   );
 };

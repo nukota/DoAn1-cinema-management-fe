@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { keyframes } from "@emotion/react";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
 import { useRooms } from "../../../providers/RoomsProvider";
+import { useNavigate } from "react-router-dom";
 
 const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
@@ -24,6 +25,39 @@ const QuickBook: React.FC = () => {
   const [filteredCinemas, setFilteredCinemas] = useState<string[]>([]);
   const [filteredDates, setFilteredDates] = useState<string[]>([]);
   const [filteredTimes, setFilteredTimes] = useState<string[]>([]);
+  const navigate = useNavigate();
+
+  const handleBook = () => {
+    if (allSelected) {
+      const movie = currentShowtime.find((movie) => movie._id === selectedMovie);
+  
+      if (movie && movie.showtimes) {
+        const selectedShowtime = movie.showtimes.find((showtime) => {
+          const room = rooms.find((room) => room._id === showtime.room_id);
+          return (
+            room?.cinema.name === selectedCinema &&
+            new Date(showtime.showtime).toISOString().split("T")[0] ===
+              selectedDate &&
+            new Date(showtime.showtime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }) === selectedTime
+          );
+        });
+        if (selectedShowtime) {
+          navigate(`/user/movie-detail/${selectedMovie}`, {
+            state: { showtimeId: selectedShowtime._id },
+          });
+        } else {
+          alert("Selected showtime not found.");
+        }
+      } else {
+        alert("Movie or showtimes not found.");
+      }
+    } else {
+      alert("Please select all options before booking.");
+    }
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -77,34 +111,42 @@ const QuickBook: React.FC = () => {
   }, [selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
-    if (selectedCinema) {
-      const movie = currentShowtime.find(
-        (movie) => movie._id === selectedMovie
+  if (selectedCinema) {
+    const movie = currentShowtime.find(
+      (movie) => movie._id === selectedMovie
+    );
+    if (movie) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const lastDay = new Date(today);
+      lastDay.setDate(today.getDate() + 6);
+
+      const dates = Array.from(
+        new Set(
+          movie
+            .showtimes!.filter((showtime) => {
+              const room = rooms.find(
+                (room) => room._id === showtime.room_id
+              );
+              if (room?.cinema.name !== selectedCinema) return false;
+              const showDate = new Date(showtime.showtime);
+              showDate.setHours(0, 0, 0, 0);
+              return showDate >= today && showDate <= lastDay;
+            })
+            .map(
+              (showtime) =>
+                new Date(showtime.showtime).toISOString().split("T")[0]
+            )
+        )
       );
-      if (movie) {
-        const dates = Array.from(
-          new Set(
-            movie
-              .showtimes!.filter((showtime) => {
-                const room = rooms.find(
-                  (room) => room._id === showtime.room_id
-                );
-                return room?.cinema.name === selectedCinema;
-              })
-              .map(
-                (showtime) =>
-                  new Date(showtime.showtime).toISOString().split("T")[0]
-              )
-          )
-        );
-        setFilteredDates(dates);
-      }
-    } else {
-      setFilteredDates([]);
+      setFilteredDates(dates);
     }
-    setSelectedDate("");
-    setSelectedTime("");
-  }, [selectedCinema, selectedMovie, currentShowtime, rooms]);
+  } else {
+    setFilteredDates([]);
+  }
+  setSelectedDate("");
+  setSelectedTime("");
+}, [selectedCinema, selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -381,6 +423,7 @@ const QuickBook: React.FC = () => {
             transition: "background-color 0.5s ease-in-out",
           }}
           variant="contained"
+          onClick={handleBook}
         >
           <Typography sx={{ fontSize: 24, fontWeight: "medium" }}>
             BOOK

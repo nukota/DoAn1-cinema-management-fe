@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css"; // This is where Tailwind CSS is included
 import App from "./App.tsx";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "./providers/AuthProvider.tsx";
 
 const theme = createTheme({
@@ -36,6 +37,19 @@ createRoot(document.getElementById("root")!).render(
     <AuthProvider>
       <ThemeProvider theme={theme}>
         <App />
+        <ToastContainer
+          aria-label={"Notification"}
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </ThemeProvider>
     </AuthProvider>
   </StrictMode>

@@ -10,6 +10,7 @@ import { ShowtimeType } from "../../interfaces/types";
 import { useRooms } from "../../providers/RoomsProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useMovies } from "../../providers/MoviesProvider";
+import { toast } from "react-toastify";
 
 const Showtimes: React.FC = () => {
   const { rooms, fetchRoomsData } = useRooms();
@@ -64,27 +65,34 @@ const Showtimes: React.FC = () => {
     setSelectedMovie(event.target.value);
   };
 
-  const handleAddShowtime = async (newShowtime: ShowtimeType) => {
+  const handleAddShowtime = async (newShowtime: ShowtimeType): Promise<boolean> => {
     try {
       await createShowtime(newShowtime);
+      toast.success("Showtime added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add showtime:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
-  const handleUpdateShowtime = async (updatedShowtime: ShowtimeType) => {
+  const handleUpdateShowtime = async (updatedShowtime: ShowtimeType): Promise<boolean> => {
     try {
       await updateShowtime(updatedShowtime);
+      toast.success("Showtime updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to update showtime:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
   const handleDeleteShowtime = async (showtimeId: string) => {
     try {
       await deleteShowtime(showtimeId);
+      toast.success("Showtime deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete showtime:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -98,7 +106,6 @@ const Showtimes: React.FC = () => {
           .toLowerCase()
           .includes(searchTermLower));
 
-    // Normalize showtime to local date
     const showtimeDate = new Date(showtime.showtime);
     const localShowtimeDate = `${showtimeDate.getFullYear()}-${String(
       showtimeDate.getMonth() + 1

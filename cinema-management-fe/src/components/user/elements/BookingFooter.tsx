@@ -9,6 +9,7 @@ import {
   ShowtimeType,
 } from "../../../interfaces/types";
 import { useNavigate } from "react-router-dom";
+import { useTimer } from "../../../providers/page/TimerProvider";
 
 interface BookingFooterProps {
   movie: MovieType;
@@ -28,6 +29,7 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
   selectedShowtime,
   selectedSeats,
 }) => {
+  const { timeLeft } = useTimer();
   const theme = useTheme();
   const [isAboveFooter, setIsAboveFooter] = useState(false);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -60,8 +62,6 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
       alert("User is not logged in.");
       return;
     }
-
-    // Combine the necessary data into the OrderType object
     const order: any = {
       user_id: userId,
       email: email,
@@ -70,8 +70,13 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
       products: selectedProducts,
       seats: selectedSeats
     };
-
     navigate("/user/payment", { state: { order } });
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
   };
 
   return (
@@ -178,7 +183,7 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
             <Typography
               sx={{ color: "black", fontSize: 30, fontWeight: 700, pl: 1 }}
             >
-              5:00
+              {timeLeft !== null ? formatTime(timeLeft) : "00:00"}
             </Typography>
           </Box>
           <Box

@@ -18,6 +18,7 @@ import { styled } from "@mui/material/styles";
 import { RoomType, RoomWithSeatsType } from "../../../interfaces/types";
 import { useCinemas } from "../../../providers/CinemasProvider";
 import { useSeats } from "../../../providers/SeatProvider";
+import { toast } from "react-toastify";
 
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -38,7 +39,7 @@ const CustomDialogContent = styled(DialogContent)({
 interface DetailRoomsProps {
   room: RoomType;
   open: boolean;
-  onSave: (updatedRoom: RoomWithSeatsType) => void;
+  onSave: (updatedRoom: RoomWithSeatsType) => Promise<boolean>;
   onDelete: () => void;
   onClose: () => void;
 }
@@ -112,6 +113,10 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({
   };
 
   const handleSaveClick = () => {
+    if (!name || !cinemaId) {
+      toast.error("All fields are required");
+      return;
+    }
     const updatedRoom: RoomWithSeatsType = {
       ...room,
       name,
@@ -193,7 +198,7 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({
             seat.seat_name === seat_name && seat.seat_column === seat_column
         );
         grid.push(
-            <Box
+          <Box
             key={`${row}-${col}`}
             sx={{
               width: "40px",
@@ -202,19 +207,19 @@ const DetailRoom: React.FC<DetailRoomsProps> = ({
               textAlign: "center",
               borderRadius: "6px",
               background: isSelected
-              ? "#B80007"
-              : !isEditing
-              ? "#fbfbfb"
-              : "#f5f5f5",
+                ? "#B80007"
+                : !isEditing
+                ? "#fbfbfb"
+                : "#f5f5f5",
               color: isSelected ? "#fff" : "#000",
               cursor: isEditing ? "pointer" : "default",
               fontWeight: 500,
               userSelect: "none",
             }}
             onClick={isEditing ? () => handleSeatClick(row, col) : undefined}
-            >
+          >
             {isSelected ? seat_name : ""}
-            </Box>
+          </Box>
         );
       }
     }

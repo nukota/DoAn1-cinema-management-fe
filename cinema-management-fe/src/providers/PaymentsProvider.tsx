@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { PaymentType } from "../interfaces/types";
 
 interface PaymentsContextType {
@@ -10,15 +16,18 @@ interface PaymentsContextType {
   loading: boolean;
 }
 
-const PaymentsContext = createContext<PaymentsContextType | undefined>(undefined);
+const PaymentsContext = createContext<PaymentsContextType | undefined>(
+  undefined
+);
 
-export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [payments, setPayments] = useState<PaymentType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all payments
   const fetchPaymentsData = async () => {
     setLoading(true);
     try {
@@ -29,18 +38,19 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching payments failed.");
       }
       const data = await response.json();
       setPayments(data);
     } catch (error) {
       console.error("Failed to fetch payments:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new payment
   const createPayment = useCallback(async (newPayment: PaymentType) => {
     setLoading(true);
     try {
@@ -54,18 +64,19 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }
         body: JSON.stringify(newPayment),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating payment failed.");
       }
       const createdPayment = await response.json();
       setPayments((prevPayments) => [...prevPayments, createdPayment]);
     } catch (error) {
       console.error("Failed to create payment:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing payment
   const updatePayment = useCallback(async (updatedPayment: PaymentType) => {
     setLoading(true);
     try {
@@ -79,7 +90,8 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }
         body: JSON.stringify(updatedPayment),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating payment failed.");
       }
       const updatedData = await response.json();
       setPayments((prevPayments) =>
@@ -89,12 +101,12 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }
       );
     } catch (error) {
       console.error("Failed to update payment:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a payment
   const deletePayment = useCallback(async (paymentId: string) => {
     setLoading(true);
     try {
@@ -106,13 +118,15 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({ children }
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting payment failed.");
       }
       setPayments((prevPayments) =>
         prevPayments.filter((payment) => payment._id !== paymentId)
       );
     } catch (error) {
       console.error("Failed to delete payment:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

@@ -11,8 +11,10 @@ interface OrdersContextType {
   orders: OrderType[];
   fetchOrdersData: () => Promise<void>;
   fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
+  getOrderByUserId: (userId: string) => Promise<OrderType[]>;
+  getOrderByCode: (code: string) => Promise<OrderType | undefined>;
   createOrder: (newOrder: OrderType) => Promise<void>;
-  createDetailedOrder: (newOrder: OrderType) => Promise<OrderType>;
+  createDetailedOrder: (newOrder: any) => Promise<Blob>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   loading: boolean;
@@ -28,7 +30,6 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all orders
   const fetchOrdersData = async () => {
     setLoading(true);
     try {
@@ -39,18 +40,19 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching orders failed.");
       }
       const data = await response.json();
       setOrders(data);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch order details
   const fetchOrderDetails = useCallback(async (orderId: string) => {
     setLoading(true);
     try {
@@ -61,19 +63,65 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching order details failed.");
       }
       const data = await response.json();
-      return data; // Return the detailed order data
+      return data;
     } catch (error) {
       console.error("Failed to fetch order details:", error);
-      throw error; // Re-throw the error to handle it in the calling component
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Create a new order
+  const getOrderByUserId = useCallback(async (userId: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/order/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching orders by user ID failed.");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch orders by user ID:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getOrderByCode = useCallback(async (code: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${baseURL}/order/code/${code}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching order by code failed.");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch order by code:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const createOrder = useCallback(async (newOrder: OrderType) => {
     setLoading(true);
     try {
@@ -87,18 +135,20 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newOrder),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating order failed.");
       }
       const createdOrder = await response.json();
       setOrders((prevOrders) => [...prevOrders, createdOrder]);
     } catch (error) {
       console.error("Failed to create order:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const createDetailedOrder = useCallback(async (newOrder: OrderType) => {
+  const createDetailedOrder = useCallback(async (newOrder: any) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -111,20 +161,19 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newOrder),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating detailed order failed.");
       }
-      const createdOrder = await response.json();
-      setOrders((prevOrders) => [...prevOrders, createdOrder]);
-      return createdOrder; // Return the created order for further use
+      const blob = await response.blob();
+      return blob;
     } catch (error) {
       console.error("Failed to create detailed order:", error);
-      throw error; // Re-throw the error to handle it in the calling component
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing order
   const updateOrder = useCallback(async (updatedOrder: OrderType) => {
     setLoading(true);
     try {
@@ -138,7 +187,8 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedOrder),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating order failed.");
       }
       const updatedData = await response.json();
       setOrders((prevOrders) =>
@@ -148,12 +198,12 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
       );
     } catch (error) {
       console.error("Failed to update order:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete an order
   const deleteOrder = useCallback(async (orderId: string) => {
     setLoading(true);
     try {
@@ -165,13 +215,15 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting order failed.");
       }
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)
       );
     } catch (error) {
       console.error("Failed to delete order:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -183,6 +235,8 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         orders,
         fetchOrdersData,
         fetchOrderDetails,
+        getOrderByUserId,
+        getOrderByCode,
         createOrder,
         createDetailedOrder,
         updateOrder,

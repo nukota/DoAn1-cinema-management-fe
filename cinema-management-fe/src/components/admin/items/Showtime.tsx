@@ -8,7 +8,7 @@ import DetailShowtime from "../dialogs/DetailShowtime";
 interface ShowtimeProps {
   showtime: ShowtimeType;
   movies: MovieType[];
-  onUpdateShowtime: (showtime: ShowtimeType) => void;
+  onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
   onDeleteShowtime: (showtimeId: string) => void;
 }
 const Showtime: React.FC<ShowtimeProps> = ({
@@ -27,9 +27,10 @@ const Showtime: React.FC<ShowtimeProps> = ({
     setIsDialogOpen(false);
   };
 
-  const handleSaveShowtime = (updatedShowtime: ShowtimeType) => {
-    onUpdateShowtime(updatedShowtime);
+  const handleSaveShowtime = async (updatedShowtime: ShowtimeType) => {
+    const result = await onUpdateShowtime(updatedShowtime);
     setIsDialogOpen(false);
+    return result;
   };
   return (
     <Box className="w-full h-[160px] bg-white rounded-xl flex flex-col justify-between p-2 relative overflow-hiden">

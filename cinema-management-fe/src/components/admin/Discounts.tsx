@@ -7,6 +7,7 @@ import { DiscountType } from "../../interfaces/types";
 import CreateDiscount from "./dialogs/CreateDiscount";
 import { useDiscounts } from "../../providers/DiscountsProvider";
 import DetailDiscount from "./dialogs/DetailDiscount";
+import { toast } from "react-toastify";
 
 const Discounts: React.FC = () => {
   const {
@@ -69,20 +70,22 @@ const Discounts: React.FC = () => {
       await deleteDiscount(discountId);
       await fetchDiscountsData();
       handleCloseDialog();
+      toast.success("Discount deleted successfully!");
     } catch (error) {
-      console.error("Error deleting discount:", error);
-      alert("An error occurred while deleting the discount. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 
-  const handleOnSave = async (newDiscount: DiscountType) => {
+  const handleOnSave = async (newDiscount: DiscountType): Promise<boolean> => {
     try {
       await updateDiscount(newDiscount);
       await fetchDiscountsData();
       handleCloseDialog();
+      toast.success("Discount updated successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to save Discount:", error);
-      alert("An error occurred while saving the Discount. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -91,14 +94,16 @@ const Discounts: React.FC = () => {
     setSelectedDiscount(null);
   };
 
-  const handleAddNewDiscount = async (newDiscount: DiscountType) => {
+  const handleAddNewDiscount = async (newDiscount: DiscountType): Promise<boolean> => {
     try {
       await createDiscount(newDiscount);
       await fetchDiscountsData();
       handleCloseDialog();
+      toast.success("Discount added successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to add new discount:", error);
-      alert("An error occurred while adding the new discount. Please try again.");
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -161,6 +166,10 @@ const Discounts: React.FC = () => {
     return pageNumbers;
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-500">Loading discounts...</div>;
+  }
+  
   return (
     <div className="discounts flex flex-col w-full min-w-[1000px] h-[100%] relative ">
       <div className="text-40px font-medium text-dark-gray">Discounts</div>

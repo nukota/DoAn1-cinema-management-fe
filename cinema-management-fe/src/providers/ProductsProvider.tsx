@@ -36,12 +36,14 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching products failed.");
       }
       const data = await response.json();
       setProducts(data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -58,12 +60,14 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newProduct),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating product failed.");
       }
       const createdProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, createdProduct]);
     } catch (error) {
       console.error("Failed to create product:", error);
+      throw error;
     }
   }, []);
 
@@ -78,7 +82,8 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedProduct),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating product failed.");
       }
       const updatedData = await response.json();
       setProducts((prevProducts) =>
@@ -88,6 +93,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
       );
     } catch (error) {
       console.error("Failed to update product:", error);
+      throw error;
     }
   }, []);
 
@@ -100,13 +106,15 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting product failed.");
       }
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product._id !== productId)
       );
     } catch (error) {
       console.error("Failed to delete product:", error);
+      throw error;
     }
   }, []);
 

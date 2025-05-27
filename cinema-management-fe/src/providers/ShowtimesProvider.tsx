@@ -36,7 +36,6 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all showtimes
   const fetchShowtimesData = async () => {
     setLoading(true);
     try {
@@ -47,18 +46,19 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching showtimes failed.");
       }
       const data = await response.json();
       setShowtimes(data);
     } catch (error) {
       console.error("Failed to fetch showtimes:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch showtimes by movie ID
   const fetchShowtimesByMovieId = useCallback(async (movieId: string) => {
     setLoading(true);
     try {
@@ -69,18 +69,19 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching showtimes by movie ID failed.");
       }
       const data = await response.json();
       setShowtimesByMovieId(data);
     } catch (error) {
       console.error("Failed to fetch showtimes by movie ID:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Create a new showtime
   const createShowtime = useCallback(async (newShowtime: ShowtimeType) => {
     setLoading(true);
     try {
@@ -94,17 +95,18 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newShowtime),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Creating showtime failed.");
       }
       fetchShowtimesData();
     } catch (error) {
       console.error("Failed to create showtime:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Update an existing showtime
   const updateShowtime = useCallback(async (updatedShowtime: ShowtimeType) => {
     setLoading(true);
     try {
@@ -121,17 +123,18 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Updating showtime failed.");
       }
       fetchShowtimesData();
     } catch (error) {
       console.error("Failed to update showtime:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Delete a showtime
   const deleteShowtime = useCallback(async (showtimeId: string) => {
     setLoading(true);
     try {
@@ -143,17 +146,18 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Deleting showtime failed.");
       }
       fetchShowtimesData();
     } catch (error) {
       console.error("Failed to delete showtime:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Fetch current showtimes
   const getCurrentShowtime = useCallback(async () => {
     setLoading(true);
     try {
@@ -164,7 +168,8 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(errorText || "Fetching current showtime failed.");
       }
       const { data } = await response.json();
       console.log("API Response:", data);
@@ -176,6 +181,7 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
       }
     } catch (error) {
       console.error("Failed to fetch current showtimes:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

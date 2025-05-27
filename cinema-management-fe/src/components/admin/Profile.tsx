@@ -3,20 +3,26 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
+import { toast } from "react-toastify";
 
 const Profile: React.FC = () => {
   const { userProfile } = useAuth();
   const { updateCustomer } = useCustomers();
   const [isEditing, setIsEditing] = useState(false);
+  
+  const formatDateForInput = (date: string | undefined): string => {
+    if (!date) return "";
+    const parsedDate = new Date(date);
+    return parsedDate.toISOString().split("T")[0];
+  };
 
-  // Provide default values to ensure formData matches UserType
   const [formData, setFormData] = useState({
     _id: userProfile?._id || "",
     full_name: userProfile?.full_name || "",
     email: userProfile?.email || "",
     phone: userProfile?.phone || "",
     password_hash: userProfile?.password_hash || "",
-    dateOfBirth: userProfile?.dateOfBirth || "",
+    dateOfBirth: formatDateForInput(userProfile?.dateOfBirth) || "",
     cccd: userProfile?.cccd || "",
     role: userProfile?.role || "employee",
     created_at: userProfile?.created_at || "",
@@ -32,10 +38,10 @@ const Profile: React.FC = () => {
   const handleSave = async () => {
     try {
       await updateCustomer(formData);
-      console.log("User profile updated successfully.");
+      toast.success("User profile updated successfully.");
       setIsEditing(false);
     } catch (error) {
-      console.error("Failed to update user profile:", error);
+      toast.error(error instanceof Error ? error.message : String(error));
     }
   };
 

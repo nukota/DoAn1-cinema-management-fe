@@ -21,7 +21,11 @@ import { PaymentsProvider } from "./providers/PaymentsProvider";
 import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
 import { SeatProvider } from "./providers/SeatProvider";
-import Showtime from "./components/admin/items/Showtime";
+import AdminNotFound from "./components/admin/NotFound";
+import { SettingProvider } from "./providers/SettingProvider";
+import { TimerProvider } from "./providers/page/TimerProvider";
+import { RevenueProvider } from "./providers/RevenueProvider";
+import { ChatbotProvider } from "./providers/ChatbotProvider";
 
 const App: React.FC = () => {
   return (
@@ -39,15 +43,36 @@ const App: React.FC = () => {
                           <DiscountsProvider>
                             <RoomsProvider>
                               <SeatProvider>
-                                <Routes>
-                                  <Route
-                                    path="/"
-                                    element={<Navigate to="/user" />}
-                                  />
-                                  <Route path="/admin/*" element={<Admin />} />
-                                  <Route path="/user/*" element={<User />} />
-                                  <Route path="/employee/*" element={<Employee />} />
-                                </Routes>
+                                <SettingProvider>
+                                  <RevenueProvider>
+                                    <TimerProvider>
+                                      <ChatbotProvider>
+                                          <Routes>
+                                            <Route
+                                              path="/"
+                                              element={<Navigate to="/user" />}
+                                            />
+                                            <Route
+                                              path="/admin/*"
+                                              element={<Admin />}
+                                            />
+                                            <Route
+                                              path="/user/*"
+                                              element={<User />}
+                                            />
+                                            <Route
+                                              path="/employee/*"
+                                              element={<Employee />}
+                                            />
+                                            <Route
+                                              path="/*"
+                                              element={<AdminNotFound />}
+                                            />
+                                          </Routes>
+                                      </ChatbotProvider>
+                                    </TimerProvider>
+                                  </RevenueProvider>
+                                </SettingProvider>
                               </SeatProvider>
                             </RoomsProvider>
                           </DiscountsProvider>

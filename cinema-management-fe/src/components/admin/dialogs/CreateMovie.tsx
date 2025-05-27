@@ -11,7 +11,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { MovieType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -39,7 +39,7 @@ const statusOptions: string[] = [
 interface CreateMovieProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (newMovie: any) => void;
+  onAdd: (newMovie: any) => Promise<boolean>;
 }
 
 const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
@@ -61,7 +61,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
 
   const handleSubmit = () => {
     if (!title || !posterURL || !status || !genre || !duration || !country) {
-      console.error("All fields are required");
+      toast.error("All fields are required");
       return;
     }
     const movieData = {
@@ -80,8 +80,8 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       trailer_url: trailerURL,
     };
     onAdd(movieData);
-    onClose();
   };
+
   return (
     <Dialog
       open={open}

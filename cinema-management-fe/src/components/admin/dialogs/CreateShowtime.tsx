@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { MovieType, ShowtimeType } from "../../../interfaces/types";
+import { toast } from "react-toastify";
 
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
@@ -37,7 +38,7 @@ interface CreateShowtimeProps {
   roomId: string;
   movies: MovieType[];
   onClose: () => void;
-  onAdd: (newShowtime: any) => void;
+  onAdd: (newShowtime: any) => Promise<boolean>;
 }
 
 const CreateShowtime: React.FC<CreateShowtimeProps> = ({
@@ -52,36 +53,17 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
   const [price, setPrice] = useState<number | null>(null);
 
   const handleAddClick = async () => {
-    if (
-      !movieId ||
-      !showtime ||
-      price === null ||
-      price === 0 ||
-      isNaN(Number(price))
-    ) {
-      alert("Please fill in all required fields.");
+    if (!movieId || !showtime || !price) {
+      toast.error("Please fill in all fields");
       return;
     }
-    
-
     const newShowtime = {
       room_id: roomId,
       movie_id: movieId,
       showtime,
       price: Number(price),
     };
-    console.log("Payload being sent:", newShowtime); // Debugging log
-
-    try {
-      await onAdd(newShowtime);
-      setMovieId("");
-      setShowtime("");
-      setPrice(null);
-      onClose();
-    } catch (error) {
-      console.error("Failed to add showtime:", error);
-      alert("An error occurred while adding the showtime. Please try again.");
-    }
+    onAdd(newShowtime);
   };
 
   return (

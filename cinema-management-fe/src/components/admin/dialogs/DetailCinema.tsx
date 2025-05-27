@@ -31,7 +31,7 @@ interface DetailCinemaProps {
   cinema: CinemaType;
   open: boolean;
   onClose: () => void;
-  onSave: (newCinema: CinemaType) => void;
+  onSave: (newCinema: CinemaType) => Promise<boolean>;
   onDelete: () => void;
 }
 
@@ -61,11 +61,16 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
   };
 
   const handleSaveClick = () => {
-    onSave({
+    if (!name || !address) {
+      console.error("All fields are required");
+      return;
+    }
+    const updatedCinema: CinemaType = {
       ...cinema,
       name,
       address,
-    });
+    };
+    onSave(updatedCinema);
     setIsEditing(false);
   };
 

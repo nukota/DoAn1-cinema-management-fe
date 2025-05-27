@@ -9,8 +9,8 @@ interface RoomShowtimesProps {
   room: RoomType;
   showtimes: ShowtimeType[];
   movies: MovieType[];
-  onAddShowtime: (roomId: ShowtimeType) => void;
-  onUpdateShowtime: (showtime: ShowtimeType) => void;
+  onAddShowtime: (roomId: ShowtimeType) => Promise<boolean>;
+  onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
   onDeleteShowtime: (showtimeId: string) => void;
 }
 
@@ -32,9 +32,12 @@ const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
     setIsDialogOpen(false);
   };
 
-  const handleAddShowtime = (newShowtime: ShowtimeType) => {
-    onAddShowtime(newShowtime);
-    setIsDialogOpen(false);
+  const handleAddShowtime = async (newShowtime: ShowtimeType) => {
+    const result = await onAddShowtime(newShowtime);
+    if (result) {
+      setIsDialogOpen(false);
+    }
+    return result;
   };
 
   return (

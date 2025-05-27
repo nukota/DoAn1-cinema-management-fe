@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import StyleIcon from "@mui/icons-material/Style";
 import PublicIcon from "@mui/icons-material/Public";
@@ -19,9 +19,15 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useSeats } from "../../providers/SeatProvider";
 import { useProducts } from "../../providers/ProductsProvider";
+import { useTimer } from "../../providers/page/TimerProvider";
+import { useSetting } from "../../providers/SettingProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
+  const { stopTimer } = useTimer();
+  const { setting } = useSetting();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { fetchMovieById, loading: movieLoading } = useMovies();
   const {
     fetchShowtimesByMovieId,
@@ -43,6 +49,7 @@ const MovieDetail: React.FC = () => {
   const [selectedShowtime, setSelectedShowtime] = useState<ShowtimeType | null>(
     null
   );
+  const seatSectionRef = useRef<HTMLDivElement>(null);
   const totalPrice = React.useMemo(() => {
     const seatPrice = selectedSeats.length * (selectedShowtime?.price || 0);
     const productPrice = selectedProducts.reduce(
@@ -51,6 +58,20 @@ const MovieDetail: React.FC = () => {
     );
     return seatPrice + productPrice;
   }, [selectedSeats, selectedShowtime, selectedProducts]);
+  const showtimeIdFromState = location.state?.showtimeId || null;
+  
+  useEffect(() => {
+    if (showtimeIdFromState && showtimesByMovieId.length > 0) {
+      const matchedShowtime = showtimesByMovieId.find(
+        (showtime) => showtime._id === showtimeIdFromState
+      );
+      if (matchedShowtime) {
+        setSelectedShowtime(matchedShowtime);
+        seatSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [showtimeIdFromState, showtimesByMovieId]);
+
   useEffect(() => {
     const fetchMovie = async () => {
       if (movieId) {
@@ -100,6 +121,14 @@ const MovieDetail: React.FC = () => {
     fetchSeats();
   }, [selectedShowtime]);
 
+  // useEffect(() => {
+  //   return () => {
+  //     if (!location.pathname.startsWith("/payment")) {
+  //       stopTimer();
+  //     }
+  //   };
+  // }, [stopTimer, navigate]);
+
   if (movieLoading || showtimesLoading || productsLoading) {
     return (
       <div className="text-white text-center text-xl mt-10">
@@ -145,27 +174,32 @@ const MovieDetail: React.FC = () => {
               BOOKING INFO
             </div>
           </div>
-          <BookingInfo
-            seats={seats}
-            selectedSeats={selectedSeats}
-            setSelectedSeats={setSelectedSeats}
-            price={selectedShowtime?.price}
-            ticketCount={ticketCount}
-            setTicketCount={setTicketCount}
-            products={products}
-            selectedProducts={selectedProducts}
-            setSelectedProducts={setSelectedProducts}
-          />
+          <div ref={seatSectionRef}>
+            <BookingInfo
+              seats={seats}
+              selectedSeats={selectedSeats}
+              setSelectedSeats={setSelectedSeats}
+              price={selectedShowtime?.price}
+              ticketCount={ticketCount}
+              setTicketCount={setTicketCount}
+              products={products}
+              selectedProducts={selectedProducts}
+              setSelectedProducts={setSelectedProducts}
+              reservationTime={setting?.reservation_time || 10}
+            />
+          </div>
         </div>
       </div>
       <div className="w-full bg-black z-20 mt-32"></div>
-      <BookingFooter
-        movie={movie}
-        totalPrice={totalPrice}
-        selectedProducts={selectedProducts}
-        selectedShowtime={selectedShowtime}
-        selectedSeats={selectedSeats}
-      />
+      <div className="overflow-hidden">
+        <BookingFooter
+          movie={movie}
+          totalPrice={totalPrice}
+          selectedProducts={selectedProducts}
+          selectedShowtime={selectedShowtime}
+          selectedSeats={selectedSeats}
+        />
+      </div>
     </div>
   );
 };

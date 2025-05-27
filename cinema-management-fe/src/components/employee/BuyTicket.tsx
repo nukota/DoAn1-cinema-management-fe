@@ -16,8 +16,6 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
-  FormControl,
-  FormLabel,
   Paper,
 } from "@mui/material";
 import {
@@ -37,6 +35,7 @@ import { useSeats } from "../../providers/SeatProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
+import { useOrders } from "../../providers/OrdersProvider";
 const steps = [
   "Select Ticket",
   "Select Seats",
@@ -51,7 +50,7 @@ const BuyTicket: React.FC = () => {
   const { seats, fetchSeatsByShowtimeId, loading } = useSeats();
   const { products, fetchProductsData } = useProducts();
   const { customers, fetchCustomersData } = useCustomers();
-  //
+  const { createDetailedOrder } = useOrders();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -105,8 +104,60 @@ const BuyTicket: React.FC = () => {
     setSelectedShowtime({ movie, showtime });
   };
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleNext = async () => {
+    if (activeStep === 4) {
+      // Build payload
+      const ticketTotal =
+        selectedShowtime && selectedSeats.length > 0
+          ? selectedSeats.length * selectedShowtime.showtime.price
+          : 0;
+      // Calculate products total
+      const productsTotal = Object.entries(selectedProducts).reduce(
+        (sum, [productId, quantity]) => {
+          const product = products.find((p) => p._id === productId);
+          return sum + (product ? product.price * quantity : 0);
+        },
+        0
+      );
+      // Final total price and amount
+      const total_price = ticketTotal + productsTotal;
+      const data = {
+        total_price: total_price,
+        user_id:
+          selectedTab === 0
+            ? customers.find(
+                (c) => `${c.full_name} (${c.phone})` === selectedAccount
+              )?._id
+            : undefined,
+        email: selectedTab === 1 ? guestEmail : undefined,
+        payment_method: selectedPaymentMethod,
+        discount_id: null,
+        amount: total_price,
+        products: Object.entries(selectedProducts).map(
+          ([productId, quantity]) => ({
+            product_id: productId,
+            quantity,
+          })
+        ),
+        tickets: {
+          showtime_id: selectedShowtime?.showtime._id,
+          price: selectedShowtime?.showtime.price,
+          seats: selectedSeats.map((seat) => ({
+            seat_id: seat._id,
+          })),
+        },
+      };
+
+      try {
+        await createDetailedOrder(data);
+        setActiveStep((prev) => prev + 1);
+      } catch (error) {
+        // Show error to user if needed
+        console.error("Failed to create order:", error);
+      }
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -824,15 +875,15 @@ const BuyTicket: React.FC = () => {
             )}
             {activeStep === 1 && (
               <div className="mr-auto flex flex-row items-center justify-items-start gap-2">
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 400, height: "auto" }}
-              >
-                Selected Seats:{" "}
-                {selectedSeats.length > 0
-                  ? selectedSeats.map((seat) => seat.seat_name).join(", ")
-                  : "None"}
-              </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 400, height: "auto" }}
+                >
+                  Selected Seats:{" "}
+                  {selectedSeats.length > 0
+                    ? selectedSeats.map((seat) => seat.seat_name).join(", ")
+                    : "None"}
+                </Typography>
               </div>
             )}
             {activeStep === 2 && (
