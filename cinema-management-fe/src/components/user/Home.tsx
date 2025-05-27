@@ -31,7 +31,7 @@ const UserHome: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-black min-h-screen w-full h-full flex flex-col relative">
+    <div className="bg-black min-h-screen w-full h-full flex flex-col relative custom-scrollbar overflow-hidden">
       <img
         className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
         src={wallPaperImg}
@@ -101,7 +101,7 @@ const UserHome: React.FC = () => {
         </Box>
       </Box>
 
-      <div ref={nextSectionRef} className="w-full mt-10 px-5 z-30">
+      <div ref={nextSectionRef} className="w-full mt-10 px-5 z-30 custom-scrollbar overflow-hidden">
         <div className="mt-6 mb-20">
           <QuickBook />
         </div>
