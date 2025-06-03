@@ -83,15 +83,16 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
           <div className="text-[18px] my-2">{movie.title}</div>
           <div className="text-sm pl-2 flex flex-col space-y-2">
             <div>
-              <StyleIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.genre}
+              <StyleIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
+              {Array.isArray(movie.genre) ? movie.genre.join(", ") : movie.genre}
             </div>
             <div>
               <AccessTimeIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
               {movie.duration}
             </div>
             <div>
-              <PersonOffIcon sx={{ fontSize: 16, color: "#ebd113" }} /> T
-              {movie.age_limit}
+              <PersonOffIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
+              {movie.age_limit ? `T${movie.age_limit}` : "None"}
             </div>
             <div>
               <PublicIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.country}

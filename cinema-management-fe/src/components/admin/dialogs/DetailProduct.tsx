@@ -50,7 +50,7 @@ const DetailProduct: React.FC<DetailProductProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [image, setImage] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
+  const [price, setPrice] = useState<string>("");
   const [category, setCategory] = useState<string>("");
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const DetailProduct: React.FC<DetailProductProps> = ({
     if (product) {
       setName(product.name);
       setImage(product.image);
-      setPrice(product.price);
+      setPrice(product.price.toString());
       setCategory(product.category);
     }
     if (!open) {
@@ -75,11 +75,15 @@ const DetailProduct: React.FC<DetailProductProps> = ({
       toast.error("All fields are required");
       return;
     }
+    if (isNaN(Number(price))) {
+      toast.error("Price must be a number");
+      return;
+    }
     const updatedProduct: ProductType = {
       ...product,
       name,
       image,
-      price,
+      price: Number(price),
       category,
     };
     onSave(updatedProduct);
@@ -185,7 +189,7 @@ const DetailProduct: React.FC<DetailProductProps> = ({
                 size="small"
                 value={price}
                 disabled={!isEditing}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => setPrice(e.target.value)}
               />
             </Box>
           </Box>

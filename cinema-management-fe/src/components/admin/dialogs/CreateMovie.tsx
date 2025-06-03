@@ -56,12 +56,34 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
   const [director, setDirector] = useState<string>("");
   const [actors, setActors] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState<string>("");
   const [trailerURL, setTrailerURL] = useState<string>("");
 
   const handleSubmit = () => {
-    if (!title || !posterURL || !status || !genre || !duration || !country) {
+    if (
+      !title ||
+      !posterURL ||
+      !status ||
+      !genre ||
+      !duration ||
+      !country ||
+      !ageLimit ||
+      !releaseDate ||
+      !director ||
+      !actors ||
+      !description ||
+      !rating ||
+      !trailerURL
+    ) {
       toast.error("All fields are required");
+      return;
+    }
+    if (
+      isNaN(Number(duration)) ||
+      isNaN(Number(ageLimit)) ||
+      isNaN(Number(rating))
+    ) {
+      toast.error("Duration, Age Limit, and Rating must be numbers");
       return;
     }
     const movieData = {
@@ -76,7 +98,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       director: director,
       actors: actors.split(",").map((name) => name.trim()),
       description,
-      rating,
+      rating: Number(rating),
       trailer_url: trailerURL,
     };
     onAdd(movieData);
@@ -307,7 +329,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 margin="dense"
                 size="small"
                 value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
+                onChange={(e) => setRating(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
