@@ -12,6 +12,7 @@ export interface AuthContextType {
   isLoggedIn: boolean;
   userProfile: UserType | null;
   accessToken: string | null;
+  loading: boolean;
   fetchUserProfile: (token: string, email: string) => Promise<void>;
   handleLogin: (email: string, password: string) => Promise<void>;
   handleLogout: () => void;
@@ -40,10 +41,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserType | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // Add loading state
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchUserProfile = async (token: string, email: string) => {
+    setLoading(true);
     try {
       const response = await axios.get(`${baseURL}/user/email?email=${email}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -54,10 +57,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
       handleLogout();
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogin = async (email: string, password: string) => {
+    setLoading(true);
     try {
       console.log("Login URL:", `${baseURL}/auth/login`);
       console.log("Login Payload:", { email, password });
@@ -79,10 +85,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Login failed:", error);
       throw new Error("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignUp = async (data: SignUpData) => {
+    setLoading(true);
     try {
       const response = await axios.post(`${baseURL}/auth/signup`, data);
 
@@ -99,6 +108,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Sign Up failed:", error);
       throw new Error("Sign Up failed. Please check your input.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,8 +117,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Clear tokens and user state
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("user_id"); 
+    localStorage.removeItem("email");
+    localStorage.removeItem("user_id");
     setUserProfile(null);
     setAccessToken(null);
     setIsLoggedIn(false);
@@ -127,6 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isLoggedIn,
         userProfile,
         accessToken,
+        loading,
         fetchUserProfile,
         handleLogin,
         handleLogout,

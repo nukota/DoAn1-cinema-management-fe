@@ -4,7 +4,7 @@ import SearchImg from "../../assets/images/search.svg";
 import { CinemaType } from "../../interfaces/types";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 
@@ -115,8 +115,13 @@ const Cinemas: React.FC = () => {
   });
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading cinemas...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading cinemas...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">

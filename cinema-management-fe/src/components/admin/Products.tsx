@@ -7,6 +7,7 @@ import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
 import { toast } from "react-toastify";
+import { CircularProgress } from "@mui/material";
 
 const Products: React.FC = () => {
   const {
@@ -113,8 +114,13 @@ const Products: React.FC = () => {
   });
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading products data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading products...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="products flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">

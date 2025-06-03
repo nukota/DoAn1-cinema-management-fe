@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import MovieSlide from "./elements/MovieSlide";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, CircularProgress } from "@mui/material";
 import QuickBook from "./elements/QuickBook";
 import { useMovies } from "../../providers/MoviesProvider";
 import { MovieType } from "../../interfaces/types";
@@ -101,18 +101,32 @@ const UserHome: React.FC = () => {
         </Box>
       </Box>
 
-      <div ref={nextSectionRef} className="w-full mt-10 px-5 z-30 custom-scrollbar overflow-hidden">
+      <div
+        ref={nextSectionRef}
+        className="w-full mt-10 px-5 z-30 custom-scrollbar overflow-hidden"
+      >
         <div className="mt-6 mb-20">
           <QuickBook />
         </div>
 
         {loading ? (
-          <Typography
-            variant="h6"
-            sx={{ color: "white", textAlign: "center", mt: 4 }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mt: 4,
+              p: 4,
+            }}
           >
-            Loading movies...
-          </Typography>
+            <CircularProgress />
+            <Typography
+              variant="h4"
+              sx={{ color: "#999", textAlign: "center", mt: 2 }}
+            >
+              Loading movies...
+            </Typography>
+          </Box>
         ) : (
           <div className="mb-4 flex flex-col gap-10">
             <MovieSlide title="Now Showing" movies={nowShowingMovies} />

@@ -5,6 +5,7 @@ import Order from "./items/Order";
 import { OrderType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 import { useOrders } from "../../providers/OrdersProvider";
+import { CircularProgress } from "@mui/material";
 
 const Orders: React.FC = () => {
   const { fetchOrdersData, orders, loading } = useOrders();
@@ -80,8 +81,13 @@ const Orders: React.FC = () => {
   });
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading orders data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading orders...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">

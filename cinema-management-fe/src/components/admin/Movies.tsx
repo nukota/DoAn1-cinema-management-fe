@@ -8,6 +8,7 @@ import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
+import { CircularProgress } from "@mui/material";
 
 const Movies: React.FC = () => {
   const {
@@ -127,8 +128,13 @@ const Movies: React.FC = () => {
   });
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading movies data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading movies...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="movies flex flex-col h-[673px]">

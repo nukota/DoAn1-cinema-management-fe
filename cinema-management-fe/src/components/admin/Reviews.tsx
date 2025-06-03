@@ -5,6 +5,7 @@ import CalendarImg from "../../assets/images/calendar.svg";
 import { ReviewType } from "../../interfaces/types";
 import DetailReview from "./dialogs/DetailReview";
 import { useReviews } from "../../providers/ReviewsProvider";
+import { CircularProgress } from "@mui/material";
 
 const Reviews: React.FC = () => {
   const { reviews, fetchReviewsData, loading } = useReviews();
@@ -95,8 +96,13 @@ const Reviews: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading reviews data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading reviews...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="reviews flex flex-col w-full min-w-[1000px] h-[100%] relative ">
