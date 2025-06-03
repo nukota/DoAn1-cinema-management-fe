@@ -153,6 +153,7 @@ const BuyTicket: React.FC = () => {
       try {
         const pdfBlob = await createDetailedOrder(data);
         const url = URL.createObjectURL(pdfBlob);
+        window.open(url, "_blank");
         setPdfUrl(url);
         setActiveStep((prev) => prev + 1);
       } catch (error) {
@@ -676,7 +677,7 @@ const BuyTicket: React.FC = () => {
                         }
                       />
                       <FormControlLabel
-                        value="visa"
+                        value="visa/mastercard"
                         disabled={isPaid}
                         control={<Radio />}
                         label={
@@ -848,29 +849,30 @@ const BuyTicket: React.FC = () => {
                 </Box>
               )}
               {activeStep === 5 && (
-                <div>
+                <div className="p-4">
                   <Typography
                     variant="h5"
-                    sx={{ fontWeight: 500, width: "100%", mt: 10 }}
+                    sx={{ fontWeight: 500, width: "100%", mt: 4 }}
                   >
                     Ticket has been successfully booked!
                   </Typography>
                   {pdfUrl ? (
-                    <iframe
-                      ref={iframeRef}
-                      src={pdfUrl}
-                      title="Ticket PDF"
-                      width="100%"
-                      height="600px"
-                      style={{
-                        border: "1px solid #ccc",
-                        borderRadius: "8px",
-                        margin: "16px 0",
-                        background: "#fafafa",
-                        minHeight: "500px",
-                        maxHeight: "70vh",
-                      }}
-                    />
+                    <>
+                      <Typography
+                        variant="h5"
+                        color="gray"
+                        sx={{ fontWeight: 400, width: "100%", mt: 2 }}
+                      >
+                        An invoice has been generated. You can preview in opened
+                        tab.
+                      </Typography>
+                      <iframe
+                        ref={iframeRef}
+                        src={pdfUrl}
+                        style={{ display: "none" }}
+                        title="Print PDF"
+                      />
+                    </>
                   ) : (
                     <Typography color="text.secondary" sx={{ mt: 4 }}>
                       PDF is not available.
@@ -879,7 +881,7 @@ const BuyTicket: React.FC = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 4 }}
                     onClick={handlePrint}
                     disabled={!pdfUrl}
                   >

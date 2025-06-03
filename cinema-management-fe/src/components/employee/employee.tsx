@@ -15,7 +15,6 @@ import PrintTicket from "./PrintTicket";
 import Payments from "../admin/Payments";
 import Orders from "../admin/Orders";
 
-
 const Employee: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
@@ -85,13 +84,6 @@ const Employee: React.FC = () => {
                 to="/employee/payments"
                 isSelected={location.pathname === "/employee/payments"}
               />,
-              <NavSelection
-                key="settings"
-                icon={SettingsImg}
-                title="Settings"
-                to="/employee/settings"
-                isSelected={location.pathname === "/employee/settings"}
-              />,
             ]}
             botChildren={[]}
             notificationChildren={[]}
@@ -109,7 +101,6 @@ const Employee: React.FC = () => {
             <Route path="/orders" element={<Orders />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="/settings" element={<div />} />
           </Routes>
         </div>
       </div>

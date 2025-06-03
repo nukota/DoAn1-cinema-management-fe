@@ -12,7 +12,7 @@ interface OrdersContextType {
   fetchOrdersData: () => Promise<void>;
   fetchOrderDetails: (orderId: string) => Promise<OrderType | undefined>;
   getOrderByUserId: (userId: string) => Promise<OrderType[]>;
-  getOrderByCode: (code: string) => Promise<OrderType | undefined>;
+  getOrderByCode: (code: string) => Promise<Blob>;
   createOrder: (newOrder: OrderType) => Promise<void>;
   createDetailedOrder: (newOrder: any) => Promise<Blob>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
@@ -112,8 +112,8 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         const errorText = await response.text();
         throw new Error(errorText || "Fetching order by code failed.");
       }
-      const data = await response.json();
-      return data;
+      const blob = await response.blob();
+      return blob;
     } catch (error) {
       console.error("Failed to fetch order by code:", error);
       throw error;

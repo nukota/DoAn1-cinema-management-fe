@@ -57,14 +57,14 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   const [status, setStatus] = useState<string>("");
   const [posterURL, setPosterURL] = useState<string>("");
   const [genre, setGenre] = useState<string>("");
-  const [duration, setDuration] = useState<number>(0);
+  const [duration, setDuration] = useState<string>("");
   const [country, setCountry] = useState<string>("");
-  const [ageLimit, setAgeLimit] = useState<number>(0);
+  const [ageLimit, setAgeLimit] = useState<string>("");
   const [releaseDate, setReleaseDate] = useState<string>("");
   const [director, setDirector] = useState<string>("");
   const [actors, setActors] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState<string>("");
   const [trailerURL, setTrailerURL] = useState<string>("");
 
   useEffect(() => {
@@ -74,14 +74,14 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       setStatus(movie.status);
       setPosterURL(movie.poster_url);
       setGenre(movie.genre.join(", "));
-      setDuration(movie.duration);
+      setDuration(movie.duration.toString());
       setCountry(movie.country);
-      setAgeLimit(movie.age_limit);
+      setAgeLimit(movie.age_limit.toString());
       setReleaseDate(new Date(movie.release_date).toISOString().slice(0, 10));
       setDirector(movie.director);
       setActors(movie.actors.join(", "));
       setDescription(movie.description);
-      setRating(movie.rating);
+      setRating(movie.rating.toString());
       setTrailerURL(movie.trailer_url);
     }
     if (!open) {
@@ -106,10 +106,18 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       !director ||
       !actors ||
       !description ||
-      rating === 0 ||
+      !rating ||
       !trailerURL
     ) {
       toast.error("All fields are required");
+      return;
+    }
+    if (
+      isNaN(Number(duration)) ||
+      isNaN(Number(ageLimit)) ||
+      isNaN(Number(rating))
+    ) {
+      toast.error("Duration, Age Limit, and Rating must be numbers");
       return;
     }
     onSave({
@@ -118,14 +126,14 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       status,
       poster_url: posterURL,
       genre,
-      duration,
+      duration: Number(duration),
       nation: country,
-      age_limit: ageLimit,
+      age_limit: Number(ageLimit),
       release_date: releaseDate,
       director,
       actors: actors.split(",").map((actor) => actor.trim()),
       description,
-      rating,
+      rating: Number(rating),
       trailer_url: trailerURL,
     });
     setIsEditing(false);
@@ -242,7 +250,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 size="small"
                 value={duration}
                 disabled={!isEditing}
-                onChange={(e) => setDuration(Number(e.target.value))}
+                onChange={(e) => setDuration(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -271,7 +279,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 size="small"
                 value={ageLimit}
                 disabled={!isEditing}
-                onChange={(e) => setAgeLimit(Number(e.target.value))}
+                onChange={(e) => setAgeLimit(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
@@ -371,7 +379,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 size="small"
                 value={rating}
                 disabled={!isEditing}
-                onChange={(e) => setRating(Number(e.target.value))}
+                onChange={(e) => setRating(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
