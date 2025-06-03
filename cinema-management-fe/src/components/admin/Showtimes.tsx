@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import RoomShowtimes from "./items/RoomShowtimes";
 import { Mousewheel, Navigation } from "swiper/modules";
@@ -13,7 +13,7 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
 
 const Showtimes: React.FC = () => {
-  const { rooms, fetchRoomsData } = useRooms();
+  const { rooms, fetchRoomsData, loading } = useRooms();
   const {
     showtimes,
     fetchShowtimesData,
@@ -65,7 +65,9 @@ const Showtimes: React.FC = () => {
     setSelectedMovie(event.target.value);
   };
 
-  const handleAddShowtime = async (newShowtime: ShowtimeType): Promise<boolean> => {
+  const handleAddShowtime = async (
+    newShowtime: ShowtimeType
+  ): Promise<boolean> => {
     try {
       await createShowtime(newShowtime);
       toast.success("Showtime added successfully!");
@@ -76,7 +78,9 @@ const Showtimes: React.FC = () => {
     }
   };
 
-  const handleUpdateShowtime = async (updatedShowtime: ShowtimeType): Promise<boolean> => {
+  const handleUpdateShowtime = async (
+    updatedShowtime: ShowtimeType
+  ): Promise<boolean> => {
     try {
       await updateShowtime(updatedShowtime);
       toast.success("Showtime updated successfully!");
@@ -131,6 +135,15 @@ const Showtimes: React.FC = () => {
       ),
     }))
     .sort((a, b) => a._id.localeCompare(b._id));
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading showtimes...</span>
+      </div>  
+    );
+  }
   return (
     <div className="showtimes flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Showtimes</div>

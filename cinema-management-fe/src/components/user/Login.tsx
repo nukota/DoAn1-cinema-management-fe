@@ -10,14 +10,17 @@ import {
   InputAdornment,
   FormControlLabel,
   Checkbox,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import wallPaperImg from "./../../assets/images/wallpaper.jpg";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
+import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
-  const { handleLogin, handleSignUp, userProfile } = useAuth();
+  const { handleLogin, handleSignUp, userProfile, loading } = useAuth();
   const navigate = useNavigate();
 
   // Pre-fill email and password from environment variables
@@ -25,7 +28,6 @@ const Login: React.FC = () => {
   const defaultPassword = import.meta.env.VITE_PASSWORD || "";
 
   const [value, setValue] = useState<string>("1");
-  const [error, setError] = useState<string>("");
   const [signInData, setSignInData] = useState({
     email: defaultEmail,
     password: defaultPassword,
@@ -43,7 +45,6 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptPolicy, setAcceptPolicy] = useState(false);
-  const [containerHeight, setContainerHeight] = useState("auto");
 
   const handleChange = (e: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -61,12 +62,12 @@ const Login: React.FC = () => {
 
   const handleSignUpClick = async () => {
     if (signUpData.password1 !== signUpData.password2) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     if (!acceptPolicy) {
-      setError("You must accept the policy to sign up");
+      toast.error("You must accept the policy to sign up");
       return;
     }
 
@@ -82,7 +83,7 @@ const Login: React.FC = () => {
       });
       navigate("/"); // Redirect to the home page after successful sign-up
     } catch (err) {
-      setError("Sign-up failed. Please check your input.");
+      toast.error(err as string || "Sign up failed");
     }
   };
 
@@ -109,9 +110,8 @@ const Login: React.FC = () => {
   const handleLoginClick = async () => {
     try {
       await handleLogin(signInData.email, signInData.password);
-      // No need to navigate here; navigation will be handled in useEffect
     } catch (err) {
-      setError("Invalid email or password");
+      toast.error(err instanceof Error ? err.message : "Sign in failed");
     }
   };
 
@@ -130,6 +130,9 @@ const Login: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col justify-center relative">
+      <Backdrop open={loading} sx={{ color: "#fff", zIndex: 2000 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <img
         className="absolute w-full h-[640px] top-[60px] z-0 opacity-20 object-cover"
         src={wallPaperImg}
@@ -146,7 +149,7 @@ const Login: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           paddingInline: "14px",
-          height: containerHeight,
+          height: 'auto',
           overflow: "auto",
           zIndex: 10,
         }}

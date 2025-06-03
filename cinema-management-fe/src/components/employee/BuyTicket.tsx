@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -77,6 +77,8 @@ const BuyTicket: React.FC = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("cash");
   const [isPaid, setIsPaid] = useState<boolean>(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     getCurrentShowtime();
@@ -149,14 +151,28 @@ const BuyTicket: React.FC = () => {
       };
 
       try {
-        await createDetailedOrder(data);
+        const pdfBlob = await createDetailedOrder(data);
+        const url = URL.createObjectURL(pdfBlob);
+        setPdfUrl(url);
         setActiveStep((prev) => prev + 1);
       } catch (error) {
-        // Show error to user if needed
         console.error("Failed to create order:", error);
       }
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
+
+  const handlePrint = () => {
+    if (iframeRef.current) {
+      iframeRef.current.contentWindow?.focus();
+      iframeRef.current.contentWindow?.print();
     }
   };
 
@@ -271,7 +287,6 @@ const BuyTicket: React.FC = () => {
       account.full_name.toLowerCase().includes(filterName.toLowerCase()) &&
       account.phone.includes(filterPhone)
   );
-  console.log("Filtered Accounts: ", filteredAccounts);
 
   const filteredShowtimes = currentShowtime.filter((movie: MovieType) =>
     movie.showtimes?.some(
@@ -320,58 +335,79 @@ const BuyTicket: React.FC = () => {
             <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative px-4 pt-4">
               {activeStep === 0 && (
                 <div className="flex gap-4 w-full">
-                  {filteredShowtimes.map((movie: MovieType) => (
-                    <div
-                      key={movie._id}
-                      className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0 overflow-clip"
+                  {filteredShowtimes.length === 0 ? (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "400px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
                     >
-                      {/* Movie Image */}
-                      <div
-                        className="image w-full h-[240px] bg-[#dadada] object-cover"
-                        style={{
-                          backgroundImage: `url(${movie.poster_url})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }}
-                      />
                       <Typography
-                        className="text-center font-bold mt-4 mb-2 px-2 py-2 h-[64px]"
-                        sx={{
-                          fontSize: "16px",
-                          color: "#484848",
-                          textAlign: "center",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
+                        sx={{ fontSize: "24px" }}
+                        color="#dadada"
+                        align="center"
                       >
-                        {movie.title}
+                        There&apos;s no showtime on this date
                       </Typography>
-                      <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
-                        {movie.showtimes
-                          ?.filter(
-                            (showtime: any) =>
-                              new Date(showtime.showtime).toLocaleDateString(
-                                "en-CA"
-                              ) === selectedDate
-                          )
-                          .map((showtime: any) => (
-                            <ShowtimeUnit
-                              key={showtime._id}
-                              showtimeData={showtime}
-                              selected={
-                                selectedShowtime?.showtime._id === showtime._id
-                              }
-                              onClick={() =>
-                                handleShowtimeSelect(movie, showtime)
-                              }
-                            />
-                          ))}
+                    </Box>
+                  ) : (
+                    filteredShowtimes.map((movie: MovieType) => (
+                      <div
+                        key={movie._id}
+                        className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0 overflow-clip"
+                      >
+                        {/* Movie Image */}
+                        <div
+                          className="image w-full h-[240px] bg-[#dadada] object-cover"
+                          style={{
+                            backgroundImage: `url(${movie.poster_url})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        />
+                        <Typography
+                          className="text-center font-bold mt-4 mb-2 px-2 py-2 h-[64px]"
+                          sx={{
+                            fontSize: "16px",
+                            color: "#484848",
+                            textAlign: "center",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {movie.title}
+                        </Typography>
+                        <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
+                          {movie.showtimes
+                            ?.filter(
+                              (showtime: any) =>
+                                new Date(showtime.showtime).toLocaleDateString(
+                                  "en-CA"
+                                ) === selectedDate
+                            )
+                            .map((showtime: any) => (
+                              <ShowtimeUnit
+                                key={showtime._id}
+                                showtimeData={showtime}
+                                selected={
+                                  selectedShowtime?.showtime._id ===
+                                  showtime._id
+                                }
+                                onClick={() =>
+                                  handleShowtimeSelect(movie, showtime)
+                                }
+                              />
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               )}
               {activeStep === 1 && (
@@ -819,11 +855,33 @@ const BuyTicket: React.FC = () => {
                   >
                     Ticket has been successfully booked!
                   </Typography>
+                  {pdfUrl ? (
+                    <iframe
+                      ref={iframeRef}
+                      src={pdfUrl}
+                      title="Ticket PDF"
+                      width="100%"
+                      height="600px"
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                        margin: "16px 0",
+                        background: "#fafafa",
+                        minHeight: "500px",
+                        maxHeight: "70vh",
+                      }}
+                    />
+                  ) : (
+                    <Typography color="text.secondary" sx={{ mt: 4 }}>
+                      PDF is not available.
+                    </Typography>
+                  )}
                   <Button
                     variant="contained"
                     color="primary"
                     sx={{ mt: 2 }}
-                    onClick={() => {}}
+                    onClick={handlePrint}
+                    disabled={!pdfUrl}
                   >
                     Print Ticket
                   </Button>

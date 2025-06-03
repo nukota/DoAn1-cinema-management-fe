@@ -4,7 +4,7 @@ import DetailEmployee from "./dialogs/DetailEmployee";
 import CreateEmployee from "./dialogs/CreateEmployee";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { EmployeeType } from "../../interfaces/types";
 import { useEmployees } from "../../providers/EmployeesProvider";
 import { toast } from "react-toastify";
@@ -85,7 +85,9 @@ const Employees: React.FC = () => {
     setSelectedEmployee(null);
   };
 
-  const handleAddNewEmployee = async (newEmployee: EmployeeType): Promise<boolean> => {
+  const handleAddNewEmployee = async (
+    newEmployee: EmployeeType
+  ): Promise<boolean> => {
     try {
       await createEmployee(newEmployee);
       await fetchEmployeesData();
@@ -98,7 +100,9 @@ const Employees: React.FC = () => {
     }
   };
 
-  const handleOnSave = async (updatedEmployee: EmployeeType): Promise<boolean> => {
+  const handleOnSave = async (
+    updatedEmployee: EmployeeType
+  ): Promise<boolean> => {
     try {
       await updateEmployee(updatedEmployee);
       await fetchEmployeesData();
@@ -136,7 +140,8 @@ const Employees: React.FC = () => {
       (employee.dateOfBirth && employee.dateOfBirth.includes(searchTermLower));
 
     const matchesCinema =
-      !selectedCinema || employee.cinema?.cinema_id.toString() === selectedCinema;
+      !selectedCinema ||
+      employee.cinema?.cinema_id.toString() === selectedCinema;
 
     return matchesSearch && matchesCinema;
   });
@@ -170,8 +175,13 @@ const Employees: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading employees data...</div>;
-  } 
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading employees...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="employees flex flex-col w-full min-w-[1000px] h-[100%] relative ">

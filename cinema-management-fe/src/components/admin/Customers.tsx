@@ -2,7 +2,7 @@ import React, { use, useEffect, useState } from "react";
 import Customer from "./items/Customer";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { useCustomers } from "../../providers/CustomersProvider";
 import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../interfaces/types";
@@ -72,7 +72,9 @@ const Customers: React.FC = () => {
     setSelectedCustomer(null);
   };
 
-  const handleAddNewCustomer = async (newCustomer: UserType): Promise<boolean> => {
+  const handleAddNewCustomer = async (
+    newCustomer: UserType
+  ): Promise<boolean> => {
     try {
       await createCustomer(newCustomer);
       await fetchCustomersData();
@@ -157,8 +159,13 @@ const Customers: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading customers data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading customers...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="customers flex flex-col w-full min-w-[1000px] h-[100%] overflow-x-auto relative">

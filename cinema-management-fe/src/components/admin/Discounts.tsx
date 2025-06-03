@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import Discount from "./items/Discount";
 import { DiscountType } from "../../interfaces/types";
 import CreateDiscount from "./dialogs/CreateDiscount";
@@ -167,8 +167,13 @@ const Discounts: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading discounts...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading discounts...</span>
+        </div>
+      );
+    }
   
   return (
     <div className="discounts flex flex-col w-full min-w-[1000px] h-[100%] relative ">

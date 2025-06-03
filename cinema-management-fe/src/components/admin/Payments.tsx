@@ -5,6 +5,7 @@ import Payment from "./items/Payment";
 import { PaymentType } from "../../interfaces/types";
 import DetailPayment from "./dialogs/DetailPayment";
 import { usePayments } from "../../providers/PaymentsProvider";
+import { CircularProgress } from "@mui/material";
 
 const Payments: React.FC = () => {
   const { payments, fetchPaymentsData, loading } = usePayments();
@@ -108,10 +109,13 @@ const Payments: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="text-center text-gray-500">Loading payments data...</div>
-    );
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading payments...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="payments flex flex-col w-full min-w-[1000px] h-[100%] relative ">

@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import {
   CinemaType,
   RoomType,
@@ -122,8 +122,13 @@ const Rooms: React.FC = () => {
   });
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading rooms data...</div>;
-  }
+      return (
+        <div className="flex flex-col items-center justify-center h-full pt-4">
+          <CircularProgress />
+          <span className="text-2xl text-gray mt-4">Loading rooms...</span>
+        </div>
+      );
+    }
 
   return (
     <div className="rooms flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
