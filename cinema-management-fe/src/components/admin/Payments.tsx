@@ -3,7 +3,6 @@ import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
 import { PaymentType } from "../../interfaces/types";
-import DetailPayment from "./dialogs/DetailPayment";
 import { usePayments } from "../../providers/PaymentsProvider";
 import { CircularProgress } from "@mui/material";
 
@@ -210,13 +209,6 @@ const Payments: React.FC = () => {
           )}
         </div>
       </div>
-      {selectedPayment && (
-        <DetailPayment
-          payment={selectedPayment}
-          open={DetailDialogOpen}
-          onClose={handleCloseDialog}
-        />
-      )}
     </div>
   );
 };

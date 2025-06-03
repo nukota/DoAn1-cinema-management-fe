@@ -12,17 +12,19 @@ import { toast } from "react-toastify";
 
 const Settings: React.FC = () => {
   const { setting, getSetting, updateSetting, loading } = useSetting();
-  const [form, setForm] = useState({
-    min_ticket_price: 0,
-    max_ticket_price: 0,
-    min_product_price: 0,
-    max_product_price: 0,
+  const [form, setForm] = useState<{
+    [key: string]: string;
+  }>({
+    min_ticket_price: "",
+    max_ticket_price: "",
+    min_product_price: "",
+    max_product_price: "",
     close_time: "",
     open_time: "",
-    time_gap: 0,
-    employee_min_age: 0,
-    employee_max_age: 0,
-    reservation_time: 0,
+    time_gap: "",
+    employee_min_age: "",
+    employee_max_age: "",
+    reservation_time: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -33,29 +35,50 @@ const Settings: React.FC = () => {
   useEffect(() => {
     if (setting) {
       setForm({
-        min_ticket_price: setting.min_ticket_price,
-        max_ticket_price: setting.max_ticket_price,
-        min_product_price: setting.min_product_price,
-        max_product_price: setting.max_product_price,
-        close_time: setting.close_time,
-        open_time: setting.open_time,
-        time_gap: setting.time_gap,
-        employee_min_age: setting.employee_min_age,
-        employee_max_age: setting.employee_max_age,
-        reservation_time: setting.reservation_time,
+        min_ticket_price: setting.min_ticket_price?.toString() ?? "",
+        max_ticket_price: setting.max_ticket_price?.toString() ?? "",
+        min_product_price: setting.min_product_price?.toString() ?? "",
+        max_product_price: setting.max_product_price?.toString() ?? "",
+        close_time: setting.close_time ?? "",
+        open_time: setting.open_time ?? "",
+        time_gap: setting.time_gap?.toString() ?? "",
+        employee_min_age: setting.employee_min_age?.toString() ?? "",
+        employee_max_age: setting.employee_max_age?.toString() ?? "",
+        reservation_time: setting.reservation_time?.toString() ?? "",
       });
     }
   }, [setting]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: Number(e.target.value) });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSave = async () => {
+    // Check if all number fields are valid numbers
+    const numberFields = [
+      "min_ticket_price",
+      "max_ticket_price",
+      "min_product_price",
+      "max_product_price",
+      "time_gap",
+      "employee_min_age",
+      "employee_max_age",
+      "reservation_time",
+    ];
+    for (const field of numberFields) {
+      if (form[field] === "" || isNaN(Number(form[field]))) {
+        toast.error("All number fields must be valid numbers");
+        return;
+      }
+    }
     try {
       await updateSetting({
         ...setting,
-        ...form,
+        ...Object.fromEntries(
+          Object.entries(form).map(([k, v]) =>
+            numberFields.includes(k) ? [k, Number(v)] : [k, v]
+          )
+        ),
       });
       toast.success("Settings updated successfully!");
     } catch (error: any) {
@@ -70,16 +93,16 @@ const Settings: React.FC = () => {
   const handleCancel = () => {
     if (setting) {
       setForm({
-        min_ticket_price: setting.min_ticket_price,
-        max_ticket_price: setting.max_ticket_price,
-        min_product_price: setting.min_product_price,
-        max_product_price: setting.max_product_price,
-        close_time: setting.close_time,
-        open_time: setting.open_time,
-        time_gap: setting.time_gap,
-        employee_min_age: setting.employee_min_age,
-        employee_max_age: setting.employee_max_age,
-        reservation_time: setting.reservation_time,
+        min_ticket_price: setting.min_ticket_price?.toString() ?? "",
+        max_ticket_price: setting.max_ticket_price?.toString() ?? "",
+        min_product_price: setting.min_product_price?.toString() ?? "",
+        max_product_price: setting.max_product_price?.toString() ?? "",
+        close_time: setting.close_time ?? "",
+        open_time: setting.open_time ?? "",
+        time_gap: setting.time_gap?.toString() ?? "",
+        employee_min_age: setting.employee_min_age?.toString() ?? "",
+        employee_max_age: setting.employee_max_age?.toString() ?? "",
+        reservation_time: setting.reservation_time?.toString() ?? "",
       });
     }
     setIsEditing(false);

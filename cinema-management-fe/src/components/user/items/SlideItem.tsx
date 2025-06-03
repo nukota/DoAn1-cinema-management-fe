@@ -88,7 +88,11 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
             </div>
             <div>
               <AccessTimeIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
-              {movie.duration}
+              {(() => {
+              const hours = Math.floor(movie.duration / 60);
+              const minutes = movie.duration % 60;
+              return `${hours > 0 ? `${hours}h ` : ""}${minutes}m`;
+              })()}
             </div>
             <div>
               <PersonOffIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}

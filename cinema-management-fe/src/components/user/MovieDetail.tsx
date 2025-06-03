@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import StyleIcon from "@mui/icons-material/Style";
 import PublicIcon from "@mui/icons-material/Public";
@@ -19,14 +19,11 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useSeats } from "../../providers/SeatProvider";
 import { useProducts } from "../../providers/ProductsProvider";
-import { useTimer } from "../../providers/page/TimerProvider";
 import { useSetting } from "../../providers/SettingProvider";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
-  const { stopTimer } = useTimer();
-  const { setting } = useSetting();
-  const navigate = useNavigate();
+  const { setting, getSetting } = useSetting();
   const location = useLocation();
   const { fetchMovieById, loading: movieLoading } = useMovies();
   const {
@@ -59,7 +56,11 @@ const MovieDetail: React.FC = () => {
     return seatPrice + productPrice;
   }, [selectedSeats, selectedShowtime, selectedProducts]);
   const showtimeIdFromState = location.state?.showtimeId || null;
-  
+
+  useEffect(() => {
+    getSetting();
+  }, []);
+
   useEffect(() => {
     if (showtimeIdFromState && showtimesByMovieId.length > 0) {
       const matchedShowtime = showtimesByMovieId.find(
@@ -83,6 +84,7 @@ const MovieDetail: React.FC = () => {
         }
       }
     };
+    console.log("Setting: ", setting);
 
     const fetchShowtimes = async () => {
       if (movieId) {
