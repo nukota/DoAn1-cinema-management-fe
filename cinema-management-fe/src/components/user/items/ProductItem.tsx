@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { ProductType } from "../../../interfaces/types";
-import NumberPicker from "../../utils/NumberPicker";
+import NumberPicker from "../../shared/NumberPicker";
 
 interface ProductItemProps {
   product: ProductType;

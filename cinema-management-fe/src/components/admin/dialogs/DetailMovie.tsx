@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  Rating,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { MovieType } from "../../../interfaces/types";
@@ -130,8 +131,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
     }
     if (
       isNaN(Number(duration)) ||
-      isNaN(Number(ageLimit)) ||
-      isNaN(Number(rating))
+      isNaN(Number(ageLimit))
     ) {
       toast.error("Duration, Age Limit, and Rating must be numbers");
       return;
@@ -149,7 +149,6 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       director,
       actors: actors.split(",").map((actor) => actor.trim()),
       description,
-      rating: Number(rating),
       trailer_url: trailerURL,
     });
     setIsEditing(false);
@@ -387,15 +386,12 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
                 Rating:
               </Typography>
-              <TextField
-                placeholder="Rating"
-                type="number"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={rating}
-                disabled={!isEditing}
-                onChange={(e) => setRating(e.target.value)}
+              <Rating
+                value={Number(rating) || 0}
+                precision={0.1}
+                readOnly
+                disabled
+                sx={{ color: "#ffb400" }}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

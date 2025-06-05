@@ -1,6 +1,7 @@
 import React from "react";
 import { OrderType } from "../../../interfaces/types";
 import orderBackgroundImg from "../../../assets/images/orderBackground.png";
+import { formatTime } from "../../../utils/formatUtils";
 
 interface OrderProps {
   order: OrderType;
@@ -8,17 +9,6 @@ interface OrderProps {
 }
 
 const Order: React.FC<OrderProps> = ({ order, handleInfoClick }) => {
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
   return (
     <div
       className="order w-full px-4 h-[160px] bg-[#f2f2f2] rounded-lg relative text-sm overflow-hidden text-black hover:bg-[#d4d4d4] transition-colors ease-in-out duration-200 group "

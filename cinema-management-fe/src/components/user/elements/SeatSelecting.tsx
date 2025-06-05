@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { SeatType } from "../../../interfaces/types";
 import SeatUnit from "../items/SeatUnit";
-import NumberPicker from "../../utils/NumberPicker";
+import NumberPicker from "../../shared/NumberPicker";
 import { useSeats } from "../../../providers/SeatProvider";
 import { useTimer } from "../../../providers/page/TimerProvider";
 

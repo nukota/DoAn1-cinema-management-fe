@@ -56,7 +56,6 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
   const [director, setDirector] = useState<string>("");
   const [actors, setActors] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [rating, setRating] = useState<string>("");
   const [trailerURL, setTrailerURL] = useState<string>("");
 
   const handleSubmit = () => {
@@ -72,7 +71,6 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       !director ||
       !actors ||
       !description ||
-      !rating ||
       !trailerURL
     ) {
       toast.error("All fields are required");
@@ -80,8 +78,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
     }
     if (
       isNaN(Number(duration)) ||
-      isNaN(Number(ageLimit)) ||
-      isNaN(Number(rating))
+      isNaN(Number(ageLimit))
     ) {
       toast.error("Duration, Age Limit, and Rating must be numbers");
       return;
@@ -98,7 +95,6 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       director: director,
       actors: actors.split(",").map((name) => name.trim()),
       description,
-      rating: Number(rating),
       trailer_url: trailerURL,
     };
     onAdd(movieData);
@@ -316,20 +312,6 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 size="small"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Rating:
-              </Typography>
-              <TextField
-                placeholder="Rating"
-                type="number"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

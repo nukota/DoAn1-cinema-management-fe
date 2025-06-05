@@ -25,6 +25,7 @@ import { useDiscounts } from "../../providers/DiscountsProvider";
 import { useOrders } from "../../providers/OrdersProvider";
 import { toast } from "react-toastify";
 import { useTimer } from "../../providers/page/TimerProvider";
+import { formatTime } from "../../utils/formatUtils";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -135,17 +136,6 @@ const Payment: React.FC = () => {
 
     return order.total_price;
   }, [order.total_price, discount]);
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
 
   const renderStepContent = (step: number) => {
     switch (step) {

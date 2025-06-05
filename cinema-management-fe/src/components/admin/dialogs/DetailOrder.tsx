@@ -16,6 +16,7 @@ import {
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { OrderType } from "../../../interfaces/types";
+import { formatTime } from "../../../utils/formatUtils";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -45,16 +46,6 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
   onClose,
   onDelete,
 }) => {
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
 
   return (
     <Dialog

@@ -130,10 +130,16 @@ export type OrderType = {
 
 export type PaymentType = {
   _id: string;
-  order_id: string;
+  order?: {
+    order_id: string;
+    total_price: number;
+  };
   amount: number;
   payment_method: string;
-  discount_id: string;
+  discount?: {
+    discount_id: string;
+    code: string;
+  };
   paid_at: string;
 };
 
@@ -169,7 +175,7 @@ export type SettingType = {
   min_product_price: number;
   max_product_price: number;
   close_time: string;
-  open_time: string;  
+  open_time: string;
   time_gap: number;
   employee_min_age: number;
   employee_max_age: number;
@@ -181,10 +187,10 @@ export type MovieRevenueType = {
   date: string;
   ticketRevenue: number;
   ticketCount: number;
-}
+};
 
 export type PrductRevenueType = {
   date: string;
   productRevenue: number;
   productCount: number;
-}
+};
