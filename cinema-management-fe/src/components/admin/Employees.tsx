@@ -105,8 +105,8 @@ const Employees: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await updateEmployee(updatedEmployee);
+      setSelectedEmployee(updatedEmployee);
       await fetchEmployeesData();
-      handleCloseDialog();
       toast.success("Employee updated successfully!");
       return true;
     } catch (error) {

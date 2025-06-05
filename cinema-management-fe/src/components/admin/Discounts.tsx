@@ -79,8 +79,8 @@ const Discounts: React.FC = () => {
   const handleOnSave = async (newDiscount: DiscountType): Promise<boolean> => {
     try {
       await updateDiscount(newDiscount);
+      setSelectedDiscount(newDiscount);
       await fetchDiscountsData();
-      handleCloseDialog();
       toast.success("Discount updated successfully!");
       return true;
     } catch (error) {

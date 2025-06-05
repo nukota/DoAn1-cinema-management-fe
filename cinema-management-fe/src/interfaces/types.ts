@@ -154,12 +154,12 @@ export type DiscountType = {
 };
 
 export type ReviewType = {
-  _id: string;
+  _id?: string;
   user_id: string;
   movie_id: string;
   rating: number;
   comment: string;
-  created_at: string;
+  created_at?: string;
 };
 
 export type SettingType = {

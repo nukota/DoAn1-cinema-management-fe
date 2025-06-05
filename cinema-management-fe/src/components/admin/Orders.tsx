@@ -6,23 +6,23 @@ import { OrderType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 import { useOrders } from "../../providers/OrdersProvider";
 import { CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 const Orders: React.FC = () => {
-  const { fetchOrdersData, orders, loading } = useOrders();
+  const { fetchOrdersData, orders, loading, deleteOrder } = useOrders();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("All");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
 
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         await fetchOrdersData();
       } catch (error) {
-        console.error("Failed to fetch orders:", error);
+        toast.error(error instanceof Error ? error.message : String(error));
       }
     };
 
@@ -53,9 +53,15 @@ const Orders: React.FC = () => {
     setDetailDialogOpen(true);
   };
 
-  const handleCheckConfirmDelete = (order: OrderType) => {
-    setShowDeleteConfirm(true);
-    setSelectedOrder(order);
+  const handleDelete = async (orderId: string) => {
+    try {
+      await deleteOrder(orderId);
+      setDetailDialogOpen(false);
+      setSelectedOrder(null);
+      toast.success("Order deleted successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    }
   };
 
   const handleCloseDialog = () => {
@@ -182,7 +188,7 @@ const Orders: React.FC = () => {
           order={selectedOrder}
           open={DetailDialogOpen}
           onClose={handleCloseDialog}
-          onDelete={() => handleCheckConfirmDelete(selectedOrder)}
+          onDelete={() => handleDelete(selectedOrder._id)}
         />
       )}
     </div>

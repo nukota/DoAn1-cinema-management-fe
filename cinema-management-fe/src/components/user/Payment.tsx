@@ -98,9 +98,8 @@ const Payment: React.FC = () => {
         setActiveStep((prevStep) => prevStep + 1);
         const pdfBlob = await createDetailedOrder(data);
         const url = URL.createObjectURL(pdfBlob);
-        console.log("PDF Blob URL:", url);
         setPdfUrl(url);
-        // setActiveStep((prevStep) => prevStep + 1);
+        stopTimer();
       } catch (error) {
         toast.error(
           `Failed to create order: ${

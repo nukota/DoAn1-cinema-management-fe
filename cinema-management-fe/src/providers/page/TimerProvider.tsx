@@ -65,7 +65,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    console.log("Time left:", timeLeft);
     if (timeLeft === 0) {
       navigate("/");
     }

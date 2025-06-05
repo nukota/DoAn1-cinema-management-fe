@@ -74,8 +74,8 @@ const Products: React.FC = () => {
   const handleOnSave = async (updatedProduct: ProductType): Promise<boolean> => {
     try {
       await updateProduct(updatedProduct);
+      setSelectedProduct(updatedProduct);
       await fetchProductsData();
-      handleCloseDialog();
       toast.success("Product updated successfully!");
       return true;
     } catch (error) {

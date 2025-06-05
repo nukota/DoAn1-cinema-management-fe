@@ -70,19 +70,35 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   useEffect(() => {
     console.log("Movie: ", movie);
     if (movie) {
-      setTitle(movie.title);
-      setStatus(movie.status);
-      setPosterURL(movie.poster_url);
-      setGenre(movie.genre.join(", "));
-      setDuration(movie.duration.toString());
-      setCountry(movie.country);
-      setAgeLimit(movie.age_limit.toString());
-      setReleaseDate(new Date(movie.release_date).toISOString().slice(0, 10));
-      setDirector(movie.director);
-      setActors(movie.actors.join(", "));
-      setDescription(movie.description);
-      setRating(movie.rating.toString());
-      setTrailerURL(movie.trailer_url);
+      setTitle(movie.title ?? "");
+      setStatus(movie.status ?? "");
+      setPosterURL(movie.poster_url ?? "");
+      setGenre(Array.isArray(movie.genre) ? movie.genre.join(", ") : "");
+      setDuration(
+        movie.duration !== undefined && movie.duration !== null
+          ? movie.duration.toString()
+          : ""
+      );
+      setCountry(movie.country ?? "");
+      setAgeLimit(
+        movie.age_limit !== undefined && movie.age_limit !== null
+          ? movie.age_limit.toString()
+          : ""
+      );
+      setReleaseDate(
+        movie.release_date
+          ? new Date(movie.release_date).toISOString().slice(0, 10)
+          : ""
+      );
+      setDirector(movie.director ?? "");
+      setActors(Array.isArray(movie.actors) ? movie.actors.join(", ") : "");
+      setDescription(movie.description ?? "");
+      setRating(
+        movie.rating !== undefined && movie.rating !== null
+          ? movie.rating.toString()
+          : ""
+      );
+      setTrailerURL(movie.trailer_url ?? "");
     }
     if (!open) {
       setIsEditing(false);
@@ -125,7 +141,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       title,
       status,
       poster_url: posterURL,
-      genre,
+      genre: genre.split(",").map((g) => g.trim()),
       duration: Number(duration),
       nation: country,
       age_limit: Number(ageLimit),

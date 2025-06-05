@@ -90,8 +90,8 @@ const Customers: React.FC = () => {
   const handleOnSave = async (updatedCustomer: UserType): Promise<boolean> => {
     try {
       await updateCustomer(updatedCustomer);
+      setSelectedCustomer(updatedCustomer);
       await fetchCustomersData();
-      handleCloseDialog();
       toast.success("Customer updated successfully!");
       return true;
     } catch (error) {

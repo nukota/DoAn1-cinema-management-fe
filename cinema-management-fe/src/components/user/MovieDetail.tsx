@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import StyleIcon from "@mui/icons-material/Style";
-import PublicIcon from "@mui/icons-material/Public";
-import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import PersonOffIcon from "@mui/icons-material/PersonOff";
-import { Button, Dialog, DialogContent, Rating } from "@mui/material";
 import ShowTimes from "./elements/ShowTimes";
 import BookingInfo from "./elements/BookingInfo";
 import BookingFooter from "./elements/BookingFooter";
@@ -20,6 +14,8 @@ import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useSeats } from "../../providers/SeatProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useSetting } from "../../providers/SettingProvider";
+import MovieInfo from "./elements/MovieInfo";
+import ReviewSection from "./elements/ReviewSection";
 
 const MovieDetail: React.FC = () => {
   const { movieId } = useParams<{ movieId: string }>();
@@ -192,7 +188,10 @@ const MovieDetail: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-black z-20 mt-32"></div>
+      <div className="w-full bg-black z-20 mt-16"></div>
+      <ReviewSection
+        movieId={movie._id}
+      />
       <div className="overflow-hidden">
         <BookingFooter
           movie={movie}
@@ -208,160 +207,4 @@ const MovieDetail: React.FC = () => {
 
 export default MovieDetail;
 
-interface MovieInfoProps {
-  movie: MovieType;
-  onClickOpen?: () => void;
-}
 
-const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const getEmbedUrl = (url: string) => {
-    const videoIdMatch = url.match(
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-    );
-    const videoId = videoIdMatch ? videoIdMatch[1] : null;
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
-  };
-
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB"); // Formats to dd/mm/yyyy
-  };
-
-  return (
-    <div className="flex flex-row z-10">
-      <img
-        className="w-[400px] h-[600px] z-10 object-cover border border-light-gray rounded-md"
-        src={movie.poster_url}
-        alt={`${movie.title} poster`}
-      />
-      <div>
-        <div className="text-sm text-gray flex flex-col py-4 pl-6">
-          <div className="text-sm text-gray pl-2 flex flex-col space-y-6">
-            <div className="text-white text-4xl font-bold">{movie.title}</div>
-            <div className="text-white text-lg tracking-wide space-y-2 pl-4">
-              <div>
-                <StyleIcon
-                  sx={{
-                    fontSize: 24,
-                    color: "#ebd113",
-                    marginRight: 1.5,
-                  }}
-                />
-                {movie.genre.join(", ")}
-              </div>
-              <div>
-                <AccessTimeIcon
-                  sx={{
-                    fontSize: 24,
-                    color: "#ebd113",
-                    marginRight: 1.5,
-                  }}
-                />
-                {formatDuration(movie.duration)}
-              </div>
-              <div>
-                <PublicIcon
-                  sx={{
-                    fontSize: 24,
-                    color: "#ebd113",
-                    marginRight: 1.5,
-                  }}
-                />
-                {movie.country}
-              </div>
-              <div>
-                <PersonOffIcon
-                  sx={{
-                    fontSize: 24,
-                    color: "#ebd113",
-                    marginRight: 1.5,
-                  }}
-                />
-                T{movie.age_limit}
-              </div>
-            </div>
-            <div className="pt-6">
-              <div
-                className="text-white text-xl font-semibold"
-                style={{ fontFamily: "Poppins" }}
-              >
-                MORE INFORMATION:
-              </div>
-              <div className="text-sm mt-2">
-                <strong>Director:</strong> {movie.director}
-              </div>
-              <div className="text-sm mt-2">
-                <strong>Cast:</strong> {movie.actors.join(", ")}
-              </div>
-              <div className="text-sm mt-2">
-                <strong>Release Date:</strong> {formatDate(movie.release_date)}
-              </div>
-              <div className="text-sm mt-2 flex items-center">
-                <strong>Rating:</strong>
-                <Rating
-                  value={movie.rating}
-                  precision={0.5}
-                  readOnly
-                  sx={{ ml: 1 }}
-                  max={5}
-                />
-              </div>
-            </div>
-            <div className="pt-6">
-              <div
-                className="text-white text-xl font-semibold"
-                style={{ fontFamily: "Roboto" }}
-              >
-                MOVIE CONTENT:
-              </div>
-              <div className="text-sm">{movie.description}</div>
-            </div>
-            <Button
-              variant="text"
-              color="secondary"
-              startIcon={<PlayCircleIcon sx={{ fontSize: 12 }} />}
-              onClick={handleClickOpen}
-              sx={{
-                width: "200px",
-                fontSize: 18,
-                fontWeight: 600,
-                marginLeft: -2,
-              }}
-              className="flex-shrink-0"
-            >
-              Watch Trailer
-            </Button>
-            <Dialog open={open} onClose={handleClose} maxWidth="lg">
-              <DialogContent>
-                <iframe
-                  width="1000"
-                  height="562.5"
-                  src={getEmbedUrl(movie.trailer_url)}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title="Trailer"
-                ></iframe>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};

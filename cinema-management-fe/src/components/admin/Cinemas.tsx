@@ -83,8 +83,8 @@ const Cinemas: React.FC = () => {
   const handleOnSave = async (updatedCinema: CinemaType): Promise<boolean> => {
     try {
       await updateCinema(updatedCinema);
+      setSelectedCinema(updatedCinema);
       await fetchCinemasData();
-      handleCloseDialog();
       toast.success("Cinema updated successfully!");
       return true;
     } catch (error) {

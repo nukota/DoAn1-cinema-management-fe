@@ -25,7 +25,6 @@ const Movies: React.FC = () => {
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
   useEffect(() => {
     fetchMoviesData();
@@ -55,9 +54,6 @@ const Movies: React.FC = () => {
     setSelectedMovie(movie);
     setDetailDialogOpen(true);
   };
-  const handleCheckConfirmDelete = () => {
-    setShowDeleteConfirm(true);
-  };
 
   const handleCloseDialog = () => {
     setDetailDialogOpen(false);
@@ -81,8 +77,8 @@ const Movies: React.FC = () => {
   const handleOnSave = async (updatedMovie: MovieType): Promise<boolean> => {
     try {
       await updateMovie(updatedMovie);
+      setSelectedMovie(updatedMovie);
       await fetchMoviesData();
-      handleCloseDialog();
       toast.success("Movie updated successfully!");
       return true;
     } catch (error) {

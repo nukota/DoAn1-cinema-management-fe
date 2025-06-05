@@ -234,34 +234,54 @@ const UserProfile: React.FC = () => {
             Booking History
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          <div className="flex flex-col gap-2 h-[420px] overflow-y-scroll custom-scrollbar">
-            {bookingHistory.length === 0 && (
-              <Typography color="gray">No booking history found.</Typography>
-            )}
-            {bookingHistory.map((order) =>
-              order.tickets?.map((ticket: any, idx: number) => (
-                <div
-                  key={order._id + "-" + idx}
-                  className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1"
-                >
-                  <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
-                    {ticket.title}
-                  </Typography>
-                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                    {new Date(ticket.showtime).toLocaleString()}
-                  </Typography>
-                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                    Seats:{" "}
-                    {ticket.seats.map((s: any) => s.seat_name).join(", ")} (
-                    {ticket.seats.length}{" "}
-                    {ticket.seats.length > 1 ? "seats" : "seat"})
-                  </Typography>
-                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                    Order Code: {order.ordercode}
-                  </Typography>
-                </div>
-              ))
-            )}
+          <div
+            className="flex flex-col gap-2 h-[420px] overflow-y-scroll"
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#e0e0e0 #f5f5f5",
+            }}
+          >
+            <style>
+              {`
+                .booking-history-scroll::-webkit-scrollbar {
+                  width: 6px;
+                  background: #f5f5f5;
+                }
+                .booking-history-scroll::-webkit-scrollbar-thumb {
+                  background: #e0e0e0;
+                  border-radius: 3px;
+                }
+              `}
+            </style>
+            <div className="booking-history-scroll">
+              {bookingHistory.length === 0 && (
+                <Typography color="gray">No booking history found.</Typography>
+              )}
+              {bookingHistory.map((order) =>
+                order.tickets?.map((ticket: any, idx: number) => (
+                  <div
+                    key={order._id + "-" + idx}
+                    className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1 m-1"
+                  >
+                    <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
+                      {ticket.title}
+                    </Typography>
+                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                      {new Date(ticket.showtime).toLocaleString()}
+                    </Typography>
+                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                      Seats:{" "}
+                      {ticket.seats.map((s: any) => s.seat_name).join(", ")} (
+                      {ticket.seats.length}{" "}
+                      {ticket.seats.length > 1 ? "seats" : "seat"})
+                    </Typography>
+                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                      Order Code: {order.ordercode}
+                    </Typography>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

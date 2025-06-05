@@ -26,7 +26,6 @@ const Rooms: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
 
@@ -69,7 +68,6 @@ const Rooms: React.FC = () => {
     if (selectedRoom) {
       try {
         await deleteRoom(selectedRoom._id);
-        setShowDeleteConfirm(false);
         setSelectedRoom(null);
         toast.success("Room deleted successfully");
       } catch (error) {
@@ -99,8 +97,7 @@ const Rooms: React.FC = () => {
   const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType): Promise<boolean> => {
     try {
       await updateRoom(updatedRoom);
-      setDetailDialogOpen(false);
-      setSelectedRoom(null);
+      setSelectedRoom(updatedRoom);
       fetchRoomsData();
       toast.success("Room updated successfully");
       return true;
