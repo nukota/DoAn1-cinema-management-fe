@@ -123,7 +123,6 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       !director ||
       !actors ||
       !description ||
-      !rating ||
       !trailerURL
     ) {
       toast.error("All fields are required");
