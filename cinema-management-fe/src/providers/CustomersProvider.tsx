@@ -35,6 +35,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       setCustomers(data);
     } catch (error) {
       console.error("Failed to fetch customers:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -60,6 +61,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       setCustomers((prevCustomers) => [...prevCustomers, createdCustomer]);
     } catch (error) {
       console.error("Failed to create customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -89,6 +91,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       );
     } catch (error) {
       console.error("Failed to update customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -113,6 +116,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       );
     } catch (error) {
       console.error("Failed to delete customer:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

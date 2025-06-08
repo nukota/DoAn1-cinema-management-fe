@@ -91,7 +91,7 @@ const Customers: React.FC = () => {
     try {
       await updateCustomer(updatedCustomer);
       setSelectedCustomer(updatedCustomer);
-      await fetchCustomersData();
+      // await fetchCustomersData();
       toast.success("Customer updated successfully!");
       return true;
     } catch (error) {
