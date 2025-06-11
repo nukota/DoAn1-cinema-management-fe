@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
-      handleLogout();
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -82,9 +82,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Fetch user profile
       await fetchUserProfile(accessToken, email);
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw new Error("Invalid email or password");
+    } catch (error: any) {
+      // Try to extract backend error message
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error.message ||
+        "Sign Up failed";
+      console.error("Sign Up failed:", message);
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -93,21 +99,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleSignUp = async (data: SignUpData) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${baseURL}/auth/signup`, data);
-
-      // Optionally log the user in after sign-up
-      const { accessToken, refreshToken } = response.data;
-
-      // Save tokens to localStorage
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("email", data.email);
-
-      // Fetch user profile
-      await fetchUserProfile(accessToken, data.email);
-    } catch (error) {
-      console.error("Sign Up failed:", error);
-      throw new Error("Sign Up failed. Please check your input.");
+      await axios.post(`${baseURL}/auth/register`, data);
+    } catch (error: any) {
+      // Try to extract backend error message
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error.message ||
+        "Sign Up failed";
+      console.error("Sign Up failed:", message);
+      throw new Error(message);
     } finally {
       setLoading(false);
     }

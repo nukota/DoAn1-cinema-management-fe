@@ -268,7 +268,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
             value={cinemas.find((c) => c._id === cinemaId) || null}
             disabled={!isEditing}
             fullWidth
-            onChange={(event, newValue) => setCinemaId(newValue?._id)}
+            onChange={(_, newValue) => setCinemaId(newValue?._id)}
             getOptionLabel={(option) => `(ID: ${option._id}) ${option.name}`}
             renderInput={(params) => (
               <TextField
@@ -303,7 +303,7 @@ const DetailEmployee: React.FC<DetailEmployeeProps> = ({
             value={shift}
             disabled={!isEditing}
             fullWidth
-            onChange={(event, newValue) => setShift(newValue)}
+            onChange={(_, newValue) => setShift(newValue)}
             renderInput={(params) => (
               <TextField
                 {...params}

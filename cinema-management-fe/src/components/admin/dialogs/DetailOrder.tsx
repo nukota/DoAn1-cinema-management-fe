@@ -46,7 +46,6 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
   onClose,
   onDelete,
 }) => {
-
   return (
     <Dialog
       open={open}
@@ -82,7 +81,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
             fontWeight: "regular",
             opacity: 0.5,
             color:
-              order.status === "paid"
+              order.status === "completed"
                 ? "green"
                 : order.status === "pending"
                 ? "gray"
@@ -155,15 +154,25 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                   Showtime: {formatTime(order.tickets.showtime)}
                 </Typography>
                 <Typography sx={{ fontSize: 14 }}>
-                  Price: {order.tickets.price.toFixed(0)} VND
+                  Price:{" "}
+                  {order.tickets.seats && order.tickets.seats.length > 1
+                  ? `${order.tickets.seats.length} x ${order.tickets.price.toFixed(0)} = ${(order.tickets.seats.length * order.tickets.price).toFixed(0)} VND`
+                  : `${order.tickets.price.toFixed(0)} VND`}
                 </Typography>
-                <Typography sx={{ fontSize: 14 }}>
-                  Seats:{" "}
-                  {order.tickets.seats.map((seat) => seat.seat_name).join(", ")}
-                </Typography>
+                {!order.tickets.seats || order.tickets.seats.length === 0 || order.tickets.seats.some((seat) => !seat.seat_name || seat.seat_name.trim() === "") ? (
+                  <Typography sx={{ fontSize: 14, color: "#dadada" }}>
+                    Seats: Not found
+                  </Typography>
+                ) : (
+                  <Typography sx={{ fontSize: 14 }}>
+                    Seats: {order.tickets.seats.map((seat) => seat.seat_name).join(", ")}
+                  </Typography>
+                )}
               </Box>
             ) : (
-              <Typography>No tickets bought.</Typography>
+              <Typography color="#dadada" sx={{ p: 1 }}>
+                No tickets bought.
+              </Typography>
             )}
           </Box>
           <Table sx={{}} aria-label="simple table">
@@ -182,45 +191,52 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                   Products
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell sx={{ width: "8%", padding: 1 }}>ID</TableCell>
-                <TableCell sx={{ width: "30%", padding: 1 }}>Name</TableCell>
-                <TableCell sx={{ width: "18%", padding: 1 }}>
-                  Quantity
-                </TableCell>
-                <TableCell sx={{ width: "22%", padding: 1 }}>Price</TableCell>
-                <TableCell sx={{ width: "22%", padding: 1 }}>Total</TableCell>
-              </TableRow>
+              {order.products && order.products.length > 0 && (
+                <TableRow>
+                  <TableCell sx={{ width: "8%", padding: 1 }}>ID</TableCell>
+                  <TableCell sx={{ width: "30%", padding: 1 }}>Name</TableCell>
+                  <TableCell sx={{ width: "18%", padding: 1 }}>
+                    Quantity
+                  </TableCell>
+                  <TableCell sx={{ width: "22%", padding: 1 }}>Price</TableCell>
+                  <TableCell sx={{ width: "22%", padding: 1 }}>Total</TableCell>
+                </TableRow>
+              )}
             </TableHead>
-            {order.products && order.products.length > 0 && (
+            {order.products && order.products.length > 0 ? (
               <TableBody>
                 {order.products.map((product) => (
                   <TableRow
                     key={product.product_id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell sx={{ width: "8%", padding: 1 }}>
-                      {product.name}
+                    <TableCell sx={{ width: "8%", padding: 1, maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {product.product_id}
                     </TableCell>
                     <TableCell sx={{ width: "30%", padding: 1 }}>
-                      Very Long Name
+                      {product.name}
                     </TableCell>
                     <TableCell sx={{ width: "18%", padding: 1 }}>
                       {product.quantity}
                     </TableCell>
-                    <TableCell sx={{ width: "22%", padding: 1 }}>{}</TableCell>
-                    <TableCell sx={{ width: "22%", padding: 1 }}>{}</TableCell>
+                    <TableCell sx={{ width: "22%", padding: 1 }}>{product.price}</TableCell>
+                    <TableCell sx={{ width: "22%", padding: 1 }}>{product.total}</TableCell>
                   </TableRow>
                 ))}
-                <TableCell
-                  colSpan={5}
-                  sx={{ display: "flex", p: 1 }}
-                  padding="none"
-                >
-                  <Typography>Total:</Typography>
-                  <Typography sx={{ pl: 2 }}>{order.total_price}</Typography>
-                </TableCell>
+                {/* Products total row */}
+                <TableRow>
+                  <TableCell colSpan={4} sx={{ fontWeight: 600, textAlign: "right", p: 1 }}>
+                    Products Total:
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, p: 1 }}>
+                    {order.products.reduce((sum, p) => sum + (p.total || (p.price * p.quantity)), 0)}
+                  </TableCell>
+                </TableRow>
               </TableBody>
+            ) : (
+              <Typography color="#dadada" sx={{ p: 1 }}>
+                No tickets bought.
+              </Typography>
             )}
           </Table>
         </TableContainer>
@@ -235,7 +251,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
           color="primary"
           variant="outlined"
           sx={{ width: 130 }}
-          disabled={order.status === "paid"}
+          disabled={order.status === "completed"}
         >
           Delete
         </Button>

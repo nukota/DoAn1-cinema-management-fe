@@ -8,6 +8,7 @@ import ArrowDownImg from "../../../assets/images/arrowDown.svg";
 import profileImg from "../../../assets/images/profile.png";
 import { useAuth } from "../../../providers/AuthProvider";
 import { IconButton, Menu, MenuItem } from "@mui/material";
+import { toast } from "react-toastify";
 
 const UserHeader: React.FC = () => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -30,6 +31,7 @@ const UserHeader: React.FC = () => {
         setIsAdmin(userProfile?.role === "admin");
       } catch (error) {
         console.error("Failed to fetch user role:", error);
+        toast.error(error instanceof Error ? error.message : String(error));
       }
     };
 

@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { ShowtimeType } from "../../../interfaces/types";
 import { useRooms } from "../../../providers/RoomsProvider";
 
-const CustomTab = styled(Tab)(({ theme }) => ({
+const CustomTab = styled(Tab)(() => ({
   minWidth: 0,
   width: 96,
   height: 82,
@@ -52,7 +52,7 @@ const ShowTimes: React.FC<ShowtimesProps> = ({
     }
   }, [selectedShowtime]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

@@ -29,7 +29,12 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setCustomers(data);
@@ -49,13 +54,18 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
       const response = await fetch(`${baseURL}/user`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", 
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newCustomer),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       const createdCustomer = await response.json();
       setCustomers((prevCustomers) => [...prevCustomers, createdCustomer]);
@@ -81,7 +91,12 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(updatedCustomer),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setCustomers((prevCustomers) =>
@@ -109,7 +124,12 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMsg = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       setCustomers((prevCustomers) =>
         prevCustomers.filter((customer) => customer._id !== customerId)

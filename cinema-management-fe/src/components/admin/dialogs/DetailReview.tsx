@@ -59,72 +59,110 @@ const DetailReview: React.FC<DetailReviewProps> = ({
         Detail Review
       </DialogTitle>
       <CustomDialogContent>
-          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-              ID:
-            </Typography>
-            <TextField
-              fullWidth
-              value={review._id}
-              disabled
-              margin="dense"
-              size="small"
-            />
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-              User:
-            </Typography>
-            <TextField
-              fullWidth
-              value={review.user_id}
-              disabled
-              margin="dense"
-              size="small"
-            />
-          </Box>
-          <Box sx={{ display: "flex" }}>
-            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-              Movie:
-            </Typography>
-            <TextField
-              placeholder="Feedback"
-              fullWidth
-              margin="dense"
-              size="small"
-              disabled
-              value={review.movie_id}
-            />
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              height: 45,
-            }}
-          >
-            <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-              Rating:
-            </Typography>
-            <Rating name="read-only" value={review.rating} readOnly />
-          </Box>
-          <Box sx={{ display: "flex" }}>
-            <Typography sx={{ mr: 2, marginTop: 4, width: 120 }}>
-              Feedback:
-            </Typography>
-            <TextField
-              placeholder="Feedback"
-              fullWidth
-              margin="normal"
-              size="small"
-              disabled
-              multiline
-              rows={4}
-              maxRows={6}
-              value={review.comment}
-            />
-          </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>ID:</Typography>
+          <TextField
+            fullWidth
+            value={review._id || ""}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            User ID:
+          </Typography>
+          <TextField
+            fullWidth
+            value={review.user?.user_id || "None"}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            User Name:
+          </Typography>
+          <TextField
+            fullWidth
+            value={review.user?.full_name || "None"}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            User Email:
+          </Typography>
+          <TextField
+            fullWidth
+            value={review.user?.email || "None"}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            Movie ID:
+          </Typography>
+          <TextField
+            fullWidth
+            value={review.movie?.movie_id || "None"}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            Movie Title:
+          </Typography>
+          <TextField
+            fullWidth
+            value={review.movie?.title || "None"}
+            disabled
+            margin="dense"
+            size="small"
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            height: 45,
+          }}
+        >
+          <Typography sx={{ mr: 2, marginTop: 1, width: 140 }}>
+            Rating:
+          </Typography>
+          <Rating
+            name="read-only"
+            value={review.rating}
+            readOnly
+            sx={{ justifySelf: "flex-start", ml: -5, mt: 0.5 }}
+          />
+        </Box>
+        <Box sx={{ display: "flex" }}>
+          <Typography sx={{ mr: 2, marginTop: 4, width: 140 }}>
+            Feedback:
+          </Typography>
+          <TextField
+            placeholder="Feedback"
+            fullWidth
+            margin="normal"
+            size="small"
+            disabled
+            multiline
+            rows={4}
+            maxRows={6}
+            value={review.comment}
+          />
+        </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>
         <Button

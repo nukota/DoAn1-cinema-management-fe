@@ -104,9 +104,9 @@ const Movies: React.FC = () => {
     const matchesTab = activeTab === "All" || movie.status === activeTab;
     const searchTermLower = searchTerm.toLowerCase();
     const matchesSearch =
+      (movie._id && movie._id.toLowerCase().includes(searchTermLower)) ||
       (movie.title && movie.title.toLowerCase().includes(searchTermLower)) ||
       (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
-      (movie.release_date && movie.release_date.includes(searchTermLower)) ||
       (movie.director && movie.director.includes(searchTermLower)) ||
       (movie.actors &&
         movie.actors.some((actor) =>
@@ -120,17 +120,23 @@ const Movies: React.FC = () => {
         movie.country.toLowerCase().includes(searchTermLower)) ||
       (movie.description &&
         movie.description.toLowerCase().includes(searchTermLower));
-    return matchesTab && matchesSearch;
+
+    const matchesDate =
+      !selectedDate ||
+      (movie.release_date &&
+        new Date(movie.release_date) <= new Date(selectedDate));
+
+    return matchesTab && matchesSearch && matchesDate;
   });
 
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading movies...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading movies...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="movies flex flex-col h-[673px]">

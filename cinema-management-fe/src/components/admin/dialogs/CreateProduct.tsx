@@ -128,7 +128,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 options={types}
                 value={type}
                 sx={{ width: 240 }}
-                onChange={(event, newValue) => setType(newValue!)}
+                onChange={(_, newValue) => setType(newValue!)}
                 renderInput={(params) => (
                   <TextField
                     {...params}

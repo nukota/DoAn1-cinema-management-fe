@@ -14,6 +14,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { MovieType } from "../../../interfaces/types";
 import { toast } from "react-toastify";
+import { countryOptions } from "../../../enum/enum";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -128,10 +129,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
       toast.error("All fields are required");
       return;
     }
-    if (
-      isNaN(Number(duration)) ||
-      isNaN(Number(ageLimit))
-    ) {
+    if (isNaN(Number(duration)) || isNaN(Number(ageLimit))) {
       toast.error("Duration, Age Limit, and Rating must be numbers");
       return;
     }
@@ -228,7 +226,7 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
                 value={status}
                 disabled={!isEditing}
                 sx={{ width: 280 }}
-                onChange={(event, newValue) => setStatus(newValue!)}
+                onChange={(_, newValue) => setStatus(newValue!)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -271,14 +269,20 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
               <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
                 Nation:
               </Typography>
-              <TextField
-                placeholder="Nation"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
+              <Autocomplete
+                options={countryOptions}
                 value={country}
                 disabled={!isEditing}
-                onChange={(e) => setCountry(e.target.value)}
+                sx={{ width: 280 }}
+                onChange={(_, newValue) => setCountry(newValue || "")}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Nation"
+                    margin="dense"
+                    size="small"
+                  />
+                )}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

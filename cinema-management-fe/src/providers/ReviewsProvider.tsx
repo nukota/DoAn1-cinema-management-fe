@@ -1,5 +1,14 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
 import { ReviewType } from "../interfaces/types";
+
+// Move baseURL to module scope
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 interface ReviewsContextType {
   reviews: ReviewType[];
@@ -7,18 +16,19 @@ interface ReviewsContextType {
   createReview: (newReview: ReviewType) => Promise<void>;
   updateReview: (updatedReview: ReviewType) => Promise<void>;
   deleteReview: (reviewId: string) => Promise<void>;
+  getReviewsByMovieId: (movieId: string) => Promise<ReviewType[]>;
   loading: boolean;
 }
 
 const ReviewsContext = createContext<ReviewsContextType | undefined>(undefined);
 
-export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [reviews, setReviews] = useState<ReviewType[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const baseURL = import.meta.env.VITE_API_BASE_URL;
-
-  const fetchReviewsData = async () => {
+  const fetchReviewsData = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -39,7 +49,7 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const createReview = useCallback(async (newReview: ReviewType) => {
     setLoading(true);
@@ -122,6 +132,32 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   }, []);
 
+  const getReviewsByMovieId = useCallback(
+    async (movieId: string): Promise<ReviewType[]> => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await fetch(`${baseURL}/review/movie/${movieId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Fetching movie reviews failed.");
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Failed to fetch reviews by movieId:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   return (
     <ReviewsContext.Provider
       value={{
@@ -130,6 +166,7 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({ children })
         createReview,
         updateReview,
         deleteReview,
+        getReviewsByMovieId,
         loading,
       }}
     >

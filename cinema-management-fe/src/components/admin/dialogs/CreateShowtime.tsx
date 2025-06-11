@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { MovieType, ShowtimeType } from "../../../interfaces/types";
+import { MovieType } from "../../../interfaces/types";
 import { toast } from "react-toastify";
 
 const CustomDialogContent = styled(DialogContent)({

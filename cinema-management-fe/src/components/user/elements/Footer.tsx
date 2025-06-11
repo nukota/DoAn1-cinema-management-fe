@@ -123,7 +123,7 @@ const Footer: React.FC = () => {
           &copy {new Date().getFullYear()} Ticket Booking Web App.
         </p>
         <p className="my-2 text-gray text-md font-light place-self-center">
-          developed by group 7
+          developed by Cong Thanh & Minh Tuan
         </p>
     </footer>
   )

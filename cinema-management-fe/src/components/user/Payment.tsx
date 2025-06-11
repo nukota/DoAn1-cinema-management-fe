@@ -12,6 +12,7 @@ import {
   Step,
   StepLabel,
   Stepper,
+  TextField,
   Typography,
 } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -26,6 +27,7 @@ import { useOrders } from "../../providers/OrdersProvider";
 import { toast } from "react-toastify";
 import { useTimer } from "../../providers/page/TimerProvider";
 import { formatTime } from "../../utils/formatUtils";
+import qrCodeImg from "../../assets/images/qrCode.jpeg";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -44,7 +46,13 @@ const Payment: React.FC = () => {
   );
   const [discount, setDiscount] = useState<DiscountType | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [visaFormValid, setVisaFormValid] = useState(false);
+  const [visaFormInfo, setVisaFormInfo] = useState({
+    cardNumber: "",
+    cardName: "",
+    expiry: "",
+    cvc: "",
+  });
   const steps = ["Payment Method", "Pay", "Finish"];
 
   useEffect(() => {
@@ -97,9 +105,7 @@ const Payment: React.FC = () => {
       };
       try {
         setActiveStep((prevStep) => prevStep + 1);
-        const pdfBlob = await createDetailedOrder(data);
-        const url = URL.createObjectURL(pdfBlob);
-        setPdfUrl(url);
+        await createDetailedOrder(data);
         stopTimer();
       } catch (error) {
         toast.error(
@@ -236,29 +242,74 @@ const Payment: React.FC = () => {
               alignItems: "center",
             }}
           >
-            <Box
-              sx={{
-                width: 200,
-                height: 200,
-                backgroundColor: "#f0f0f0",
-                margin: "0 auto",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 2,
-              }}
-            >
-              <Typography>QR Code</Typography>
-            </Box>{" "}
-            <Typography sx={{ mt: 2, fontSize: 16, fontWeight: "medium" }}>
-              Scan QR Code to pay
-            </Typography>
-            <Typography sx={{ fontSize: 14 }}>
-              Total: {order.total_price}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }}>
-              Message: money transfer for ticket #id
-            </Typography>
+            {paymentMethod === "momo" && (
+              <>
+                <Box
+                  sx={{
+                    width: 200,
+                    height: 200,
+                    backgroundColor: "#f0f0f0",
+                    margin: "0 auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 2,
+                    mb: 2,
+                  }}
+                >
+                  <img
+                    src={qrCodeImg}
+                    alt="Momo QR"
+                    style={{ width: 180, height: 180 }}
+                  />
+                </Box>
+                <Typography sx={{ fontWeight: 500 }}>
+                  Receiver: MTM CINEMA
+                </Typography>
+                <Typography>Account Number: 0909090909</Typography>
+                <Typography>E-Wallet: Momo</Typography>
+                <Typography>
+                  Message: CM-MOMO-TICKET-{order.ordercode || "123456"}
+                </Typography>
+              </>
+            )}
+            {paymentMethod === "banking" && (
+              <>
+                <Box
+                  sx={{
+                    width: 200,
+                    height: 200,
+                    backgroundColor: "#f0f0f0",
+                    margin: "0 auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 2,
+                    mb: 2,
+                  }}
+                >
+                  <img
+                    src={qrCodeImg}
+                    alt="Banking QR"
+                    style={{ width: 180, height: 180 }}
+                  />
+                </Box>
+                <Typography sx={{ fontWeight: 500 }}>
+                  Receiver: MTM CINEMA
+                </Typography>
+                <Typography>Account Number: 0909090909</Typography>
+                <Typography>Bank: Vietcombank</Typography>
+                <Typography>
+                  Message: CM-BANKING-TICKET-{order.ordercode || "123456"}
+                </Typography>
+              </>
+            )}
+            {paymentMethod === "visa/mastercard" && (
+              <VisaForm
+                onValidChange={setVisaFormValid}
+                onInfoChange={setVisaFormInfo}
+              />
+            )}
           </Box>
         );
       case 2:
@@ -273,17 +324,6 @@ const Payment: React.FC = () => {
             <Typography variant="body1" sx={{ textAlign: "center" }}>
               Please check your email to see the order details.
             </Typography>
-            {pdfUrl && (
-              <Box sx={{ mt: 2, width: "100%", height: 500 }}>
-                <iframe
-                  src={pdfUrl}
-                  title="Order PDF"
-                  width="100%"
-                  height="100%"
-                  style={{ border: "none" }}
-                />
-              </Box>
-            )}
           </Box>
         );
       default:
@@ -347,25 +387,22 @@ const Payment: React.FC = () => {
           >
             Back
           </Button>
-          {activeStep !== 1 && (
+          {activeStep === steps.length - 1 ? (
+            <Button variant="contained" onClick={() => navigate("/")}>
+              Go to Home
+            </Button>
+          ) : (
             <Button
               onClick={handleNext}
               variant="contained"
               disabled={
                 (activeStep === 0 && !paymentMethod) ||
-                activeStep === steps.length - 1
+                (activeStep === 1 &&
+                  paymentMethod === "visa/mastercard" &&
+                  !visaFormValid)
               }
             >
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
-            </Button>
-          )}
-          {activeStep === 1 && (
-            <Button
-              onClick={handleNext}
-              variant="outlined"
-              disabled={activeStep === steps.length - 1}
-            >
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              Next
             </Button>
           )}
         </Box>
@@ -383,9 +420,32 @@ const Payment: React.FC = () => {
           zIndex: 10,
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "medium" }}>
-          Order Information
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+            Order Information
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "#b71c1c", fontWeight: 500 }}
+          >
+            {timeLeft === null
+              ? "Loading..."
+              : timeLeft > 0
+              ? `Time left: ${Math.floor(timeLeft / 60)
+                  .toString()
+                  .padStart(2, "0")}:${(timeLeft % 60)
+                  .toString()
+                  .padStart(2, "0")}`
+              : "Expired"}
+          </Typography>
+        </Box>
         <Typography variant="body1" sx={{ mb: 0.5 }}>
           Movie:{" "}
           <span className="text-[#999]">{order.showtime.movie.title}</span>
@@ -480,3 +540,103 @@ const Payment: React.FC = () => {
 };
 
 export default Payment;
+
+// Add VisaForm component above Payment
+const VisaForm = ({
+  onValidChange,
+  onInfoChange,
+}: {
+  onValidChange: (valid: boolean) => void;
+  onInfoChange: (info: any) => void;
+}) => {
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const [showValidation, setShowValidation] = useState(false);
+
+  // Simple expiry validation: MM/YY and not expired
+  const isExpiryValid = (exp: string) => {
+    if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
+    const [mm, yy] = exp.split("/").map(Number);
+    if (mm < 1 || mm > 12) return false;
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100;
+    const currentMonth = now.getMonth() + 1;
+    return yy > currentYear || (yy === currentYear && mm >= currentMonth);
+  };
+
+  const valid =
+    cardNumber.length === 16 &&
+    cardName.trim().length > 0 &&
+    isExpiryValid(expiry) &&
+    cvc.length === 3;
+
+  // Show validation message when all fields are filled (not required all digits)
+  const allFieldsFilled =
+    cardNumber.length > 0 &&
+    cardName.trim().length > 0 &&
+    expiry.trim().length > 0 &&
+    cvc.length > 0;
+
+  useEffect(() => {
+    onValidChange(valid);
+    onInfoChange({ cardNumber, cardName, expiry, cvc });
+    setShowValidation(allFieldsFilled);
+  }, [cardNumber, cardName, expiry, cvc, valid, onValidChange, onInfoChange, allFieldsFilled]);
+
+  return (
+    <Box
+      sx={{
+        width: 320,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        mt: 2,
+      }}
+    >
+      <TextField
+        label="Card Number (16 digits)"
+        value={cardNumber}
+        onChange={(e) =>
+          setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 16))
+        }
+        inputProps={{ maxLength: 16 }}
+        fullWidth
+      />
+      <TextField
+        label="Cardholder Name"
+        value={cardName}
+        onChange={(e) => setCardName(e.target.value)}
+        fullWidth
+      />
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <TextField
+          label="Expiry (MM/YY)"
+          value={expiry}
+          onChange={(e) => setExpiry(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          label="CVC"
+          value={cvc}
+          onChange={(e) =>
+            setCvc(e.target.value.replace(/\D/g, "").slice(0, 3))
+          }
+          inputProps={{ maxLength: 3 }}
+          fullWidth
+        />
+      </Box>
+      {showValidation && (
+        <Typography
+          variant="body2"
+          sx={{ color: valid ? "green" : "red", mt: 1, textAlign: "center" }}
+        >
+          {valid
+            ? "Card information is valid."
+            : "Card information is invalid."}
+        </Typography>
+      )}
+    </Box>
+  );
+};

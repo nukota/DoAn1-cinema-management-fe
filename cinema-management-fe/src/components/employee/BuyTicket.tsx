@@ -36,6 +36,7 @@ import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
 import { useOrders } from "../../providers/OrdersProvider";
+import qrCodeImg from "../../assets/images/qrCode.jpeg";
 const steps = [
   "Select Ticket",
   "Select Seats",
@@ -210,7 +211,7 @@ const BuyTicket: React.FC = () => {
     setSelectedAccount(accountName);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
 
@@ -573,7 +574,6 @@ const BuyTicket: React.FC = () => {
                       </Box>
 
                       {/* Customer List */}
-                      {/* Customer List */}
                       <List sx={{ maxHeight: "380px", overflowY: "auto" }}>
                         {filteredAccounts.map((account) => (
                           <ListItem
@@ -590,10 +590,10 @@ const BuyTicket: React.FC = () => {
                                 handleAccountSelect(
                                   `${account.full_name} (${account.phone})`
                                 )
-                              } // Update selected account
+                              }
                             >
                               <ListItemText
-                                primary={`${account.full_name} (${account.phone})`} // Display full name with phone number
+                                primary={`${account.full_name} (${account.phone})`}
                               />
                             </ListItemButton>
                           </ListItem>
@@ -766,7 +766,7 @@ const BuyTicket: React.FC = () => {
                         payment.
                       </Typography>
                     )}
-                    {selectedPaymentMethod === "visa" && (
+                    {selectedPaymentMethod === "visa/mastercard" && (
                       <Box
                         sx={{
                           display: "flex",
@@ -784,12 +784,31 @@ const BuyTicket: React.FC = () => {
                           variant="outlined"
                           fullWidth
                         />
-                        <TextField
-                          label="Expiration Date (MM/YY)"
-                          variant="outlined"
-                          fullWidth
-                        />
-                        <TextField label="CVV" variant="outlined" fullWidth />
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                          <TextField
+                            label="CVV"
+                            variant="outlined"
+                            fullWidth
+                            sx={{ flex: 1 }}
+                            inputProps={{
+                              maxLength: 4,
+                              inputMode: "numeric",
+                              pattern: "[0-9]*",
+                            }}
+                          />
+                          <TextField
+                            label="Expiry Date (MM/YY)"
+                            variant="outlined"
+                            sx={{ width: 120 }}
+                            inputProps={{
+                              maxLength: 5,
+                              inputMode: "numeric",
+                              pattern: "(0[1-9]|1[0-2])\\/([0-9]{2})",
+                              placeholder: "MM/YY",
+                            }}
+                            // Optionally, add validation logic for MM/YY format and valid date
+                          />
+                        </Box>
                       </Box>
                     )}
                     {selectedPaymentMethod === "momo" && (
@@ -803,15 +822,40 @@ const BuyTicket: React.FC = () => {
                           height: "100%",
                         }}
                       >
-                        {/* <img
-                          src="https://via.placeholder.com/200" // Replace with actual QR code image
-                          alt="Momo QR Code"
-                          style={{ width: "200px", height: "200px" }}
-                        /> */}
-                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover" />
+                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover flex items-center justify-center">
+                          <img
+                            src={qrCodeImg}
+                            alt="Momo QR Code"
+                            style={{
+                              width: "260px",
+                              height: "260px",
+                              objectFit: "contain",
+                              borderRadius: "12px",
+                            }}
+                          />
+                        </div>
+
+                        {/* Mock payment details */}
+                        <Box sx={{ mt: 1, width: "100%", maxWidth: 320 }}>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Receiver: <b>MTM CINEMA</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Account Number: <b>0909090909</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            E-Wallet: <b>Momo</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Message: <b>CM-MOMO-TICKET-123456</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Amount: <b>200,000 VND</b>
+                          </Typography>
+                        </Box>
                         <Typography
                           variant="body1"
-                          sx={{ color: "#333", textAlign: "center" }}
+                          sx={{ color: "#999", textAlign: "center" }}
                         >
                           Scan the QR code above to complete the payment using
                           Momo.
@@ -830,18 +874,43 @@ const BuyTicket: React.FC = () => {
                           height: "100%",
                         }}
                       >
-                        {/* <img
-                          src="https://via.placeholder.com/200" // Replace with actual QR code image
-                          alt="Momo QR Code"
-                          style={{ width: "200px", height: "200px" }}
-                        /> */}
-                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover" />
+                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover flex items-center justify-center">
+                          <img
+                            src={qrCodeImg}
+                            alt="Banking QR Code"
+                            style={{
+                              width: "260px",
+                              height: "260px",
+                              objectFit: "contain",
+                              borderRadius: "12px",
+                            }}
+                          />
+                        </div>
+
+                        {/* Mock payment details */}
+                        <Box sx={{ mt: 1, width: "100%", maxWidth: 320 }}>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Receiver: <b>MTM CINEMA</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Account Number: <b>222233334444</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Bank: <b>Vietcombank</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Message: <b>CM-BANK-TICKET-654321</b>
+                          </Typography>
+                          <Typography variant="body1" sx={{ color: "#333" }}>
+                            Amount: <b>200,000 VND</b>
+                          </Typography>
+                        </Box>
                         <Typography
                           variant="body1"
-                          sx={{ color: "#333", textAlign: "center" }}
+                          sx={{ color: "#999", textAlign: "center" }}
                         >
                           Scan the QR code above to complete the payment using
-                          Banking.
+                          Internet Banking.
                         </Typography>
                       </Box>
                     )}

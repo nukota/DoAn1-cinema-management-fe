@@ -81,9 +81,10 @@ const Login: React.FC = () => {
         cccd: signUpData.cccd,
         role: signUpData.role,
       });
-      navigate("/"); // Redirect to the home page after successful sign-up
+      toast.success("Sign up successful! Please log in.");
+      setValue("1");
     } catch (err) {
-      toast.error(err as string || "Sign up failed");
+      toast.error(err instanceof Error ? err.message : "Sign up failed");
     }
   };
 

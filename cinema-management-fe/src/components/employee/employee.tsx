@@ -5,7 +5,6 @@ import NavBar from "../admin/elements/NavBar";
 import NavSelection from "../admin/elements/NavSelection";
 import OrdersImg from "../../assets/images/orders.svg";
 import PaymentsImg from "./../../assets/images/receipts.svg";
-import SettingsImg from "../../assets/images/settings.svg";
 import BuyTicketImg from "../../assets/images/buyTicket.svg";
 import PrintTicketImg from "../../assets/images/printTicket.svg";
 import { Button } from "@mui/material";

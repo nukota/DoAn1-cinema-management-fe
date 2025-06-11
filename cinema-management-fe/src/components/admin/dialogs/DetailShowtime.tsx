@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { ShowtimeType, MovieType } from "../../../interfaces/types";
 import { toast } from "react-toastify";
+import { toUTCPlus7 } from "../../../utils/formatUtils";
 
 interface DetailShowtimeProps {
   open: boolean;
@@ -27,16 +28,25 @@ const DetailShowtime: React.FC<DetailShowtimeProps> = ({
   showtime,
   movies,
 }) => {
+  // Helper to format to 'YYYY-MM-DDTHH:mm' for datetime-local input
+  function formatForDateTimeLocalInput(dateString: string) {
+    const date = new Date(dateString);
+    // Get local time in the format required by datetime-local
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60000);
+    return localDate.toISOString().slice(0, 16);
+  }
+
   const [movieId, setMovieId] = useState<string>(showtime.movie.movie_id);
   const [showtimeDate, setShowtimeDate] = useState<string>(
-    new Date(showtime.showtime).toISOString().slice(0, 16)
+    formatForDateTimeLocalInput(showtime.showtime)
   );
   const [price, setPrice] = useState<number>(showtime.price);
 
   useEffect(() => {
     if (showtime) {
       setMovieId(showtime.movie.movie_id);
-      setShowtimeDate(new Date(showtime.showtime).toISOString().slice(0, 16));
+      setShowtimeDate(formatForDateTimeLocalInput(showtime.showtime));
       setPrice(showtime.price);
     }
   }, [showtime]);
@@ -45,12 +55,14 @@ const DetailShowtime: React.FC<DetailShowtimeProps> = ({
     if (!movieId || !showtimeDate || price <= 0) {
       toast.error("Please fill in all required fields.");
       return;
-    }
-
+    };
+    // Convert local input back to UTC+7 ISO string
+    const localDate = new Date(showtimeDate);
+    const utcPlus7 = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000 - 7 * 60 * 60 * 1000);
     const updatedShowtime: ShowtimeType = {
       ...showtime,
       movie: { ...showtime.movie, movie_id: movieId },
-      showtime: new Date(showtimeDate).toISOString(),
+      showtime: utcPlus7.toISOString(),
       price,
     };
 

@@ -3,6 +3,7 @@ import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { SentimentDissatisfied } from "@mui/icons-material";
 import { useAuth } from "../../providers/AuthProvider";
+import { toast } from "react-toastify";
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const NotFound: React.FC = () => {
         }
         setRole(userProfile?.role || null);
       } catch (error) {
-        console.error("Failed to fetch user role:", error);
+        toast.error(error instanceof Error ? error.message : String(error));
       }
     };
 

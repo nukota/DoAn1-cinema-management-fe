@@ -47,17 +47,19 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
   const [code, setCode] = useState<String>("");
   const [type, setType] = useState<String>("");
   const [expiryDate, setExpiryDate] = useState<String>("");
-  const [value, setValue] = useState<Number>(0);
-  const [minPurchase, setMinPurchase] = useState<Number>(0);
-  const [maxUsage, setMaxUsage] = useState<Number>(0);
+  const [value, setValue] = useState<String>("");
+  const [minPurchase, setMinPurchase] = useState<String>("");
+  const [maxUsage, setMaxUsage] = useState<String>("");
+  const [remaining, setRemaining] = useState<String>("");
 
   useEffect(() => {
     if (discount) {
       setCode(discount.code);
       setType(discount.discount_type);
-      setValue(discount.value);
-      setMinPurchase(discount.min_purchase);
-      setMaxUsage(discount.max_usage);
+      setValue(discount.value.toString());
+      setMinPurchase(discount.min_purchase.toString());
+      setMaxUsage(discount.max_usage.toString());
+      setRemaining(discount.remaining.toString());
       setExpiryDate(discount.expiry_date);
     }
     if (!open) {
@@ -70,8 +72,27 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
   };
 
   const handleSaveClick = () => {
-    if (!code || !type || !value || !minPurchase || !maxUsage) {
+    if (
+      !code ||
+      !type ||
+      !expiryDate ||
+      !value ||
+      !minPurchase ||
+      !maxUsage ||
+      !remaining
+    ) {
       toast.error("All fields are required");
+      return;
+    }
+    if (
+      isNaN(Number(value)) ||
+      isNaN(Number(minPurchase)) ||
+      isNaN(Number(maxUsage)) ||
+      isNaN(Number(remaining))
+    ) {
+      toast.error(
+        "Value, Min Purchase, Max Usage, and Remaining must be numbers"
+      );
       return;
     }
     const updatedDiscount = {
@@ -108,7 +129,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
       </DialogTitle>
       <CustomDialogContent>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
             CODE:
           </Typography>
           <TextField
@@ -121,7 +142,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
             Type:
           </Typography>
           <Autocomplete
@@ -129,7 +150,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
             disabled={!isEditing}
             value={type}
             fullWidth
-            onChange={(event, newValue) => setType(newValue!)}
+            onChange={(_, newValue) => setType(newValue!)}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -141,8 +162,22 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Minium purchase:
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
+            Remaining:
+          </Typography>
+          <TextField
+            type="number"
+            fullWidth
+            disabled={!isEditing}
+            margin="dense"
+            size="small"
+            value={remaining}
+            onChange={(e) => setRemaining(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
+            Min purchase:
           </Typography>
           <TextField
             type="number"
@@ -151,11 +186,11 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
             margin="dense"
             size="small"
             value={minPurchase}
-            onChange={(e) => setMinPurchase(Number(e.target.value))}
+            onChange={(e) => setMinPurchase(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
             Max Usage
           </Typography>
           <TextField
@@ -165,11 +200,11 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
             margin="dense"
             size="small"
             value={maxUsage}
-            onChange={(e) => setMaxUsage(Number(e.target.value))}
+            onChange={(e) => setMaxUsage(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
             Value:
           </Typography>
           <TextField
@@ -179,11 +214,11 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
             margin="dense"
             size="small"
             value={value}
-            onChange={(e) => setValue(Number(e.target.value))}
+            onChange={(e) => setValue(e.target.value)}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
             Expiry Date:
           </Typography>
           <TextField

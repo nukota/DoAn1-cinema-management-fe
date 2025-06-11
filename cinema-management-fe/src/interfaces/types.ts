@@ -111,7 +111,7 @@ export type OrderType = {
   ordercode: string;
   user_id: string;
   total_price: number;
-  status: "pending" | "paid" | "cancelled";
+  status: "pending" | "completed" | "cancelled";
   ordered_at: string;
   ticketCount?: number;
   productCount?: number;
@@ -125,6 +125,8 @@ export type OrderType = {
     product_id: string;
     name: string;
     quantity: number;
+    price: number;
+    total: number;
   }[];
 };
 
@@ -154,6 +156,7 @@ export type DiscountType = {
   code: string;
   discount_type: "percentage" | "fixed";
   value: number;
+  remaining: number;
   min_purchase: number;
   max_usage: number;
   expiry_date: string;
@@ -161,8 +164,17 @@ export type DiscountType = {
 
 export type ReviewType = {
   _id?: string;
-  user_id: string;
-  movie_id: string;
+  user_id?: string;
+  movie_id?: string;
+  user?: {
+    user_id: string;
+    full_name: string;
+    email: string;
+  };
+  movie?: {
+    movie_id: string;
+    title: string;
+  };
   rating: number;
   comment: string;
   created_at?: string;

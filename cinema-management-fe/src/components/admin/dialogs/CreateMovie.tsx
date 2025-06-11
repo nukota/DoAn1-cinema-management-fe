@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { toast } from "react-toastify";
+import { countryOptions } from "../../../enum/enum";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -157,7 +158,7 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
                 options={statusOptions}
                 value={status}
                 sx={{ width: 280 }}
-                onChange={(event, newValue) => {
+                onChange={(_, newValue) => {
                   if (newValue && statusOptions.includes(newValue)) {
                     setStatus(
                       newValue as
@@ -224,13 +225,19 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
               <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
                 Nation:
               </Typography>
-              <TextField
-                placeholder="Nation"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
+              <Autocomplete
+                options={countryOptions}
                 value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                sx={{ width: 280 }}
+                onChange={(_, newValue) => setCountry(newValue || "")}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Nation"
+                    margin="dense"
+                    size="small"
+                  />
+                )}
               />
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>

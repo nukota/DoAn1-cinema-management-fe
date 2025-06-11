@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import { Button, CircularProgress } from "@mui/material";
@@ -27,7 +27,6 @@ const Discounts: React.FC = () => {
 
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -233,9 +232,10 @@ const Discounts: React.FC = () => {
       <div className="discounts-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
-          <div className="w-[12%] text-base">CODE</div>
-          <div className="w-[12%] text-base">Type</div>
-          <div className="w-[12%] text-base">Value</div>
+          <div className="w-[9%] text-base">CODE</div>
+          <div className="w-[9%] text-base">Type</div>
+          <div className="w-[9%] text-base">Value</div>
+          <div className="w-[9%] text-base">Remaining</div>
           <div className="w-[12%] text-base">Min Purchase</div>
           <div className="w-[12%] text-base">Max Usage</div>
           <div className="w-[20%] text-base">Expiry Date</div>

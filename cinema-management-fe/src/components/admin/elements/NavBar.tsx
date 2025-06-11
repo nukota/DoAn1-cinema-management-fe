@@ -34,7 +34,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
           React.cloneElement(child as React.ReactElement, { key: index })
         )}
         <div className="w-[200px] self-center text-sm text-line-gray font-light">
-          Developed by Group 7
+          Developed by Cong Thanh & Minh Tuan
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
 import Payment from "./items/Payment";
-import { PaymentType } from "../../interfaces/types";
 import { usePayments } from "../../providers/PaymentsProvider";
 import { CircularProgress } from "@mui/material";
 
@@ -10,11 +9,6 @@ const Payments: React.FC = () => {
   const { payments, fetchPaymentsData, loading } = usePayments();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedPayment, setSelectedPayment] = useState<PaymentType | null>(
-    null
-  );
-  const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
@@ -40,16 +34,6 @@ const Payments: React.FC = () => {
     datePicker.focus();
   };
 
-  const handleInfoClick = (payment: PaymentType) => {
-    setSelectedPayment(payment);
-    setDetailDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDetailDialogOpen(false);
-    setSelectedPayment(null);
-  };
-
   const handlePageChange = (pageNumber: number | string) => {
     if (pageNumber !== "...") setCurrentPage(Number(pageNumber));
   };
@@ -69,8 +53,6 @@ const Payments: React.FC = () => {
       (isDateMatch && // Filter by selectedDate
         payment._id &&
         payment._id.toString().includes(searchTermLower)) ||
-      (payment.order_id &&
-        payment.order_id.toString().includes(searchTermLower)) ||
       (payment.payment_method &&
         payment.payment_method.toLowerCase().includes(searchTermLower)) ||
       (payment.paid_at &&

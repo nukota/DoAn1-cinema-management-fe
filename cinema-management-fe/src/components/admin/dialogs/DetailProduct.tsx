@@ -152,7 +152,7 @@ const DetailProduct: React.FC<DetailProductProps> = ({
                 value={category}
                 sx={{ width: 240 }}
                 disabled={!isEditing}
-                onChange={(event, newValue) => setCategory(newValue!)}
+                onChange={(_, newValue) => setCategory(newValue!)}
                 renderInput={(params) => (
                   <TextField
                     {...params}

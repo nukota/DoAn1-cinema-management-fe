@@ -25,7 +25,6 @@ const Products: React.FC = () => {
   );
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
   useEffect(() => {
     fetchProductsData();
@@ -47,10 +46,6 @@ const Products: React.FC = () => {
     setSelectedProduct(product);
     setDetailDialogOpen(true);
   };
-
-  // const handleCheckConfirmDelete = () => {
-  //   setShowDeleteConfirm(true);
-  // };
 
   const handleCloseDialog = () => {
     setCreateDialogOpen(false);

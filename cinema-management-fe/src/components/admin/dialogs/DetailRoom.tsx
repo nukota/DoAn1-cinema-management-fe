@@ -45,7 +45,6 @@ interface DetailRoomsProps {
 }
 
 const ROWS = 14;
-const COLS = 17;
 
 const getSeatName = (
   row: number,

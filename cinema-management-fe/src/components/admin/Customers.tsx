@@ -26,7 +26,6 @@ const Customers: React.FC = () => {
   );
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -226,7 +225,7 @@ const Customers: React.FC = () => {
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
           <div className="w-[8%] text-base">ID</div>
           <div className="w-[24%] text-base">Name</div>
-          <div className="w-[14%] text-base">Role</div>
+          <div className="w-[14%] text-base">Phone Number</div>
           <div className="w-[12%] text-base">CCCD</div>
           <div className="w-[22%] text-base">Dob</div>
           <div className="w-[20%] text-base">User Action</div>

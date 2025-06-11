@@ -179,14 +179,6 @@ const AdminHome: React.FC = () => {
     getProductRevenueByDate,
   ]);
 
-  // Card titles
-  const cardTitles = [
-    "Total Revenue",
-    "Tickets Sold",
-    "Products Sold",
-    "Orders",
-  ];
-
   return (
     <div className="home flex flex-col h-full w-full">
       <Box

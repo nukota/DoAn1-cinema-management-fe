@@ -290,7 +290,7 @@ const Showtimes: React.FC = () => {
               <RoomShowtimes
                 room={room}
                 showtimes={room.showtimes}
-                movies={movies}
+                movies={movies.filter((movie) => movie.status !== "Stopped")}
                 onAddShowtime={handleAddShowtime}
                 onUpdateShowtime={handleUpdateShowtime}
                 onDeleteShowtime={handleDeleteShowtime}

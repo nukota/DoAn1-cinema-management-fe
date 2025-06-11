@@ -48,7 +48,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("employee");
   const [cinemaId, setCinemaId] = useState<string>();
   const [shift, setShift] = useState<string | null>(null);
   const [position, setPosition] = useState<string>("");
@@ -262,7 +261,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
             options={cinemas}
             value={cinemas.find((c) => c._id === cinemaId) || null}
             fullWidth
-            onChange={(event, newValue) => setCinemaId(newValue?._id)}
+            onChange={(_, newValue) => setCinemaId(newValue?._id)}
             getOptionLabel={(option) => `(ID: ${option._id}) ${option.name}`}
             renderInput={(params) => (
               <TextField
@@ -295,7 +294,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
             options={shifts}
             value={shift}
             fullWidth
-            onChange={(event, newValue) => setShift(newValue)}
+            onChange={(_, newValue) => setShift(newValue)}
             renderInput={(params) => (
               <TextField
                 {...params}

@@ -6,15 +6,15 @@ import { ReviewType } from "../../interfaces/types";
 import DetailReview from "./dialogs/DetailReview";
 import { useReviews } from "../../providers/ReviewsProvider";
 import { CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 const Reviews: React.FC = () => {
-  const { reviews, fetchReviewsData, loading } = useReviews();
+  const { reviews, fetchReviewsData, deleteReview, loading } = useReviews();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedReview, setSelectedReview] = useState<ReviewType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const itemsPerPage = 10;
   const pageRangeDisplayed = 5;
 
@@ -47,14 +47,20 @@ const Reviews: React.FC = () => {
     setSelectedReview(review);
     setDetailDialogOpen(true);
   };
-  const handleCheckConfirmDelete = (review: ReviewType) => {
-    setShowDeleteConfirm(true);
-    setSelectedReview(review);
-  };
+  
   const handleCloseDialog = () => {
     setDetailDialogOpen(false);
     setSelectedReview(null);
   };
+
+  const handleDeleteReview = async (review: ReviewType) => {
+    try {
+      await deleteReview(review._id!);
+      toast.success("Review deleted successfully.");
+    } catch (error) {
+      toast.error("Failed to delete review.");
+    }
+  }
 
   const filteredReviews = reviews.filter((review) => {
     const searchTermLower = searchTerm.toLowerCase();
@@ -161,9 +167,9 @@ const Reviews: React.FC = () => {
       </div>
       <div className="Reviews-list mt-3 h-full min-h-[568px] w-[calc(100vw - 336px)] bg-white rounded-xl overflow-auto">
         <div className="flex flex-row items-center text-dark-gray text-sm font-medium px-8 pt-3 pb-4">
-          <div className="w-[14%] text-base">Review ID</div>
-          <div className="w-[14%] text-base">Movie ID</div>
-          <div className="w-[14%] text-base">User ID</div>
+          <div className="w-[10%] text-base">Review ID</div>
+          <div className="w-[16%] text-base">Movie</div>
+          <div className="w-[16%] text-base">User</div>
           <div className="w-[14%] text-base">Rating</div>
           <div className="w-[28%] text-base">Comment</div>
           <div className="w-[16%] text-base">Review Action</div>
@@ -180,7 +186,7 @@ const Reviews: React.FC = () => {
               key={review.user_id}
               review={review}
               handleInfoClick={() => handleInfoClick(review)}
-              handleDeleteClick={() => handleCheckConfirmDelete(review)}
+              handleDeleteClick={() => handleDeleteReview(review)}
             />
           ))}
         </div>

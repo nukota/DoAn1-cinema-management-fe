@@ -8,7 +8,6 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Autocomplete,
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -50,7 +49,6 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
   const [phone, setPhone] = useState<String>("");
   const [dob, setDob] = useState<String>("");
   const [cccd, setCccd] = useState<String>("");
-  const [role, setRole] = useState<String>("customer");
   const [password, setPassword] = useState<String>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -83,7 +81,7 @@ const DetailCustomer: React.FC<DetailCustomerProps> = ({
       phone: phone.trim(),
       dateOfBirth: dob,
       cccd,
-      role,
+      role: "customer",
       password: password || undefined,
     };
     onSave(updatedCustomer);
