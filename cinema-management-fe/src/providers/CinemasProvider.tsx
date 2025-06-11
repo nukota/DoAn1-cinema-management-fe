@@ -36,13 +36,15 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching cinemas failed.");
+        const errorData = await response.json();
+        const errorMsg =
+          errorData?.error?.message || "Fetching cinemas failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setCinemas(data);
     } catch (error) {
-      console.error("Failed to fetch cinemas:", error);
+      console.error(error);
       throw error;
     } finally {
       setLoading(false);
@@ -50,6 +52,7 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const fetchCinemaDetails = useCallback(async (cinemaId: string) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
       const response = await fetch(
@@ -61,14 +64,18 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        const errorData = await response.json();
+        const errorMsg =
+          errorData?.error?.message || "Fetching cinema details failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Failed to fetch cinema details:", error);
+      console.error(error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -84,8 +91,9 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newCinema),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating cinema failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating cinema failed.";
+        throw new Error(errorMsg);
       }
       const createdCinema = await response.json();
       setCinemas((prevCinemas) => [...prevCinemas, createdCinema]);
@@ -107,13 +115,14 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedCinema),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating cinema failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating cinema failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setCinemas((prevCinemas) =>
         prevCinemas.map((cinema) =>
-          cinema._id === updatedData.cinema_id ? updatedData : cinema
+          cinema._id === updatedData._id ? updatedData : cinema
         )
       );
     } catch (error) {
@@ -132,8 +141,9 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting cinema failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting cinema failed.";
+        throw new Error(errorMsg);
       }
       setCinemas((prevCinemas) =>
         prevCinemas.filter((cinema) => cinema._id !== _id)

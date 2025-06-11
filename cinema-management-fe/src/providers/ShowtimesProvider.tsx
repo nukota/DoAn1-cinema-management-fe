@@ -46,8 +46,9 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching showtimes failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching showtimes failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setShowtimes(data);
@@ -69,8 +70,9 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching showtimes by movie ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching showtimes by movie ID failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setShowtimesByMovieId(data);
@@ -95,10 +97,11 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newShowtime),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating showtime failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating showtime failed.";
+        throw new Error(errorMsg);
       }
-      fetchShowtimesData();
+      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to create showtime:", error);
       throw error;
@@ -123,10 +126,11 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating showtime failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating showtime failed.";
+        throw new Error(errorMsg);
       }
-      fetchShowtimesData();
+      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to update showtime:", error);
       throw error;
@@ -146,10 +150,11 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting showtime failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting showtime failed.";
+        throw new Error(errorMsg);
       }
-      fetchShowtimesData();
+      await fetchShowtimesData();
     } catch (error) {
       console.error("Failed to delete showtime:", error);
       throw error;
@@ -168,11 +173,11 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching current showtime failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching current showtime failed.";
+        throw new Error(errorMsg);
       }
       const { data } = await response.json();
-      console.log("API Response:", data);
       if (Array.isArray(data)) {
         setCurrentShowtime(data);
       } else {

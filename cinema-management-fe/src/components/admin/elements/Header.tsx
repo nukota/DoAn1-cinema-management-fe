@@ -8,6 +8,7 @@ import ArrowDownImg from "../../../assets/images/arrowDown.svg";
 import profileImg from "../../../assets/images/profile.png";
 import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { useAuth } from "../../../providers/AuthProvider";
+import { toast } from "react-toastify";
 
 const Header: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -18,21 +19,25 @@ const Header: React.FC = () => {
   useEffect(() => {
     const checkAdminRole = async () => {
       try {
-        if (!userProfile) {
-          const token = localStorage.getItem("accessToken");
-          const email = localStorage.getItem("email");
-          if (token && email) {
-            await fetchUserProfile(token, email);
+        if (isLoggedIn) {
+          if (!userProfile) {
+            const token = localStorage.getItem("accessToken");
+            const email = localStorage.getItem("email");
+            if (token && email) {
+              await fetchUserProfile(token, email);
+            }
           }
+          setIsAdmin(userProfile?.role === "admin");
+        } else {
+          setIsAdmin(false);
         }
-        setIsAdmin(userProfile?.role === "admin");
       } catch (error) {
         console.error("Failed to fetch user role:", error);
       }
     };
 
     checkAdminRole();
-  }, [fetchUserProfile, userProfile]);
+  }, [isLoggedIn, fetchUserProfile, userProfile]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,13 +76,13 @@ const Header: React.FC = () => {
   };
 
   const handleCalendarClick = () => {
-    // alert("Calendar clicked")
+    toast.info("This feature is under development", { position: "bottom-right" });
   };
   const handleMessageClick = () => {
-    // alert("Message clicked")
+    toast.info("This feature is under development", { position: "bottom-right" });
   };
   const handleNotificationClick = () => {
-    // alert("Notification clicked")
+    toast.info("This feature is under development", { position: "bottom-right" });
   };
 
   return (

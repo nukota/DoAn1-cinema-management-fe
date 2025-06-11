@@ -37,8 +37,9 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching rooms failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching rooms failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setRooms(data);
@@ -63,8 +64,9 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newRoom),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating room failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating room failed.";
+        throw new Error(errorMsg);
       }
       const createdRoom = await response.json();
       setRooms((prevRooms) => [...prevRooms, createdRoom]);
@@ -89,8 +91,9 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(room),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating room with seats failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating room with seats failed.";
+        throw new Error(errorMsg);
       }
       await fetchRoomsData();
     } catch (error) {
@@ -114,10 +117,16 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedRoom),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating room failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating room failed.";
+        throw new Error(errorMsg);
       }
-      await fetchRoomsData();
+      const updatedData = await response.json();
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room._id === updatedData._id ? updatedData : room
+        )
+      );
     } catch (error) {
       console.error("Failed to update room:", error);
       throw error;
@@ -137,8 +146,9 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting room failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting room failed.";
+        throw new Error(errorMsg);
       }
       setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
     } catch (error) {

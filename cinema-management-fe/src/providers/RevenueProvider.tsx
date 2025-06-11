@@ -47,8 +47,9 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Fetching all revenue failed.");
+          const errorData = await response.json();
+          const errorMsg = errorData?.error?.message || "Fetching all revenue failed.";
+          throw new Error(errorMsg);
         }
         const data = await response.json();
         return data;
@@ -80,10 +81,9 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            errorText || "Fetching movie revenue by date failed."
-          );
+          const errorData = await response.json();
+          const errorMsg = errorData?.error?.message || "Fetching movie revenue by date failed.";
+          throw new Error(errorMsg);
         }
         const data = await response.json();
         return data;
@@ -115,10 +115,9 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            errorText || "Fetching product revenue by date failed."
-          );
+          const errorData = await response.json();
+          const errorMsg = errorData?.error?.message || "Fetching product revenue by date failed.";
+          throw new Error(errorMsg);
         }
         const data = await response.json();
         return data;

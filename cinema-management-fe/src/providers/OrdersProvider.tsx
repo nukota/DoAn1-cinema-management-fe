@@ -40,8 +40,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching orders failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching orders failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setOrders(data);
@@ -63,8 +64,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching order details failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching order details failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       return data;
@@ -86,8 +88,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching orders by user ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching orders by user ID failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       return data;
@@ -109,8 +112,12 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching order by code failed.");
+        let errorMsg = "Fetching order by code failed.";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData?.error?.message || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       const blob = await response.blob();
       return blob;
@@ -135,8 +142,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newOrder),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating order failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating order failed.";
+        throw new Error(errorMsg);
       }
       const createdOrder = await response.json();
       setOrders((prevOrders) => [...prevOrders, createdOrder]);
@@ -161,8 +169,12 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newOrder),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating detailed order failed.");
+        let errorMsg = "Creating detailed order failed.";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData?.error?.message || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
       }
       const blob = await response.blob();
       return blob;
@@ -187,8 +199,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedOrder),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating order failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating order failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setOrders((prevOrders) =>
@@ -215,8 +228,9 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting order failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting order failed.";
+        throw new Error(errorMsg);
       }
       setOrders((prevOrders) =>
         prevOrders.filter((order) => order._id !== orderId)

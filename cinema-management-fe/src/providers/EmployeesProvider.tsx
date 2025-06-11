@@ -38,8 +38,9 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching Employees failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching Employees failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setEmployees(data);
@@ -64,8 +65,9 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newEmployee),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating Employee failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating Employee failed.";
+        throw new Error(errorMsg);
       }
       const createdEmployee = await response.json();
       setEmployees((prevEmployees) => [...prevEmployees, createdEmployee]);
@@ -93,8 +95,9 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating Employee failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating Employee failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setEmployees((prevEmployees) =>
@@ -121,8 +124,9 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting Employee failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting Employee failed.";
+        throw new Error(errorMsg);
       }
       setEmployees((prevEmployees) =>
         prevEmployees.filter((Employee) => Employee._id !== EmployeeId)

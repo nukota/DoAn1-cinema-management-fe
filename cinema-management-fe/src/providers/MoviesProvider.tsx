@@ -36,8 +36,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching movies failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching movies failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setMovies(data);
@@ -58,8 +59,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching movie by ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching movie by ID failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       return data;
@@ -83,8 +85,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching movies by status failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching movies by status failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       return data;
@@ -107,8 +110,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newMovie),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating movie failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating movie failed.";
+        throw new Error(errorMsg);
       }
       const createdMovie = await response.json();
       setMovies((prevMovies) => [...prevMovies, createdMovie]);
@@ -129,8 +133,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedMovie),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating movie failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating movie failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setMovies((prevMovies) =>
@@ -153,8 +158,9 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting movie failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting movie failed.";
+        throw new Error(errorMsg);
       }
       setMovies((prevMovies) =>
         prevMovies.filter((movie) => movie._id !== movieId)

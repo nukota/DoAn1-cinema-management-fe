@@ -38,8 +38,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching seats failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching seats failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setSeats(data);
@@ -61,8 +62,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching seats by room ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching seats by room ID failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setSeats(data);
@@ -84,8 +86,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching seats by showtime ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching seats by showtime ID failed.";
+        throw new Error(errorMsg);
       }
       const { data } = await response.json();
       setSeats(data);
@@ -110,8 +113,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newSeat),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating seat failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating seat failed.";
+        throw new Error(errorMsg);
       }
       const createdSeat = await response.json();
       setSeats((prevSeats) => [...prevSeats, createdSeat]);
@@ -136,8 +140,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedSeat),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating seat failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating seat failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setSeats((prevSeats) =>
@@ -164,8 +169,9 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting seat failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting seat failed.";
+        throw new Error(errorMsg);
       }
       setSeats((prevSeats) => prevSeats.filter((seat) => seat._id !== seatId));
     } catch (error) {

@@ -9,6 +9,7 @@ import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 
 const Cinemas: React.FC = () => {
+  const fetchedIds = React.useRef<Set<string>>(new Set());
   const {
     cinemas,
     fetchCinemasData,
@@ -31,6 +32,8 @@ const Cinemas: React.FC = () => {
   }, []);
 
   const fetchDetails = async (cinemaId: string) => {
+    if (cinemaDetails[cinemaId] || fetchedIds.current.has(cinemaId)) return;
+    fetchedIds.current.add(cinemaId);
     try {
       const details = await fetchCinemaDetails(cinemaId);
       setCinemaDetails((prevDetails) => ({
@@ -70,7 +73,6 @@ const Cinemas: React.FC = () => {
         address: newCinema.address,
       };
       await createCinema(cinemaData as CinemaType);
-      await fetchCinemasData();
       handleCloseDialog();
       toast.success("Cinema added successfully!");
       return true;
@@ -84,7 +86,6 @@ const Cinemas: React.FC = () => {
     try {
       await updateCinema(updatedCinema);
       setSelectedCinema(updatedCinema);
-      await fetchCinemasData();
       toast.success("Cinema updated successfully!");
       return true;
     } catch (error) {
@@ -96,7 +97,6 @@ const Cinemas: React.FC = () => {
   const handleDeleteCinema = async (cinemaId: string) => {
     try {
       await deleteCinema(cinemaId);
-      await fetchCinemasData();
       handleCloseDialog();
       toast.success("Cinema deleted successfully!");
     } catch (error) {
@@ -114,14 +114,22 @@ const Cinemas: React.FC = () => {
     );
   });
 
+  useEffect(() => {
+    filteredCinemas.forEach((cinema) => {
+      if (!cinemaDetails[cinema._id] && !fetchedIds.current.has(cinema._id)) {
+        fetchDetails(cinema._id);
+      }
+    });
+  }, [filteredCinemas]);
+
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading cinemas...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading cinemas...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">
@@ -166,7 +174,6 @@ const Cinemas: React.FC = () => {
               key={cinema._id}
               cinema={cinema}
               details={cinemaDetails[cinema._id]}
-              fetchDetails={() => fetchDetails(cinema._id)}
               handleInfoClick={() => handleInfoClick(cinema)}
             />
           ))}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { CinemaType } from "../../../interfaces/types";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
@@ -6,21 +6,14 @@ import InfoIcon from "@mui/icons-material/Info";
 interface CinemaProps {
   cinema: CinemaType;
   details?: { employeeCount: number; roomCount: number };
-  fetchDetails: () => void;
   handleInfoClick: () => void;
 }
 
 const Cinema: React.FC<CinemaProps> = ({
   cinema,
   details,
-  fetchDetails,
   handleInfoClick,
 }) => {
-  useEffect(() => {
-    if (!details) {
-      fetchDetails();
-    }
-  }, [details, fetchDetails]);
   return (
     <div className="cinema w-full min-w-[300px] h-[200px] lg:w-[340px] xl:w-[320px] lg:h-[200px] flex-shrink-0 flex-grow-0 rounded-xl bg-white border-red border-2 flex flex-col items-start justify-start relative overflow-clip">
       <div className="w-full flex items-start justify-between p-3 mt-3 z-10 relative">
@@ -56,14 +49,6 @@ const Cinema: React.FC<CinemaProps> = ({
       <div className="w-full text-[#fef5f5] text-[84px] absolute -top-10 -right-10 z-0 whitespace-nowrap text-overflow-clip">
         {cinema.name}
       </div>
-      {/* <Button
-        color="primary"
-        variant="contained"
-        sx={{ width: "90%", placeSelf: "center", bottom: "10px", mt: 1 }}
-        onClick={() => handleSeeAllRooms()}
-      >
-        See All Rooms
-      </Button> */}
     </div>
   );
 };

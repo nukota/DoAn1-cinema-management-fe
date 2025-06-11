@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Customer from "./items/Customer";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
@@ -61,8 +61,6 @@ const Customers: React.FC = () => {
 
   const handleCheckConfirmDelete = (customer: UserType) => {
     handleDeleteCustomer(customer._id);
-    // setShowDeleteConfirm(true);
-    // setSelectedCustomer(customer);
   };
 
   const handleCloseDialog = () => {
@@ -76,9 +74,8 @@ const Customers: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await createCustomer(newCustomer);
-      await fetchCustomersData();
-      handleCloseDialog();
       toast.success("Customer added successfully!");
+      handleCloseDialog();
       return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
@@ -90,7 +87,6 @@ const Customers: React.FC = () => {
     try {
       await updateCustomer(updatedCustomer);
       setSelectedCustomer(updatedCustomer);
-      // await fetchCustomersData();
       toast.success("Customer updated successfully!");
       return true;
     } catch (error) {
@@ -102,7 +98,6 @@ const Customers: React.FC = () => {
   const handleDeleteCustomer = async (customerId: string) => {
     try {
       await deleteCustomer(customerId);
-      await fetchCustomersData();
       handleCloseDialog();
       toast.success("Customer deleted successfully!");
     } catch (error) {
@@ -158,13 +153,13 @@ const Customers: React.FC = () => {
   };
 
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading customers...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading customers...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="customers flex flex-col w-full min-w-[1000px] h-[100%] overflow-x-auto relative">

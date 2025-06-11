@@ -41,17 +41,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserType | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [loading, setLoading] = useState<boolean>(false);
 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const fetchUserProfile = async (token: string, email: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseURL}/user/email?email=${email}`, {
+      const response = await fetch(`${baseURL}/user/email?email=${email}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUserProfile(response.data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Failed to fetch user profile.";
+        throw new Error(errorMsg);
+      }
+      const data = await response.json();
+      setUserProfile(data);
       setAccessToken(token);
       setIsLoggedIn(true);
     } catch (error) {
@@ -65,32 +71,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     try {
-      console.log("Login URL:", `${baseURL}/auth/login`);
-      console.log("Login Payload:", { email, password });
-      const response = await axios.post(`${baseURL}/auth/login`, {
-        email,
-        password,
+      const response = await fetch(`${baseURL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        const message = errorData?.error?.message || "Sign In failed";
+        throw new Error(message);
+      }
+      const data = await response.json();
+      const { accessToken, refreshToken, user_id } = data;
 
-      const { accessToken, refreshToken, user_id } = response.data;
-
-      // Save tokens to localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("email", email);
       localStorage.setItem("user_id", user_id);
-
-      // Fetch user profile
       await fetchUserProfile(accessToken, email);
     } catch (error: any) {
-      // Try to extract backend error message
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error.message ||
-        "Sign Up failed";
-      console.error("Sign Up failed:", message);
-      throw new Error(message);
+      console.error("Sign In failed:", error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -99,23 +100,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleSignUp = async (data: SignUpData) => {
     setLoading(true);
     try {
-      await axios.post(`${baseURL}/auth/register`, data);
+      const response = await fetch(`${baseURL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        const message = errorData?.error?.message || "Sign Up failed";
+        throw new Error(message);
+      }
     } catch (error: any) {
-      // Try to extract backend error message
-      const message =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error.message ||
-        "Sign Up failed";
-      console.error("Sign Up failed:", message);
-      throw new Error(message);
+      console.error("Sign Up failed:", error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = () => {
-    // Clear tokens and user state
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("email");

@@ -27,8 +27,9 @@ export const SettingProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching setting failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching setting failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setSetting(data);
@@ -55,8 +56,9 @@ export const SettingProvider: React.FC<{ children: React.ReactNode }> = ({
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Updating setting failed.");
+          const errorData = await response.json();
+          const errorMsg = errorData?.error?.message || "Updating setting failed.";
+          throw new Error(errorMsg);
         }
         const data = await response.json();
         setSetting(data);

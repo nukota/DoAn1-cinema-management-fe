@@ -30,8 +30,9 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching discounts failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching discounts failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setDiscounts(data);
@@ -52,8 +53,9 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching discount by ID failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching discount by ID failed.";
+        throw new Error(errorMsg);
       }
       const discount = await response.json();
       return discount;
@@ -72,8 +74,9 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching discount by code failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching discount by code failed.";
+        throw new Error(errorMsg);
       }
       const discount = await response.json();
       return discount;
@@ -95,8 +98,9 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(newDiscount),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating discount failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating discount failed.";
+        throw new Error(errorMsg);
       }
       const createdDiscount = await response.json();
       setDiscounts((prev) => [...prev, createdDiscount]);
@@ -118,12 +122,13 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(newDiscount),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating discount failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating discount failed.";
+        throw new Error(errorMsg);
       }
       const updatedDiscount = await response.json();
       setDiscounts((prev) =>
-        prev.map((d) => (d._id === newDiscount._id ? updatedDiscount : d))
+        prev.map((d) => (d._id === updatedDiscount._id ? updatedDiscount : d))
       );
     } catch (error) {
       console.error("Failed to update discount:", error);
@@ -141,8 +146,9 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting discount failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting discount failed.";
+        throw new Error(errorMsg);
       }
       setDiscounts((prev) => prev.filter((d) => d._id !== id));
     } catch (error) {

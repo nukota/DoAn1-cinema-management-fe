@@ -27,7 +27,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(false);
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const fetchProductsData = async () => {
+  const fetchProductsData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${baseURL}/product`, {
@@ -36,8 +36,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching products failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching products failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setProducts(data);
@@ -47,7 +48,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const createProduct = useCallback(async (newProduct: ProductType) => {
     try {
@@ -60,8 +61,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newProduct),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating product failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating product failed.";
+        throw new Error(errorMsg);
       }
       const createdProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, createdProduct]);
@@ -82,8 +84,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedProduct),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating product failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating product failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setProducts((prevProducts) =>
@@ -106,8 +109,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting product failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting product failed.";
+        throw new Error(errorMsg);
       }
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product._id !== productId)

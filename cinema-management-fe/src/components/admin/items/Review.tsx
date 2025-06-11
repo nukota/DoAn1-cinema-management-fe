@@ -20,37 +20,37 @@ const Review: React.FC<ReviewProps> = ({
       className="review grid grid-cols-6 h-[45px] px-8 text-gray items-center hover:text-red"
       style={{ gridTemplateColumns: "0.5fr 0.8fr 0.8fr 0.7fr 1.4fr 0.8fr" }}
     >
-      <p className="text-sm font-normal truncate pr-4">{review._id}</p>
-      <div className="flex flex-col items-start">
+      <p className="text-sm font-normal truncate pr-4 max-w-full overflow-hidden whitespace-nowrap">{review._id}</p>
+      <div className="flex flex-col items-start min-w-0">
         {review.movie ? (
           <>
-            <p className="text-sm font-normal truncate pr-4 text-[#dadada]">
+            <p className="text-sm font-normal truncate pr-4 text-[#dadada] max-w-full overflow-hidden whitespace-nowrap">
               {review.movie.movie_id}
             </p>
-            <p className="text-sm font-normal truncate pr-4">
+            <p className="truncate pr-4 max-w-full">
               {review.movie.title}
             </p>
           </>
         ) : (
-          <p className="text-sm font-normal truncate pr-4">None</p>
+          <p className="truncate pr-4 max-w-full">None</p>
         )}
       </div>
       <>
         {review.user ? (
-          <div className="flex flex-col items-start">
-            <p className="text-sm font-normal truncate pr-4 text-[#dadada]">
+          <div className="text-sm font-normal flex flex-col items-start min-w-0">
+            <p className="truncate pr-4 text-[#dadada] max-w-full overflow-hidden whitespace-nowrap">
               {review.user.email}
             </p>
-            <p className="text-sm font-normal truncate pr-4">
+            <p className="truncate pr-4 max-w-full overflow-hidden whitespace-nowrap">
               {review.user.full_name}
             </p>
           </div>
         ) : (
-          <p className="text-sm font-normal truncate pr-4">None</p>
+          <p className="text-sm font-normal truncate pr-4 max-w-full overflow-hidden whitespace-nowrap">None</p>
         )}
       </>
       <Rating value={review.rating} readOnly />
-      <p className="text-sm font-normal truncate pr-4">{review.comment}</p>
+      <p className="text-sm font-normal truncate pr-4 max-w-full overflow-hidden whitespace-nowrap">{review.comment}</p>
       <div className="flex flex-row">
         <button
           className="info-btn hover:transform hover:-translate-y-1 transition-transform duration-200"

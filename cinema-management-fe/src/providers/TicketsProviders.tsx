@@ -19,8 +19,9 @@ export const TicketsProvider: React.FC<{ children: ReactNode }> = ({ children })
       const apiUrl = process.env.REACT_APP_API_URL;
       const response = await fetch(`${apiUrl}/tickets`);
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching tickets failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching tickets failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setTickets(data);

@@ -7,12 +7,10 @@ interface LoginProps {
 }
 const Login: React.FC<LoginProps> = ({ handleLoginClick, handleCloseClick }) => {
   const onLoginClick = () => {
-    alert("Log in clicked")
     handleLoginClick()
   }
 
   const onCloseClick = () => {
-    alert("Close clicked")
     handleCloseClick()
   }
 

@@ -19,7 +19,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   // Fetch all customers
-  const fetchCustomersData = async () => {
+  const fetchCustomersData = useCallback(async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -29,11 +29,8 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        let errorMsg = `HTTP error! status: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData || errorMsg;
-        } catch {}
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching customers failed.";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -44,7 +41,7 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Create a new customer
   const createCustomer = useCallback(async (newCustomer: UserType) => {
@@ -60,11 +57,8 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(newCustomer),
       });
       if (!response.ok) {
-        let errorMsg = `HTTP error! status: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData || errorMsg;
-        } catch {}
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating customer failed.";
         throw new Error(errorMsg);
       }
       const createdCustomer = await response.json();
@@ -91,11 +85,8 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         body: JSON.stringify(updatedCustomer),
       });
       if (!response.ok) {
-        let errorMsg = `HTTP error! status: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData || errorMsg;
-        } catch {}
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating customer failed.";
         throw new Error(errorMsg);
       }
       const updatedData = await response.json();
@@ -124,11 +115,8 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
       });
       if (!response.ok) {
-        let errorMsg = `HTTP error! status: ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData || errorMsg;
-        } catch {}
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting customer failed.";
         throw new Error(errorMsg);
       }
       setCustomers((prevCustomers) =>

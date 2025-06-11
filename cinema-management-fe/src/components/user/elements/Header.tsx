@@ -21,14 +21,18 @@ const UserHeader: React.FC = () => {
   useEffect(() => {
     const checkAdminRole = async () => {
       try {
-        if (!userProfile) {
-          const token = localStorage.getItem("accessToken");
-          const email = localStorage.getItem("email");
-          if (token && email) {
-            await fetchUserProfile(token, email);
+        if (isLoggedIn) {
+          if (!userProfile) {
+            const token = localStorage.getItem("accessToken");
+            const email = localStorage.getItem("email");
+            if (token && email) {
+              await fetchUserProfile(token, email);
+            }
           }
+          setIsAdmin(userProfile?.role === "admin");
+        } else {
+          setIsAdmin(false);
         }
-        setIsAdmin(userProfile?.role === "admin");
       } catch (error) {
         console.error("Failed to fetch user role:", error);
         toast.error(error instanceof Error ? error.message : String(error));
@@ -36,7 +40,7 @@ const UserHeader: React.FC = () => {
     };
 
     checkAdminRole();
-  }, [fetchUserProfile, userProfile]);
+  }, [isLoggedIn, fetchUserProfile, userProfile]);
 
   const handleSearchClick = () => {
     if (searchPhrase.trim()) {

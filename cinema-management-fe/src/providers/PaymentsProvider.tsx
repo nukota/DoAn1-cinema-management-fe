@@ -38,8 +38,9 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching payments failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Fetching payments failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setPayments(data);
@@ -64,8 +65,9 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newPayment),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating payment failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating payment failed.";
+        throw new Error(errorMsg);
       }
       const createdPayment = await response.json();
       setPayments((prevPayments) => [...prevPayments, createdPayment]);
@@ -90,8 +92,9 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedPayment),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating payment failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating payment failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setPayments((prevPayments) =>
@@ -118,8 +121,9 @@ export const PaymentsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting payment failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting payment failed.";
+        throw new Error(errorMsg);
       }
       setPayments((prevPayments) =>
         prevPayments.filter((payment) => payment._id !== paymentId)

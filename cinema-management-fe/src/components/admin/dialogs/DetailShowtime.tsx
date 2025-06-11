@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { ShowtimeType, MovieType } from "../../../interfaces/types";
 import { toast } from "react-toastify";
-import { toUTCPlus7 } from "../../../utils/formatUtils";
 
 interface DetailShowtimeProps {
   open: boolean;

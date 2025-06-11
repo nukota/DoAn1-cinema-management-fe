@@ -86,7 +86,16 @@ const CreateCustomer: React.FC<CreateCustomerProps> = ({
       role: "customer",
       password,
     };
-    onAdd(newCustomer);
+    const success = await onAdd(newCustomer);
+    if (success) {
+      setFullname("");
+      setEmail("");
+      setPhone("");
+      setDob("");
+      setCccd("");
+      setPassword("");
+      setConfirmPassword("");
+    }
   };
 
   return (

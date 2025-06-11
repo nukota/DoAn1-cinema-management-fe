@@ -38,8 +38,10 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Fetching reviews failed.");
+        const errorData = await response.json();
+        const errorMsg =
+          errorData?.error?.message || "Fetching reviews failed.";
+        throw new Error(errorMsg);
       }
       const data = await response.json();
       setReviews(data);
@@ -64,8 +66,9 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(newReview),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Creating review failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Creating review failed.";
+        throw new Error(errorMsg);
       }
       const createdReview = await response.json();
       setReviews((prevReviews) => [...prevReviews, createdReview]);
@@ -90,8 +93,9 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(updatedReview),
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Updating review failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Updating review failed.";
+        throw new Error(errorMsg);
       }
       const updatedData = await response.json();
       setReviews((prevReviews) =>
@@ -118,8 +122,9 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Deleting review failed.");
+        const errorData = await response.json();
+        const errorMsg = errorData?.error?.message || "Deleting review failed.";
+        throw new Error(errorMsg);
       }
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review._id !== reviewId)
@@ -143,8 +148,10 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
           },
         });
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Fetching movie reviews failed.");
+          const errorData = await response.json();
+          const errorMsg =
+            errorData?.error?.message || "Fetching movie reviews failed.";
+          throw new Error(errorMsg);
         }
         const data = await response.json();
         return data;

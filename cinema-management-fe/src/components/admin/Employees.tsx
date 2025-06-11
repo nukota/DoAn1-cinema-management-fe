@@ -89,7 +89,6 @@ const Employees: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await createEmployee(newEmployee);
-      await fetchEmployeesData();
       handleCloseDialog();
       toast.success("Employee added successfully!");
       return true;
@@ -105,7 +104,6 @@ const Employees: React.FC = () => {
     try {
       await updateEmployee(updatedEmployee);
       setSelectedEmployee(updatedEmployee);
-      await fetchEmployeesData();
       toast.success("Employee updated successfully!");
       return true;
     } catch (error) {
@@ -117,7 +115,6 @@ const Employees: React.FC = () => {
   const handleDeleteEmployee = async (EmployeeId: string) => {
     try {
       await deleteEmployee(EmployeeId);
-      await fetchEmployeesData();
       handleCloseDialog();
       toast.success("Employee deleted successfully!");
     } catch (error) {
