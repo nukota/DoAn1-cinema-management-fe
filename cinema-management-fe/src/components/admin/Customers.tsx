@@ -8,6 +8,7 @@ import CreateCustomer from "./dialogs/CreateCustomer";
 import { UserType } from "../../interfaces/types";
 import DetailCustomer from "./dialogs/DetailCustomer";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Customers: React.FC = () => {
   const {
@@ -59,10 +60,6 @@ const Customers: React.FC = () => {
     setDetailDialogOpen(true);
   };
 
-  const handleCheckConfirmDelete = (customer: UserType) => {
-    handleDeleteCustomer(customer._id);
-  };
-
   const handleCloseDialog = () => {
     setDetailDialogOpen(false);
     setAddDialogOpen(false);
@@ -95,13 +92,22 @@ const Customers: React.FC = () => {
     }
   };
 
-  const handleDeleteCustomer = async (customerId: string) => {
-    try {
-      await deleteCustomer(customerId);
-      handleCloseDialog();
-      toast.success("Customer deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+  const handleDeleteCustomer = async (customer: UserType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Customer",
+      `Are you sure you want to delete ${customer.full_name}? This action cannot be undone.`
+    );
+  
+    if (confirmed) {
+      try {
+        await deleteCustomer(customer._id);
+        handleCloseDialog();
+        toast.success("Customer deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 
@@ -237,7 +243,7 @@ const Customers: React.FC = () => {
               key={customer._id}
               customer={customer}
               handleInfoClick={() => handleInfoClick(customer)}
-              handleDeleteClick={() => handleCheckConfirmDelete(customer)}
+              handleDeleteClick={() => handleDeleteCustomer(customer)}
             />
           ))}
         </div>
