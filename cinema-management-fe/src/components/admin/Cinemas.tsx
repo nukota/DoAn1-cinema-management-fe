@@ -7,6 +7,7 @@ import CreateCinema from "./dialogs/CreateCinema";
 import { Button, CircularProgress } from "@mui/material";
 import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Cinemas: React.FC = () => {
   const fetchedIds = React.useRef<Set<string>>(new Set());
@@ -94,13 +95,23 @@ const Cinemas: React.FC = () => {
     }
   };
 
-  const handleDeleteCinema = async (cinemaId: string) => {
-    try {
-      await deleteCinema(cinemaId);
-      handleCloseDialog();
-      toast.success("Cinema deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+  const handleDeleteCinema = async (cinemaId: string, cinemaName?: string) => {
+    const confirmed = await confirmDeletion(
+      "Delete Cinema",
+      `Are you sure you want to delete ${cinemaName ?? "this cinema"}? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteCinema(cinemaId);
+        fetchCinemasData();
+        handleCloseDialog();
+        toast.success("Cinema deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 

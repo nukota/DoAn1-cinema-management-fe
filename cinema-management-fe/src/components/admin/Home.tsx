@@ -33,7 +33,6 @@ for (let year = earliestYear; year <= now.year(); year++) {
 }
 
 const AdminHome: React.FC = () => {
-  // Stats cards state
   const [selectedMonth, setSelectedMonth] = useState<string>(
     `${now.year()}-${(now.month() + 1).toString().padStart(2, "0")}`
   );

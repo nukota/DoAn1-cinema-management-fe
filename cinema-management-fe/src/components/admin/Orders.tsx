@@ -7,6 +7,7 @@ import DetailOrder from "./dialogs/DetailOrder";
 import { useOrders } from "../../providers/OrdersProvider";
 import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Orders: React.FC = () => {
   const { fetchOrdersData, orders, loading, deleteOrder } = useOrders();
@@ -54,13 +55,23 @@ const Orders: React.FC = () => {
   };
 
   const handleDelete = async (orderId: string) => {
-    try {
-      await deleteOrder(orderId);
-      setDetailDialogOpen(false);
-      setSelectedOrder(null);
-      toast.success("Order deleted successfully");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+    const confirmed = await confirmDeletion(
+      "Delete Order",
+      "Are you sure you want to delete this order? This action cannot be undone."
+    );
+
+    if (confirmed) {
+      try {
+        await deleteOrder(orderId);
+        await fetchOrdersData();
+        setDetailDialogOpen(false);
+        setSelectedOrder(null);
+        toast.success("Order deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 
@@ -172,16 +183,6 @@ const Orders: React.FC = () => {
             />
           ))}
         </div>
-        {/* <button
-          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200 z-20"
-          onClick={handleAddNewClick}
-        >
-          <img
-            className="size-11 invert brightness-0"
-            src={addImg}
-            alt="Add New"
-          />
-        </button> */}
       </div>
       {selectedOrder && (
         <DetailOrder

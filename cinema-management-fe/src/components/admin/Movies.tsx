@@ -9,6 +9,7 @@ import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
 import { CircularProgress } from "@mui/material";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Movies: React.FC = () => {
   const {
@@ -87,16 +88,23 @@ const Movies: React.FC = () => {
     }
   };
 
-  const handleDeleteMovie = async (movieId: string): Promise<boolean> => {
-    try {
-      await deleteMovie(movieId);
-      await fetchMoviesData();
-      handleCloseDialog();
-      toast.success("Movie deleted successfully!");
-      return true;
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
-      return false;
+  const handleDeleteMovie = async (movie: MovieType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Movie",
+      `Are you sure you want to delete "${movie.title}"? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteMovie(movie._id);
+        await fetchMoviesData();
+        handleCloseDialog();
+        toast.success("Movie deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 
@@ -228,7 +236,7 @@ const Movies: React.FC = () => {
           open={DetailDialogOpen}
           movie={selectedMovie!}
           onClose={handleCloseDialog}
-          onDelete={() => handleDeleteMovie(selectedMovie!._id)}
+          onDelete={() => handleDeleteMovie(selectedMovie)}
           onSave={handleOnSave}
         />
       )}

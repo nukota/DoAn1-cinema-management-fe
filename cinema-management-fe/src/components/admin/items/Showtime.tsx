@@ -9,7 +9,7 @@ interface ShowtimeProps {
   showtime: ShowtimeType;
   movies: MovieType[];
   onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
-  onDeleteShowtime: (showtimeId: string) => void;
+  onDeleteShowtime: (showtimeId: ShowtimeType) => void;
 }
 const Showtime: React.FC<ShowtimeProps> = ({
   showtime,
@@ -59,7 +59,7 @@ const Showtime: React.FC<ShowtimeProps> = ({
             size="small"
             color="default"
             sx={{ p: "2px" }}
-            onClick={() => onDeleteShowtime(showtime._id)}
+            onClick={() => onDeleteShowtime(showtime)}
           >
             <DeleteIcon fontSize="inherit" />
           </IconButton>

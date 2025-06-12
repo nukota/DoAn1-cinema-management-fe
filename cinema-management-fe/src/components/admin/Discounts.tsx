@@ -8,6 +8,7 @@ import CreateDiscount from "./dialogs/CreateDiscount";
 import { useDiscounts } from "../../providers/DiscountsProvider";
 import DetailDiscount from "./dialogs/DetailDiscount";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Discounts: React.FC = () => {
   const {
@@ -60,18 +61,23 @@ const Discounts: React.FC = () => {
     setDetailDialogOpen(true);
   };
 
-  const handleDeleteDiscount = async (discountId: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this discount?"
+  const handleDeleteDiscount = async (discount: DiscountType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Discount",
+      `Are you sure you want to delete discount code "${discount.code}"? This action cannot be undone.`
     );
-    if (!confirmed) return;
-    try {
-      await deleteDiscount(discountId);
-      await fetchDiscountsData();
-      handleCloseDialog();
-      toast.success("Discount deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+
+    if (confirmed) {
+      try {
+        await deleteDiscount(discount._id);
+        await fetchDiscountsData();
+        handleCloseDialog();
+        toast.success("Discount deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 
@@ -252,7 +258,7 @@ const Discounts: React.FC = () => {
             <Discount
               discount={discount}
               handleInfoClick={() => handleInfoClick(discount)}
-              handleDeleteClick={() => handleDeleteDiscount(discount._id)}
+              handleDeleteClick={() => handleDeleteDiscount(discount)}
             />
           ))}
         </div>

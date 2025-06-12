@@ -11,6 +11,7 @@ import { useRooms } from "../../providers/RoomsProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Showtimes: React.FC = () => {
   const { rooms, fetchRoomsData, loading } = useRooms();
@@ -91,12 +92,22 @@ const Showtimes: React.FC = () => {
     }
   };
 
-  const handleDeleteShowtime = async (showtimeId: string) => {
-    try {
-      await deleteShowtime(showtimeId);
-      toast.success("Showtime deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+  const handleDeleteShowtime = async (showtime: ShowtimeType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Showtime",
+      `Are you sure you want to delete showtime for "${showtime.movie.title}" at ${showtime.showtime}? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteShowtime(showtime._id);
+        fetchShowtimesData();
+        toast.success("Showtime deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 

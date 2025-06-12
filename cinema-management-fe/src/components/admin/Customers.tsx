@@ -71,6 +71,7 @@ const Customers: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await createCustomer(newCustomer);
+      fetchCustomersData();
       toast.success("Customer added successfully!");
       handleCloseDialog();
       return true;
@@ -83,6 +84,7 @@ const Customers: React.FC = () => {
   const handleOnSave = async (updatedCustomer: UserType): Promise<boolean> => {
     try {
       await updateCustomer(updatedCustomer);
+      fetchCustomersData();
       setSelectedCustomer(updatedCustomer);
       toast.success("Customer updated successfully!");
       return true;
@@ -97,10 +99,11 @@ const Customers: React.FC = () => {
       "Delete Customer",
       `Are you sure you want to delete ${customer.full_name}? This action cannot be undone.`
     );
-  
+
     if (confirmed) {
       try {
         await deleteCustomer(customer._id);
+        fetchCustomersData();
         handleCloseDialog();
         toast.success("Customer deleted successfully!");
       } catch (error) {

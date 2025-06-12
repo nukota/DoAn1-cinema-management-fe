@@ -12,6 +12,7 @@ import { useRooms } from "../../providers/RoomsProvider";
 import { useCinemas } from "../../providers/CinemasProvider";
 import CreateRoom from "./dialogs/CreateRoom";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Rooms: React.FC = () => {
   const {
@@ -66,12 +67,22 @@ const Rooms: React.FC = () => {
 
   const handleDeleteClick = async () => {
     if (selectedRoom) {
-      try {
-        await deleteRoom(selectedRoom._id);
-        setSelectedRoom(null);
-        toast.success("Room deleted successfully");
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : String(error));
+      const confirmed = await confirmDeletion(
+        "Delete Room",
+        `Are you sure you want to delete ${selectedRoom.name}? This action cannot be undone.`
+      );
+
+      if (confirmed) {
+        try {
+          await deleteRoom(selectedRoom._id);
+          fetchRoomsData();
+          handleCloseDialog();
+          toast.success("Room deleted successfully!");
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : String(error));
+        }
+      } else {
+        toast.info("Deletion canceled.");
       }
     }
   };

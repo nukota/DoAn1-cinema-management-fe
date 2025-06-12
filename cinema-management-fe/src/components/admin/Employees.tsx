@@ -8,6 +8,7 @@ import { Button, CircularProgress } from "@mui/material";
 import { EmployeeType } from "../../interfaces/types";
 import { useEmployees } from "../../providers/EmployeesProvider";
 import { toast } from "react-toastify";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Employees: React.FC = () => {
   const {
@@ -72,11 +73,6 @@ const Employees: React.FC = () => {
     setSelectedEmployee(employee);
     setDetailDialogOpen(true);
   };
-  const handleCheckConfirmDelete = (employee: EmployeeType) => {
-    handleDeleteEmployee(employee._id);
-    // setShowDeleteConfirm(true);
-    // setSelectedEmployee(employee);
-  };
 
   const handleCloseDialog = () => {
     setDetailDialogOpen(false);
@@ -89,6 +85,7 @@ const Employees: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await createEmployee(newEmployee);
+      fetchEmployeesData();
       handleCloseDialog();
       toast.success("Employee added successfully!");
       return true;
@@ -103,6 +100,7 @@ const Employees: React.FC = () => {
   ): Promise<boolean> => {
     try {
       await updateEmployee(updatedEmployee);
+      fetchEmployeesData();
       setSelectedEmployee(updatedEmployee);
       toast.success("Employee updated successfully!");
       return true;
@@ -112,13 +110,23 @@ const Employees: React.FC = () => {
     }
   };
 
-  const handleDeleteEmployee = async (EmployeeId: string) => {
-    try {
-      await deleteEmployee(EmployeeId);
-      handleCloseDialog();
-      toast.success("Employee deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+  const handleDeleteEmployee = async (employee: EmployeeType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Employee",
+      `Are you sure you want to delete ${employee.full_name}? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteEmployee(employee._id);
+        fetchEmployeesData();
+        handleCloseDialog();
+        toast.success("Employee deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
 
@@ -275,7 +283,7 @@ const Employees: React.FC = () => {
               key={employee._id}
               employee={employee}
               handleInfoClick={() => handleInfoClick(employee)}
-              handleDeleteClick={() => handleCheckConfirmDelete(employee)}
+              handleDeleteClick={() => handleDeleteEmployee(employee)}
             />
           ))}
         </div>

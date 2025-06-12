@@ -8,6 +8,7 @@ import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
 import { toast } from "react-toastify";
 import { CircularProgress } from "@mui/material";
+import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Products: React.FC = () => {
   const {
@@ -79,14 +80,23 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleDeleteProduct = async (productId: string) => {
-    try {
-      await deleteProduct(productId);
-      await fetchProductsData();
-      handleCloseDialog();
-      toast.success("Product deleted successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+  const handleDeleteProduct = async (product: ProductType) => {
+    const confirmed = await confirmDeletion(
+      "Delete Product",
+      `Are you sure you want to delete ${product.name}? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteProduct(product._id);
+        await fetchProductsData();
+        handleCloseDialog();
+        toast.success("Product deleted successfully!");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
     }
   };
   const filteredProducts = products.filter((product) => {
@@ -188,7 +198,7 @@ const Products: React.FC = () => {
           product={selectedProduct}
           open={detailDialogOpen}
           onClose={handleCloseDialog}
-          onDelete={() => handleDeleteProduct(selectedProduct._id)}
+          onDelete={() => handleDeleteProduct(selectedProduct)}
           onSave={handleOnSave}
         />
       )}

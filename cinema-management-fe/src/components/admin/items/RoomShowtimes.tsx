@@ -11,7 +11,7 @@ interface RoomShowtimesProps {
   movies: MovieType[];
   onAddShowtime: (roomId: ShowtimeType) => Promise<boolean>;
   onUpdateShowtime: (showtime: ShowtimeType) => Promise<boolean>;
-  onDeleteShowtime: (showtimeId: string) => void;
+  onDeleteShowtime: (showtimeId: ShowtimeType) => void;
 }
 
 const RoomShowtimes: React.FC<RoomShowtimesProps> = ({
