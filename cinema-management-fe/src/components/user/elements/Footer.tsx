@@ -9,7 +9,7 @@ import logo from "../../../assets/images/logo.svg"
 const Footer: React.FC = () => {
   const navigate = useNavigate()
   const handleBuyTicketClicked = () => {
-    navigate("/user/movie-detail")
+    navigate("/user/movie-list")
   }
   return (
     <footer className={`pb-20 text-white items-center bg-black`}>

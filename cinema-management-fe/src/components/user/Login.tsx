@@ -366,11 +366,25 @@ const Login: React.FC = () => {
               <TextField
                 placeholder="Enter Password"
                 name="password1"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 size="small"
                 value={signUpData.password1}
                 onChange={handleSignUpChange}
                 fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Typography
                 variant="body1"
@@ -383,11 +397,25 @@ const Login: React.FC = () => {
               <TextField
                 placeholder="Confirm Password"
                 name="password2"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 size="small"
                 value={signUpData.password2}
                 onChange={handleSignUpChange}
                 fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <FormControlLabel
                 control={

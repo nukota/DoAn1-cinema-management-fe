@@ -38,6 +38,12 @@ const MovieSlide: React.FC<MovieSlideProps> = ({ title, movies }) => {
           1280: {
             slidesPerView: 5,
           },
+          1680: {
+            slidesPerView: 6,
+          },
+          1820: {
+            slidesPerView: 7,
+          },
         }}
         className="w-full movie-slide"
       >

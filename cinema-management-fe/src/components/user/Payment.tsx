@@ -173,8 +173,8 @@ const Payment: React.FC = () => {
                       {d.code} -{" "}
                       {d.discount_type === "percentage"
                         ? `${d.value}%`
-                        : `$${d.value}`}{" "}
-                      (Min Purchase: ${d.min_purchase})
+                        : `${d.value} vnd`}{" "}
+                      (Min Purchase: {d.min_purchase} vnd)
                     </MenuItem>
                   ))}
                 </Select>

@@ -4,8 +4,8 @@ import React, {
   useContext,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
-import axios from "axios";
 import { UserType } from "../interfaces/types";
 
 export interface AuthContextType {
@@ -17,6 +17,8 @@ export interface AuthContextType {
   handleLogin: (email: string, password: string) => Promise<void>;
   handleLogout: () => void;
   handleSignUp: (data: SignUpData) => Promise<void>;
+  sendEmail: (email: string) => Promise<any>;
+  resetPassword: (token: string, newPassword: string) => Promise<any>;
 }
 
 interface SignUpData {
@@ -53,7 +55,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Failed to fetch user profile.";
+        const errorMsg =
+          errorData?.error?.message || "Failed to fetch user profile.";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -128,6 +131,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoggedIn(false);
   };
 
+  // Send forgot password email
+  const sendEmail = useCallback(
+    async (email: string) => {
+      try {
+        const response = await fetch(`${baseURL}/auth/forgot-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          const errorMsg = errorData?.error?.message || "Failed to send email.";
+          throw new Error(errorMsg);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Failed to send forgot password email:", error);
+        throw error;
+      }
+    },
+    [baseURL]
+  );
+
+  // Reset password
+  const resetPassword = useCallback(
+    async (token: string, newPassword: string) => {
+      try {
+        const response = await fetch(`${baseURL}/auth/reset-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token, newPassword }),
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          const errorMsg =
+            errorData?.error?.message || "Failed to reset password.";
+          throw new Error(errorMsg);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Failed to reset password:", error);
+        throw error;
+      }
+    },
+    [baseURL]
+  );
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const email = localStorage.getItem("email");
@@ -147,6 +201,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleLogin,
         handleLogout,
         handleSignUp,
+        sendEmail,
+      resetPassword,
       }}
     >
       {children}

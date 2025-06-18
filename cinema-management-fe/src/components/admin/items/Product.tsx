@@ -19,7 +19,7 @@ const Product: React.FC<ProductProps> = ({product, handleInfoClick}) => {
           {product.name}
         </p>
         <p className="text-[13px] font-light text-black tracking-wider truncate">
-          ${product.price}
+          {product.price} vnd
         </p>
       </div>
     </div>

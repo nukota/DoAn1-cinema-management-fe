@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,36 +7,72 @@ import {
   StepLabel,
   Typography,
   TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import LockResetIcon from "@mui/icons-material/LockReset";
+import { useAuth } from "../../providers/AuthProvider";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const steps = ["Enter Email", "Verify Code", "Set New Password"];
 
 const ResetPassword: React.FC = () => {
+  const { sendEmail, resetPassword } = useAuth();
+  const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [email, setEmail] = useState<string>("");
-  const [code, setCode] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [token, setToken] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  useEffect(() => {
+    const urlToken = searchParams.get("token");
+    if (urlToken) {
+      setToken(urlToken);
+      setActiveStep(2);
+    }
+  }, [searchParams]);
+
+  // Step 1: Enter email to send reset link
+  const handleSendEmail = async () => {
+    setLoading(true);
+    try {
+      await sendEmail(email);
+      toast.success("Reset email sent! Please check your inbox.");
+      setActiveStep(1);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send email."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  // Step 3: Enter new password and reset
+  const handleResetPassword = async () => {
+    setLoading(true);
+    try {
+      await resetPassword(token, newPassword);
+      toast.success("Password reset successfully!");
+      setActiveStep(3);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to reset password."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    setEmail("");
-    setCode("");
-    setNewPassword("");
-  };
-
-  const handleSubmit = () => {
-    // Handle the final submission logic
-    // onClose()
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -82,7 +118,6 @@ const ResetPassword: React.FC = () => {
               <Typography sx={{ mt: 2, mb: 1 }}>
                 All steps completed - your password has been reset.
               </Typography>
-              <Button onClick={handleReset}>Reset</Button>
             </Box>
           ) : (
             <Box
@@ -108,7 +143,7 @@ const ResetPassword: React.FC = () => {
                     RESET YOUR PASSWORD
                   </Typography>
                   <Typography fontSize="14px" fontWeight="bold" marginTop="4px">
-                    Enter your email (A verification code will be sent to you).
+                    Enter your email (A verification email will be sent to you).
                   </Typography>
                   <TextField
                     placeholder="Email"
@@ -116,6 +151,7 @@ const ResetPassword: React.FC = () => {
                     size="small"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                   />
                 </Box>
               )}
@@ -133,17 +169,13 @@ const ResetPassword: React.FC = () => {
                   >
                     RESET YOUR PASSWORD
                   </Typography>
-                  <Typography fontSize="14px" fontWeight="bold" marginTop="4px">
-                    Enter the verification code sent to your email
+                  <Typography
+                    fontSize="16px"
+                    fontWeight="medium"
+                    marginTop="4px"
+                  >
+                    A verification email has been sent. Please check your inbox.
                   </Typography>
-                  <TextField
-                    placeholder="Verification Code"
-                    name="code"
-                    size="small"
-                    type="password"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                  />
                 </Box>
               )}
               {activeStep === 2 && (
@@ -166,8 +198,24 @@ const ResetPassword: React.FC = () => {
                   <TextField
                     placeholder="Enter your password"
                     size="small"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    disabled={loading}
+                    type={showPassword ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                   <Typography fontSize="14px" fontWeight="bold" marginTop="4px">
                     Confirm your new password
@@ -175,42 +223,58 @@ const ResetPassword: React.FC = () => {
                   <TextField
                     placeholder="Confirm your password"
                     size="small"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={loading}
+                    type={showPassword ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Box>
               )}
               <Box
                 sx={{
-                  display: "flex",
-                  flexDirection: "row",
                   pt: 2,
                   position: "absolute",
                   width: "100%",
                   top: "290px",
                 }}
               >
-                <Button
-                  color="inherit"
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  sx={{ mr: 1 }}
-                >
-                  Back
-                </Button>
                 <Box sx={{ flex: "1 1 auto" }} />
-                {activeStep === steps.length - 1 ? (
-                  <Button onClick={handleSubmit}>Finish</Button>
-                ) : (
-                  <Button onClick={handleNext}>Next</Button>
+                {activeStep === 0 && (
+                  <Button
+                    onClick={handleSendEmail}
+                    disabled={loading || !email}
+                  >
+                    Confirm
+                  </Button>
+                )}
+                {activeStep === 2 && (
+                  <Button
+                    onClick={handleResetPassword}
+                    disabled={loading || !newPassword}
+                  >
+                    Confirm
+                  </Button>
                 )}
               </Box>
             </Box>
           )}
         </Box>
       </Box>
-      <div className="w-full bg-black z-20">
-      </div>
+      <div className="w-full bg-black z-20"></div>
     </div>
   );
 };
