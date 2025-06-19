@@ -62,13 +62,17 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
       alert("User is not logged in.");
       return;
     }
+    if (!selectedSeats || selectedSeats.length === 0) {
+      alert("Please select at least one seat before proceeding to payment.");
+      return;
+    }
     const order: any = {
       user_id: userId,
       email: email,
       total_price: totalPrice,
       showtime: selectedShowtime,
       products: selectedProducts,
-      seats: selectedSeats
+      seats: selectedSeats,
     };
     navigate("/user/payment", { state: { order } });
   };

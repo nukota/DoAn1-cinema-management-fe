@@ -160,6 +160,8 @@ export type DiscountType = {
   min_purchase: number;
   max_usage: number;
   expiry_date: string;
+  movie_id?: string; // Movie this discount applies to (optional)
+  credit?: number;   // User's credit required to use this discount (optional)
 };
 
 export type ReviewType = {

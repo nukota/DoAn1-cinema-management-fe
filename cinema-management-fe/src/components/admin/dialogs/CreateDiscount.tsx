@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { toast } from "react-toastify";
+import { useMovies } from "../../../providers/MoviesProvider";
+
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",
@@ -40,6 +42,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   onClose,
   onAdd,
 }) => {
+  const { movies, fetchMoviesData } = useMovies();
   const [code, setCode] = useState<String>("");
   const [type, setType] = useState<String>("");
   const [expiryDate, setExpiryDate] = useState<String>("");
@@ -47,6 +50,13 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   const [minPurchase, setMinPurchase] = useState<String>("");
   const [maxUsage, setMaxUsage] = useState<String>("");
   const [remaining, setRemaining] = useState<String>("");
+  const [movieId, setMovieId] = useState<string | null>(null);
+  const [credit, setCredit] = useState<string>("");
+
+  // Fetch movies on mount
+  useEffect(() => {
+    fetchMoviesData();
+  }, [fetchMoviesData]);
 
   const handleAddClick = () => {
     if (
@@ -65,7 +75,8 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       isNaN(Number(value)) ||
       isNaN(Number(minPurchase)) ||
       isNaN(Number(maxUsage)) ||
-      isNaN(Number(remaining))
+      isNaN(Number(remaining)) ||
+      (credit && isNaN(Number(credit)))
     ) {
       toast.error("Value, Min Purchase, Max Usage, and Remaining must be numbers");
       return;
@@ -76,7 +87,10 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       min_purchase: minPurchase,
       max_usage: maxUsage,
       value,
+      remaining,
       expiry_date: expiryDate,
+      movie_id: movieId || undefined,
+      credit: credit ? Number(credit) : undefined,
     };
     onAdd(newDiscount);
     setCode("");
@@ -85,6 +99,8 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
     setMinPurchase("");
     setMaxUsage("");
     setExpiryDate("");
+    setMovieId(null);
+    setCredit("");
     onClose();
   };
 
@@ -209,6 +225,41 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
             size="small"
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
+            Movie:
+          </Typography>
+          <TextField
+            select
+            fullWidth
+            SelectProps={{ native: true }}
+            disabled={false}
+            value={movieId || ""}
+            onChange={(e) => setMovieId(e.target.value || null)}
+            margin="dense"
+            size="small"
+          >
+            <option value="">All</option>
+            {movies.map((movie) => (
+              <option key={movie._id} value={movie._id}>
+                {movie.title}
+              </option>
+            ))}
+          </TextField>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
+          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
+            Credit:
+          </Typography>
+          <TextField
+            type="number"
+            fullWidth
+            margin="dense"
+            size="small"
+            value={credit}
+            onChange={(e) => setCredit(e.target.value)}
           />
         </Box>
       </CustomDialogContent>

@@ -241,10 +241,10 @@ const Discounts: React.FC = () => {
           <div className="w-[9%] text-base">CODE</div>
           <div className="w-[9%] text-base">Type</div>
           <div className="w-[9%] text-base">Value</div>
-          <div className="w-[9%] text-base">Remaining</div>
           <div className="w-[12%] text-base">Min Purchase</div>
           <div className="w-[12%] text-base">Max Usage</div>
-          <div className="w-[20%] text-base">Expiry Date</div>
+          <div className="w-[12%] text-base">Expiry Date</div>
+          <div className="w-[17%] text-base">Movie</div>
           <div className="w-[12%] text-base">Action</div>
         </div>
         <div className="border-b border-light-gray border-1.5" />

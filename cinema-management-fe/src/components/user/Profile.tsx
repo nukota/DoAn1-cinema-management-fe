@@ -3,13 +3,15 @@ import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
+import { useUsers } from "../../providers/UserProvider";
+import { useOrders } from "../../providers/OrdersProvider";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import { formatToDateInput } from "../../utils/formatUtils";
-import { useOrders } from "../../providers/OrdersProvider";
 
 const UserProfile: React.FC = () => {
   const { userProfile } = useAuth();
   const { updateCustomer } = useCustomers();
+  const { getCreditByUserId } = useUsers();
   const { getOrderByUserId } = useOrders();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,8 +25,21 @@ const UserProfile: React.FC = () => {
     role: userProfile?.role || "employee",
     created_at: userProfile?.created_at || "",
   });
-  const navigate = useNavigate();
+  const [userCredit, setUserCredit] = useState<number | null>(null);
   const [bookingHistory, setBookingHistory] = useState<any[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCredit = async () => {
+      if (userProfile?._id) {
+        const credit = await getCreditByUserId(userProfile._id);
+        setUserCredit(credit);
+      } else {
+        setUserCredit(null);
+      }
+    };
+    fetchCredit();
+  }, [userProfile?._id, getCreditByUserId]);
 
   useEffect(() => {
     const fetchBookingHistory = async () => {
@@ -68,7 +83,10 @@ const UserProfile: React.FC = () => {
             component="form"
             sx={{ display: "flex", flexDirection: "column", gap: 1 }}
           >
-            <h2 className="text-4xl font-semibold mb-4">Profile</h2>
+            <h2 className="text-4xl font-semibold mb-1">Profile</h2>
+            <Typography variant="body1" sx={{ mb: 0, color: userCredit === null ? 'text.disabled' : 'text.primary', float: 'right' }}>
+              Credit: {userCredit !== null ? userCredit : "-"}
+            </Typography>
             <Typography
               variant="body1"
               marginTop="4px"

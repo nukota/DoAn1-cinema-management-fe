@@ -28,6 +28,8 @@ import { toast } from "react-toastify";
 import { useTimer } from "../../providers/page/TimerProvider";
 import { formatTime } from "../../utils/formatUtils";
 import qrCodeImg from "../../assets/images/qrCode.jpeg";
+import { useMovies } from "../../providers/MoviesProvider";
+import { useUsers } from "../../providers/UserProvider";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -41,6 +43,8 @@ const Payment: React.FC = () => {
     loading: discountsLoading,
   } = useDiscounts();
   const { createDetailedOrder } = useOrders();
+  const { movies } = useMovies();
+  const { getCreditByUserId } = useUsers();
   const [availableDiscounts, setAvailableDiscounts] = useState<DiscountType[]>(
     []
   );
@@ -53,7 +57,13 @@ const Payment: React.FC = () => {
     expiry: "",
     cvc: "",
   });
+  const [userCredit, setUserCredit] = useState<number | null>(null);
   const steps = ["Payment Method", "Pay", "Finish"];
+
+  // User's credit, assumed to be available in order or user context
+  const userCreditDefault = order?.user_credit ?? 0;
+  // Movie id for this order
+  const selectedMovieId = order?.showtime?.movie_id || null;
 
   useEffect(() => {
     const fetchDiscounts = async () => {
@@ -81,6 +91,19 @@ const Payment: React.FC = () => {
       navigate("/");
     }
   }, [timeLeft, stopTimer, navigate]);
+
+  useEffect(() => {
+    const fetchCredit = async () => {
+      if (order?.user_id) {
+        const credit = await getCreditByUserId(order.user_id);
+        console.log("User credit fetched:", credit);
+        setUserCredit(credit);
+      } else {
+        setUserCredit(null);
+      }
+    };
+    fetchCredit();
+  }, [order?.user_id, getCreditByUserId]);
 
   const handleNext = async () => {
     if (activeStep === 1) {
@@ -148,9 +171,14 @@ const Payment: React.FC = () => {
       case 0:
         return (
           <Box>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Select a Payment Method
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2, justifyContent: "space-between" }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Select a Payment Method
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: userCredit === null ? 'text.disabled' : 'text.primary' }}>
+                Credit: {userCredit !== null ? userCredit : "-"}
+              </Typography>
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>
@@ -168,15 +196,39 @@ const Payment: React.FC = () => {
                   onChange={handleDiscountChange}
                   disabled={discountsLoading || availableDiscounts.length === 0}
                 >
-                  {availableDiscounts.map((d) => (
-                    <MenuItem key={d._id} value={d._id}>
-                      {d.code} -{" "}
-                      {d.discount_type === "percentage"
-                        ? `${d.value}%`
-                        : `${d.value} vnd`}{" "}
-                      (Min Purchase: {d.min_purchase} vnd)
-                    </MenuItem>
-                  ))}
+                  {availableDiscounts.map((d) => {
+                    const movie = movies.find((m) => m._id === d.movie_id);
+                    // Ensure disabled is always boolean
+                    const disabled = Boolean(
+                      (d.movie_id && d.movie_id !== selectedMovieId) ||
+                      (d.credit && userCreditDefault < d.credit)
+                    );
+                    return (
+                      <MenuItem key={d._id} value={d._id} disabled={disabled}>
+                      <Box display="flex" flexDirection="column">
+                        <Typography variant="body1">{d.code}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                        {movie ? movie.title : ""}
+                        {d.credit ? ` | Credit required: ${d.credit}` : ""}
+                        {d.discount_type === "percentage"
+                          ? ` | Value: ${d.value}% off`
+                          : ` | Value: -${d.value.toLocaleString()} vnd`}
+                        {(() => {
+                          let reduced = 0;
+                          if (d.discount_type === "percentage") {
+                          reduced = (order.total_price * d.value) / 100;
+                          } else if (d.discount_type === "fixed") {
+                          reduced = d.value;
+                          }
+                          // Don't show negative reduction
+                          reduced = Math.min(reduced, order.total_price);
+                          return ` | Save: -${reduced.toLocaleString()} vnd`;
+                        })()}
+                        </Typography>
+                      </Box>
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
               {discount && (
