@@ -1,7 +1,12 @@
 import React, { createContext, useContext, ReactNode, useCallback, useState } from "react";
 
+type ChatbotResponse = {
+  reply: string;
+  mentionedMovies?: { id: string; title: string; poster_url: string }[];
+};
+
 interface ChatbotContextType {
-  sendMessage: (message: string) => Promise<string>;
+  sendMessage: (message: string) => Promise<ChatbotResponse>;
   loading: boolean;
 }
 
@@ -11,7 +16,7 @@ export const ChatbotProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [loading, setLoading] = useState(false);
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const sendMessage = useCallback(async (message: string): Promise<string> => {
+  const sendMessage = useCallback(async (message: string): Promise<ChatbotResponse> => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -27,8 +32,8 @@ export const ChatbotProvider: React.FC<{ children: ReactNode }> = ({ children })
         const errorText = await response.text();
         throw new Error(errorText || "Failed to get chatbot reply.");
       }
-      const data = await response.json();
-      return data.reply || "";
+      const data: ChatbotResponse = await response.json();
+      return data;
     } catch (error) {
       console.error("Chatbot sendMessage error:", error);
       throw error;
