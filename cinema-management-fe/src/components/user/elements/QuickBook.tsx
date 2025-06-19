@@ -13,11 +13,13 @@ import { keyframes } from "@emotion/react";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
 import { useRooms } from "../../../providers/RoomsProvider";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../providers/AuthProvider";
 
 const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
   const { rooms, fetchRoomsData } = useRooms();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const { isLoggedIn } = useAuth();
+  
   const [selectedMovie, setSelectedMovie] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -62,7 +64,6 @@ const QuickBook: React.FC = () => {
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
     console.log("User ID:", userId);
-    setIsLoggedIn(!!userId);
   }, []);
 
   useEffect(() => {

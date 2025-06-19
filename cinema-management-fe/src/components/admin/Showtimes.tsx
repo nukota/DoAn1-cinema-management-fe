@@ -10,6 +10,7 @@ import { ShowtimeType } from "../../interfaces/types";
 import { useRooms } from "../../providers/RoomsProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useMovies } from "../../providers/MoviesProvider";
+import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 
@@ -23,6 +24,7 @@ const Showtimes: React.FC = () => {
     deleteShowtime,
   } = useShowtimes();
   const { movies, fetchMoviesData } = useMovies();
+  const { cinemas, fetchCinemasData } = useCinemas();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
@@ -30,10 +32,9 @@ const Showtimes: React.FC = () => {
 
   useEffect(() => {
     fetchRoomsData();
-    console.log("Rooms data fetched:", rooms);
     fetchShowtimesData();
-    console.log("Showtimes data fetched:", showtimes);
     fetchMoviesData();
+    fetchCinemasData();
   }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,11 +52,9 @@ const Showtimes: React.FC = () => {
     datePicker.focus();
   };
 
-  const uniqueCinemas = Array.from(
-    new Set(rooms.map((room) => room.cinema.cinema_id))
-  ).map((cinema_id) => ({
-    cinema_id,
-    name: `Cinema ${cinema_id}`,
+  const uniqueCinemas = cinemas.map((cinema) => ({
+    cinema_id: cinema._id,
+    name: cinema.name,
   }));
 
   const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

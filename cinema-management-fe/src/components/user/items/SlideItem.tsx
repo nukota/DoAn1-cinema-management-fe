@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@mui/material";
 import { MovieType } from "../../../interfaces/types";
+import { useAuth } from "../../../providers/AuthProvider";
 
 interface SlideItemProps {
   movie: MovieType;
@@ -15,6 +16,7 @@ interface SlideItemProps {
 
 const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
   const [open, setOpen] = useState(false);
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const handlePlayTrailerClicked = () => {
@@ -26,7 +28,6 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
   };
 
   const handleBuyTicketClicked = () => {
-    const isLoggedIn = !!localStorage.getItem("accessToken");
     if (!isLoggedIn) {
       navigate("/user/login");
     } else {
