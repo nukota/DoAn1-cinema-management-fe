@@ -173,7 +173,7 @@ const Admin: React.FC = () => {
           />
         </div>
         <div
-          className={`content w-full overflow-visible px-12 py-4 mt-[48px] transition-all duration-300 md:ml-[224px] ${
+          className={`content w-full overflow-visible px-12 py-8 mt-[48px] transition-all duration-300 md:ml-[224px] ${
             isSidebarOpen ? "ml-[224px]" : "ml-0"
           }`}
         >

@@ -172,7 +172,7 @@ const Customers: React.FC = () => {
 
   return (
     <div className="customers flex flex-col w-full min-w-[1000px] h-[100%] overflow-x-auto relative">
-      <div className="text-40px font-medium text-dark-gray">Customers</div>
+      <div className="sm:text-2xl md:text-3xl lg:text-[40px] font-medium text-dark-gray">Customers</div>
       <div className="flex flex-col 1270-break-point:flex-row">
         <div className="flex flex-row items-center">
           <div className="SearchBar relative w-full max-w-[240px] h-8 mt-2">
