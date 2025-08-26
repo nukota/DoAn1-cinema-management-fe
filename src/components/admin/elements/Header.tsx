@@ -69,20 +69,28 @@ const Header: React.FC = () => {
 
   const handleGoToEmployeePage = () => {
     navigate("/employee");
+    handleMenuClose();
   };
 
   const handleGoToAdminPage = () => {
     navigate("/admin");
+    handleMenuClose();
   };
 
   const handleCalendarClick = () => {
-    toast.info("This feature is under development", { position: "bottom-right" });
+    toast.info("This feature is under development", {
+      position: "bottom-right",
+    });
   };
   const handleMessageClick = () => {
-    toast.info("This feature is under development", { position: "bottom-right" });
+    toast.info("This feature is under development", {
+      position: "bottom-right",
+    });
   };
   const handleNotificationClick = () => {
-    toast.info("This feature is under development", { position: "bottom-right" });
+    toast.info("This feature is under development", {
+      position: "bottom-right",
+    });
   };
 
   return (
@@ -97,38 +105,6 @@ const Header: React.FC = () => {
       </Link>
       <div className="md:block hidden border-l-[2px] border-light-gray absolute left-56 h-[48px]" />
       <div className="flex items-center ml-auto mr-3 w-[calc(100vw - 240px)] space-x-2 flex-shrink-0">
-        {isAdmin && location.pathname.startsWith("/employee") && (
-          <Button
-            variant="outlined"
-            size="small"
-            color="primary"
-            sx={{
-              borderRadius: "20px",
-              fontSize: "14px",
-              textTransform: "none",
-              marginRight: "16px",
-            }}
-            onClick={handleGoToAdminPage}
-          >
-            Admin Page
-          </Button>
-        )}
-        {isAdmin && location.pathname.startsWith("/admin") && (
-          <Button
-            variant="outlined"
-            size="small"
-            color="primary"
-            sx={{
-              borderRadius: "20px",
-              fontSize: "14px",
-              textTransform: "none",
-              marginRight: "16px",
-            }}
-            onClick={handleGoToEmployeePage}
-          >
-            Employee Page
-          </Button>
-        )}
         <div className="space-x-3">
           <button
             className="header-calendar hover:transform hover:-translate-y-1 transition-transform duration-200"
@@ -179,6 +155,14 @@ const Header: React.FC = () => {
               >
                 User Page
               </MenuItem>
+              {isAdmin && (
+                <MenuItem onClick={handleGoToAdminPage}>Admin Page</MenuItem>
+              )}
+              {isAdmin && (
+                <MenuItem onClick={handleGoToEmployeePage}>
+                  Employee Page
+                </MenuItem>
+              )}
               <MenuItem onClick={handleSeeProfile}>See Profile</MenuItem>
               <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
             </Menu>

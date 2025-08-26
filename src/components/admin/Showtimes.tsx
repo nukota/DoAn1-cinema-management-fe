@@ -1,106 +1,39 @@
-import React, { useEffect, useState } from "react";
-import SearchImg from "../../assets/images/search.svg";
-import CalendarImg from "../../assets/images/calendar.svg";
-import { Box, CircularProgress } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
-import RoomShowtimes from "./items/RoomShowtimes";
-import { Mousewheel, Navigation } from "swiper/modules";
-import theme from "../../main";
+import React, { useEffect } from "react";
+import {
+  GridActionsCellItem,
+  GridColDef,
+  GridRenderCellParams,
+} from "@mui/x-data-grid";
+import { Button } from "@mui/material";
 import { ShowtimeType } from "../../interfaces/types";
-import { useRooms } from "../../providers/RoomsProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
-import { useMovies } from "../../providers/MoviesProvider";
-import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
+import CustomDataGrid from "./elements/DataGrid";
+import { DeleteOutline } from "@mui/icons-material";
 
 const Showtimes: React.FC = () => {
-  const { rooms, fetchRoomsData, loading } = useRooms();
-  const {
-    showtimes,
-    fetchShowtimesData,
-    createShowtime,
-    updateShowtime,
-    deleteShowtime,
-  } = useShowtimes();
-  const { movies, fetchMoviesData } = useMovies();
-  const { cinemas, fetchCinemasData } = useCinemas();
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedCinema, setSelectedCinema] = useState<string>("");
-  const [selectedMovie, setSelectedMovie] = useState<string>("");
+  const { showtimes, fetchShowtimesData, deleteShowtime, loading } =
+    useShowtimes();
 
   useEffect(() => {
-    fetchRoomsData();
     fetchShowtimesData();
-    fetchMoviesData();
-    fetchCinemasData();
   }, []);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-  };
-
-  const handleCalendarClick = () => {
-    const datePicker = document.getElementById(
-      "date-picker"
-    ) as HTMLInputElement;
-    datePicker.focus();
-  };
-
-  const uniqueCinemas = cinemas.map((cinema) => ({
-    cinema_id: cinema._id,
-    name: cinema.name,
-  }));
-
-  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCinema(event.target.value);
-  };
-
-  const handleMovieChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMovie(event.target.value);
-  };
-
-  const handleAddShowtime = async (
-    newShowtime: ShowtimeType
-  ): Promise<boolean> => {
-    try {
-      await createShowtime(newShowtime);
-      toast.success("Showtime added successfully!");
-      return true;
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
-      return false;
-    }
-  };
-
-  const handleUpdateShowtime = async (
-    updatedShowtime: ShowtimeType
-  ): Promise<boolean> => {
-    try {
-      await updateShowtime(updatedShowtime);
-      toast.success("Showtime updated successfully!");
-      return true;
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
-      return false;
-    }
-  };
 
   const handleDeleteShowtime = async (showtime: ShowtimeType) => {
     const confirmed = await confirmDeletion(
       "Delete Showtime",
-      `Are you sure you want to delete showtime for "${showtime.movie.title}" at ${showtime.showtime}? This action cannot be undone.`
+      `Are you sure you want to delete showtime for "${
+        showtime.movie.title
+      }" at ${new Date(
+        showtime.showtime
+      ).toLocaleString()}? This action cannot be undone.`
     );
 
     if (confirmed) {
       try {
         await deleteShowtime(showtime._id);
-        fetchShowtimesData();
+        await fetchShowtimesData();
         toast.success("Showtime deleted successfully!");
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
@@ -110,206 +43,74 @@ const Showtimes: React.FC = () => {
     }
   };
 
-  const filteredShowtimes = showtimes.filter((showtime) => {
-    const searchTermLower = searchTerm.toLowerCase();
-    const matchesSearchTerm =
-      (showtime._id && showtime._id.toString().includes(searchTermLower)) ||
-      (showtime.movie.title &&
-        showtime.movie.title
-          .toString()
-          .toLowerCase()
-          .includes(searchTermLower));
-
-    const showtimeDate = new Date(showtime.showtime);
-    const localShowtimeDate = `${showtimeDate.getFullYear()}-${String(
-      showtimeDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(showtimeDate.getDate()).padStart(2, "0")}`;
-
-    const matchesDate = !selectedDate || localShowtimeDate === selectedDate;
-
-    const matchesMovie =
-      !selectedMovie || showtime.movie.title === selectedMovie;
-
-    return matchesSearchTerm && matchesDate && matchesMovie;
-  });
-
-  const roomsWithShowtimes = rooms
-    .filter(
-      (room) =>
-        !selectedCinema || room.cinema.cinema_id.toString() === selectedCinema
-    )
-    .map((room) => ({
-      ...room,
-      showtimes: filteredShowtimes.filter(
-        (showtime) => showtime.room.room_id === room._id
-      ),
-    }))
-    .sort((a, b) => a._id.localeCompare(b._id));
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">Loading showtimes...</span>
-      </div>  
-    );
-  }
-  return (
-    <div className="showtimes flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
-      <div className="text-40px font-medium text-dark-gray">Showtimes</div>
-      <div className="flex flex-col 1270-break-point:flex-row">
-        <div className="flex flex-row items-center">
-          <div className="SearchBar relative w-full max-w-[240px] h-8 mt-2">
-            <input
-              type="text"
-              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <img
-              src={SearchImg}
-              alt="Search"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-            />
-          </div>
-          <div className="DateFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
-            <input
-              type="date"
-              id="date-picker"
-              className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-white border-red border-2 focus:outline-none focus:ring-1"
-              value={selectedDate}
-              onChange={handleDateChange}
-            />
-            <img
-              src={CalendarImg}
-              alt="Calendar"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer"
-              style={{
-                filter:
-                  "invert(10%) sepia(88%) saturate(6604%) hue-rotate(352deg) brightness(73%) contrast(105%)",
+  const columns: GridColDef[] = [
+    { field: "_id", headerName: "ID", width: 120 },
+    {
+      field: "movie_title",
+      headerName: "Movie",
+      width: 200,
+      valueGetter: (_, row) => row.movie?.title || "N/A",
+    },
+    {
+      field: "room_name",
+      headerName: "Room",
+      width: 200,
+      valueGetter: (_, row) =>
+        `${row.room?.name || "N/A"} (Cinema: ${
+          row.room?.cinema?.name || "N/A"
+        })`,
+    },
+    {
+      field: "showtime",
+      headerName: "Show Time",
+      width: 180,
+      valueFormatter: (value: any) =>
+        value ? new Date(value).toLocaleString() : "N/A",
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      width: 120,
+      valueFormatter: (value: any) => `$${value?.toFixed(2) || "0.00"}`,
+    },
+    {
+      field: "seats_available",
+      headerName: "Available Seats",
+      width: 140,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      getActions: (params) => [
+        <GridActionsCellItem
+          key="delete"
+          icon={
+            <DeleteOutline
+              sx={{
+                fontSize: { xs: 20, sm: 24, md: 28 },
               }}
-              onClick={handleCalendarClick}
             />
-          </div>
-          <div className="CinemaFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
-            <select
-              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-              value={selectedCinema}
-              onChange={handleCinemaChange}
-            >
-              <option value="">All Cinemas</option>
-              {uniqueCinemas.map((cinema) => (
-                <option key={cinema.cinema_id} value={cinema.cinema_id}>
-                  {cinema.name}
-                </option>
-              ))}
-            </select>
-            <img
-              src={SearchImg}
-              alt="Cinema"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-            />
-          </div>
-          {/* Movie select */}
-          <div className="MovieFilterBar relative ml-5 w-full max-w-[240px] h-8 mt-2">
-            <select
-              className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-              value={selectedMovie}
-              onChange={handleMovieChange}
-            >
-              <option value="">All Movies</option>
-              {movies.map((movie) => (
-                <option key={movie._id} value={movie.title}>
-                  {movie.title}
-                </option>
-              ))}
-            </select>
-            <img
-              src={SearchImg}
-              alt="Movie"
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-            />
-          </div>
-        </div>
-      </div>
+          }
+          label="Delete"
+          onClick={() => handleDeleteShowtime(params.row)}
+          showInMenu={false}
+        />,
+      ],
+    },
+  ];
 
-      <Box
-        sx={{
-          position: "relative",
-          mt: 4,
-          width: "100%",
-          maxWidth: { md: "960px", lg: "1200px", xl: "2000px" },
-          px: 2,
-          py: 2,
-          height: "100%",
-          backgroundColor: "white",
-          borderRadius: "12px",
-          overflowY: "scroll",
-          overflowX: "hidden",
-          display: "flex",
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "center",
-          "&::-webkit-scrollbar": { display: "none" },
-        }}
-      >
-        <Swiper
-          modules={[Navigation, Mousewheel]}
-          spaceBetween={0}
-          loop={true}
-          navigation
-          breakpoints={{
-            0: {
-              slidesPerView: 1,
-            },
-            640: {
-              slidesPerView: 2,
-            },
-            768: {
-              slidesPerView: 2,
-            },
-            1024: {
-              slidesPerView: 2,
-            },
-            1280: {
-              slidesPerView: 3,
-            },
-            1536: {
-              slidesPerView: 4,
-            },
-          }}
-          style={{
-            width: "100%",
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          <style>
-            {`
-      .swiper-button-next,
-      .swiper-button-prev {
-        color: ${theme.palette.primary.main}; /* Use MUI primary color */
-        font-size: 1.2rem;
-        font-weight: bold;
-      }
-    `}
-          </style>
-          {roomsWithShowtimes.map((room) => (
-            <SwiperSlide key={room._id}>
-              <RoomShowtimes
-                room={room}
-                showtimes={room.showtimes}
-                movies={movies.filter((movie) => movie.status !== "Stopped")}
-                onAddShowtime={handleAddShowtime}
-                onUpdateShowtime={handleUpdateShowtime}
-                onDeleteShowtime={handleDeleteShowtime}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Box>
-    </div>
+  return (
+    <CustomDataGrid
+      title="Showtimes Management"
+      loading={loading}
+      loadingMessage="Loading showtimes..."
+      rows={showtimes}
+      columns={columns}
+      showCheckboxSelection={false}
+      getRowId={(row) => row._id}
+    />
   );
 };
 
