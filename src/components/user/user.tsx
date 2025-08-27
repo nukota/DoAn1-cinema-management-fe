@@ -17,7 +17,7 @@ import Chatbox from "./elements/Chatbox";
 const User: React.FC = () => {
   return (
     <div
-      className="bg-black h-screen w-full relative"
+      className="bg-black h-screen w-full relative user-scrollbar"
       style={{
         height: "100vh",
         overflow: "auto",

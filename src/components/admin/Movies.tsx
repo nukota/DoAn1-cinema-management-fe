@@ -2,13 +2,13 @@ import { useState, ChangeEvent, useEffect } from "react";
 import Movie from "./items/Movie";
 import SearchImg from "../../assets/images/search.svg";
 import CalendarImg from "../../assets/images/calendar.svg";
-import addImg from "../../assets/images/add.svg";
 import { MovieType } from "../../interfaces/types";
 import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Fab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Movies: React.FC = () => {
@@ -147,7 +147,7 @@ const Movies: React.FC = () => {
   }
 
   return (
-    <div className="movies flex flex-col h-[673px]">
+    <div className="movies flex flex-col">
       <div className="text-40px font-medium text-dark-gray">Movies</div>
       <div className="flex items-center mt-4">
         <div className="DateFilterBar relative w-full max-w-[240px] h-8 -mt-2">
@@ -210,8 +210,8 @@ const Movies: React.FC = () => {
           <span>Stopped</span>
         </button>
       </div>
-      <div className="content relative -mt-[2px]  min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
-        <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6  2xl:grid-cols-8 gap-y-8 max-h-[510px] py-3 overflow-y-auto">
+      <div className="content relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 flex flex-col">
+        <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-y-8 py-3 overflow-y-auto max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[550px] xl:max-h-[600px] list-scrollbar">
           {filteredMovies.map((movie) => (
             <Movie
               key={movie._id}
@@ -220,16 +220,22 @@ const Movies: React.FC = () => {
             />
           ))}
         </div>
-        <button
-          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200"
+        <Fab
+          color="primary"
+          aria-label="add"
           onClick={handleAddNewClick}
+          sx={{
+            position: "absolute",
+            bottom: 24,
+            right: 36,
+            backgroundColor: "#dc2626",
+            "&:hover": {
+              backgroundColor: "#b91c1c",
+            },
+          }}
         >
-          <img
-            className="size-11 invert brightness-0"
-            src={addImg}
-            alt="Add New"
-          />
-        </button>
+          <AddIcon />
+        </Fab>
       </div>
       {selectedMovie && (
         <DetailMovie

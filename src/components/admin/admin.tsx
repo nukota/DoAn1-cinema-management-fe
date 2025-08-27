@@ -46,7 +46,15 @@ const Admin: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] overflow-auto">
+    <div
+      className="bg-[#f2f2f2] min-h-screen w-full relative z-[1000] admin-scrollbar"
+      style={{
+        height: "100vh",
+        overflow: "auto",
+        scrollbarWidth: "thin",
+        scrollbarColor: "#666 #f2f2f2",
+      }}
+    >
       <Header />
       <div className="sidebar-toggle z-[1000] fixed md:hidden block">
         <Button

@@ -98,13 +98,13 @@ const Orders: React.FC = () => {
   });
 
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading orders...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading orders...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="orders flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative ">
@@ -173,7 +173,7 @@ const Orders: React.FC = () => {
           <span>Cancelled</span>
         </button>
       </div>
-      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
+      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[640px] w-full flex-1 bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-3 py-3 pr-3">
         <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-[510px] py-3 overflow-y-auto overflow-x-clip">
           {filteredOrders.map((order) => (
             <Order

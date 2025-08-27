@@ -1,13 +1,13 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import Product from "./items/Product";
 import SearchImg from "../../assets/images/search.svg";
-import addImg from "../../assets/images/add.svg";
 import { ProductType } from "../../interfaces/types";
 import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
 import { toast } from "react-toastify";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Fab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 
 const Products: React.FC = () => {
@@ -54,7 +54,9 @@ const Products: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const handleAddNewProduct = async (newProduct: ProductType): Promise<boolean> => {
+  const handleAddNewProduct = async (
+    newProduct: ProductType
+  ): Promise<boolean> => {
     try {
       await createProduct(newProduct);
       await fetchProductsData();
@@ -67,7 +69,9 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleOnSave = async (updatedProduct: ProductType): Promise<boolean> => {
+  const handleOnSave = async (
+    updatedProduct: ProductType
+  ): Promise<boolean> => {
     try {
       await updateProduct(updatedProduct);
       setSelectedProduct(updatedProduct);
@@ -119,16 +123,16 @@ const Products: React.FC = () => {
   });
 
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading products...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading products...</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="products flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
+    <div className="products flex flex-col relative">
       <div className="text-40px font-medium text-dark-gray">Products</div>
       <div className="flex items-center mt-2">
         <div className="SearchBar relative w-full max-w-[240px] h-8">
@@ -172,8 +176,8 @@ const Products: React.FC = () => {
           <span>Others</span>
         </button>
       </div>
-      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full h-full bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4">
-        <div className="list grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-2 py-3 overflow-y-visible overflow-x-clip">
+      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 flex flex-col">
+        <div className="list flex-1 grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-2 py-3 overflow-y-auto overflow-x-clip max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[550px] xl:max-h-[600px] list-scrollbar">
           {filteredProducts.map((product) => (
             <Product
               key={product._id}
@@ -182,16 +186,23 @@ const Products: React.FC = () => {
             />
           ))}
         </div>
-        <button
-          className="absolute bottom-6 right-9 size-11 rounded-2xl bg-red hover:bg-dark-red duration-200 z-20"
+        <Fab
+          color="primary"
+          aria-label="add"
           onClick={handleAddNewClick}
+          sx={{
+            position: "absolute",
+            bottom: 24,
+            right: 36,
+            backgroundColor: "#dc2626",
+            "&:hover": {
+              backgroundColor: "#b91c1c",
+            },
+            zIndex: 20,
+          }}
         >
-          <img
-            className="size-11 invert brightness-0"
-            src={addImg}
-            alt="Add New"
-          />
-        </button>
+          <AddIcon />
+        </Fab>
       </div>
       {selectedProduct && (
         <DetailProduct

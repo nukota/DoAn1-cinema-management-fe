@@ -1,7 +1,14 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
-import Room from "./items/Room";
 import SearchImg from "../../assets/images/search.svg";
-import { Button, CircularProgress } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  Box,
+} from "@mui/material";
 import {
   CinemaType,
   RoomType,
@@ -91,7 +98,9 @@ const Rooms: React.FC = () => {
     setShowAddDialog(true);
   };
 
-  const handleAddNewRoom = async (newRoom: RoomWithSeatsType): Promise<boolean> => {
+  const handleAddNewRoom = async (
+    newRoom: RoomWithSeatsType
+  ): Promise<boolean> => {
     try {
       await createRoomWithSeats(newRoom);
       setShowAddDialog(false);
@@ -105,7 +114,9 @@ const Rooms: React.FC = () => {
     }
   };
 
-  const handleUpdateRoom = async (updatedRoom: RoomWithSeatsType): Promise<boolean> => {
+  const handleUpdateRoom = async (
+    updatedRoom: RoomWithSeatsType
+  ): Promise<boolean> => {
     try {
       await updateRoom(updatedRoom);
       setSelectedRoom(updatedRoom);
@@ -130,13 +141,13 @@ const Rooms: React.FC = () => {
   });
 
   if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full pt-4">
-          <CircularProgress />
-          <span className="text-2xl text-gray mt-4">Loading rooms...</span>
-        </div>
-      );
-    }
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-4">
+        <CircularProgress />
+        <span className="text-2xl text-gray mt-4">Loading rooms...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="rooms flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
@@ -195,14 +206,116 @@ const Rooms: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative mt-[8px] w-full h-full  min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
-        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip">
+      <div className="relative mt-[8px] w-full h-full min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
+        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip list-scrollbar">
           {filteredRooms.map((room) => (
-            <Room
+            <Card
               key={room._id}
-              room={room}
-              handleInfoClick={() => handleInfoClick(room)}
-            />
+              sx={{
+                width: 170,
+                height: 180,
+                display: "flex",
+                flexDirection: "column",
+                border: "2px solid #dadada",
+                borderRadius: 3,
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  borderColor: "#dc2626",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                },
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    fontSize: "18px",
+                    fontWeight: 500,
+                    color: "#374151",
+                    textAlign: "center",
+                    mb: 2,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {room.name}
+                </Typography>
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      height: "21px",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#374151", fontSize: "16px" }}
+                    >
+                      Cinema:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#000",
+                        ml: 0.5,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        flex: 1,
+                      }}
+                    >
+                      {room.cinema?.name}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      height: "21px",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#374151", fontSize: "16px" }}
+                    >
+                      Capacity:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#000",
+                        ml: 0.5,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {room.seat_count}
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+
+              <CardActions sx={{ p: 2, pt: 0 }}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => handleInfoClick(room)}
+                  sx={{
+                    width: "100%",
+                    borderRadius: 2,
+                  }}
+                >
+                  View Info
+                </Button>
+              </CardActions>
+            </Card>
           ))}
         </div>
       </div>

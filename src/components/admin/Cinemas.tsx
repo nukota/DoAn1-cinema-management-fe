@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
-import Cinema from "./items/Cinema";
 import SearchImg from "../../assets/images/search.svg";
 import { CinemaType } from "../../interfaces/types";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
-import { Button, CircularProgress } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
@@ -98,7 +106,9 @@ const Cinemas: React.FC = () => {
   const handleDeleteCinema = async (cinemaId: string, cinemaName?: string) => {
     const confirmed = await confirmDeletion(
       "Delete Cinema",
-      `Are you sure you want to delete ${cinemaName ?? "this cinema"}? This action cannot be undone.`
+      `Are you sure you want to delete ${
+        cinemaName ?? "this cinema"
+      }? This action cannot be undone.`
     );
 
     if (confirmed) {
@@ -179,14 +189,110 @@ const Cinemas: React.FC = () => {
         </div>
       </div>
       <div className="content mt-[14px] w-full h-full">
-        <div className="gap-y-8 py-3 overflow-y-auto flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3">
+        <div className="gap-y-8 py-3 overflow-y-auto flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 list-scrollbar">
           {filteredCinemas.map((cinema) => (
-            <Cinema
+            <Card
               key={cinema._id}
-              cinema={cinema}
-              details={cinemaDetails[cinema._id]}
-              handleInfoClick={() => handleInfoClick(cinema)}
-            />
+              sx={{
+                minWidth: 300,
+                height: 200,
+                position: "relative",
+                borderRadius: 3,
+                border: "2px solid #dc2626",
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
+                },
+                overflow: "visible",
+              }}
+            >
+              <CardContent
+                sx={{ height: "100%", position: "relative", zIndex: 2 }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    mb: 1,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: "1.5rem",
+                      color: "#1a1a1a",
+                      maxWidth: "70%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {cinema.name}
+                  </Typography>
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={() => handleInfoClick(cinema)}
+                    sx={{
+                      backgroundColor: "#f3f4f6",
+                      "&:hover": { backgroundColor: "#e5e7eb" },
+                    }}
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </Box>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mb: 2,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Address: {cinema.address}
+                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
+                    <span>Rooms: </span>
+                    <span style={{ fontWeight: 500 }}>
+                      {cinemaDetails[cinema._id]
+                        ? cinemaDetails[cinema._id].roomCount
+                        : "Loading..."}
+                    </span>
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
+                    <span>Employees: </span>
+                    <span style={{ fontWeight: 500 }}>
+                      {cinemaDetails[cinema._id]
+                        ? cinemaDetails[cinema._id].employeeCount
+                        : "Loading..."}
+                    </span>
+                  </Typography>
+                </Box>
+              </CardContent>
+              <Typography
+                sx={{
+                  position: "absolute",
+                  top: -40,
+                  right: -40,
+                  fontSize: "84px",
+                  color: "#fef5f5",
+                  zIndex: 0,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  pointerEvents: "none",
+                  userSelect: "none",
+                }}
+              >
+                {cinema.name}
+              </Typography>
+            </Card>
           ))}
         </div>
       </div>
