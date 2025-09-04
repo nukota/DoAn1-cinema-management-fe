@@ -5,16 +5,16 @@ import CreateCinema from "./dialogs/CreateCinema";
 import {
   Button,
   CircularProgress,
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
   Box,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import { useCinemas } from "../../providers/CinemasProvider";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
+import Cinema from "./items/Cinema";
 
 const Cinemas: React.FC = () => {
   const fetchedIds = React.useRef<Set<string>>(new Set());
@@ -30,6 +30,7 @@ const Cinemas: React.FC = () => {
   const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [cinemaDetails, setCinemaDetails] = useState<{
     [key: string]: { employeeCount: number; roomCount: number };
   }>({});
@@ -37,6 +38,10 @@ const Cinemas: React.FC = () => {
   useEffect(() => {
     fetchCinemasData();
   }, []);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   const fetchDetails = async (cinemaId: string) => {
     if (cinemaDetails[cinemaId] || fetchedIds.current.has(cinemaId)) return;
@@ -127,6 +132,14 @@ const Cinemas: React.FC = () => {
     });
   }, [cinemas]);
 
+  const filteredCinemas = cinemas.filter((cinema) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      cinema.name.toLowerCase().includes(searchTermLower) ||
+      cinema.address.toLowerCase().includes(searchTermLower)
+    );
+  });
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-full pt-4">
@@ -137,130 +150,64 @@ const Cinemas: React.FC = () => {
   }
 
   return (
-    <div className="cinemas flex flex-col h-[673px] relative overflow-y-visible">
+    <div className="cinemas flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Cinemas</div>
-      <div className="flex flex-col 1270-break-point:flex-row">
-        <div className="flex flex-row items-center 1270-break-point:ml-auto">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
-            sx={{
-              mt: 2,
-              ml: { 1270: 2 },
-              width: "114px",
-              height: "32px",
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          mt: 2,
+          mb: 1,
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: { xs: "flex-start", md: "space-between" },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+          }}
+        >
+          <TextField
+            placeholder="Search cinemas..."
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
             }}
-          >
-            Add New
-          </Button>
-        </div>
-      </div>
-      <div className="content mt-[14px] w-full h-full">
-        <div className="gap-y-8 py-3 overflow-y-auto flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 list-scrollbar">
-          {cinemas.map((cinema) => (
-            <Card
+            sx={{
+              width: 240,
+              backgroundColor: "white",
+              borderRadius: "4px",
+            }}
+          />
+        </Box>
+        <Button
+          onClick={handleAddNewClick}
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          disableElevation
+        >
+          Add New
+        </Button>
+      </Box>
+
+      <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[1px] border-light-gray rounded-md p-8 flex flex-col">
+        <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 overflow-y-visible overflow-x-clip list-scrollbar">
+          {filteredCinemas.map((cinema) => (
+            <Cinema
               key={cinema._id}
-              sx={{
-                minWidth: 300,
-                height: 200,
-                position: "relative",
-                borderRadius: 3,
-                border: "2px solid #dc2626",
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
-                },
-                overflow: "visible",
-              }}
-            >
-              <CardContent
-                sx={{ height: "100%", position: "relative", zIndex: 2 }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    mb: 1,
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    component="h2"
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: "1.5rem",
-                      color: "#1a1a1a",
-                      maxWidth: "70%",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {cinema.name}
-                  </Typography>
-                  <IconButton
-                    color="primary"
-                    size="small"
-                    onClick={() => handleInfoClick(cinema)}
-                    sx={{
-                      backgroundColor: "#f3f4f6",
-                      "&:hover": { backgroundColor: "#e5e7eb" },
-                    }}
-                  >
-                    <InfoIcon />
-                  </IconButton>
-                </Box>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 2,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Address: {cinema.address}
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
-                    <span>Rooms: </span>
-                    <span style={{ fontWeight: 500 }}>
-                      {cinemaDetails[cinema._id]
-                        ? cinemaDetails[cinema._id].roomCount
-                        : "Loading..."}
-                    </span>
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
-                    <span>Employees: </span>
-                    <span style={{ fontWeight: 500 }}>
-                      {cinemaDetails[cinema._id]
-                        ? cinemaDetails[cinema._id].employeeCount
-                        : "Loading..."}
-                    </span>
-                  </Typography>
-                </Box>
-              </CardContent>
-              <Typography
-                sx={{
-                  position: "absolute",
-                  top: -40,
-                  right: -40,
-                  fontSize: "84px",
-                  color: "#fef5f5",
-                  zIndex: 0,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  pointerEvents: "none",
-                  userSelect: "none",
-                }}
-              >
-                {cinema.name}
-              </Typography>
-            </Card>
+              cinema={cinema}
+              cinemaDetails={cinemaDetails[cinema._id]}
+              handleInfoClick={() => handleInfoClick(cinema)}
+            />
           ))}
         </div>
       </div>

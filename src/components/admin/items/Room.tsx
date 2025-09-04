@@ -1,6 +1,13 @@
 import React from "react";
 import { RoomType } from "../../../interfaces/types";
-import { Button } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+  Box,
+} from "@mui/material";
 
 interface RoomProps {
   room: RoomType;
@@ -9,36 +16,102 @@ interface RoomProps {
 
 const Room: React.FC<RoomProps> = ({ room, handleInfoClick }) => {
   return (
-    <div className="flex flex-col p-2 w-[170px] h-[180px] border-2 border-light-gray rounded-xl hover:border-light-gray duration-200">
-      <div className="flex py-2 w-full flex-col overflow-hidden">
-        <p className="flex justify-center text-[18px] font-medium text-dark-gray truncate mb-2">
+    <Card
+      sx={{
+        width: 180,
+        height: 200,
+        display: "flex",
+        flexDirection: "column",
+        border: "2px solid #dc2626",
+        borderRadius: 2,
+        boxShadow: "none",
+        transition: "all 0.2s ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        },
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1, p: 2 }}>
+        <Typography
+          component="h3"
+          sx={{
+            fontSize: "20px",
+            fontWeight: 500,
+            color: "#374151",
+            textAlign: "flex-start",
+            mb: 2,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {room.name}
-        </p>
+        </Typography>
 
-        <div className="text-[16px] text-dark-gray truncate space-y-1 flex-col flex w-full overflow-ellipsis">
-          <p className="h-[21px]">
-            <span>Cinema: </span>
-            <span className="text-black truncate">{room.cinema?.name}</span>
-          </p>
-          <p className="h-[21px]">
-            <span>Capacity: </span>
-            <span className="text-black truncate">{room.seat_count}</span>
-          </p>
-        </div>
-      </div>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              height: "21px",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#333",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                flex: 1,
+              }}
+            >
+              {room.cinema?.name}
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              height: "21px",
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#000" }}>
+              Capacity:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#000",
+                ml: 0.5,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {room.seat_count}
+            </Typography>
+          </Box>
+        </Box>
+      </CardContent>
+
+      <CardActions sx={{ p: 0 }}>
         <Button
-          variant="outlined"
-          color="secondary"
+          variant="text"
+          color="primary"
           onClick={handleInfoClick}
           sx={{
-            mt: "auto",
+            backgroundColor: "rgba(184, 0, 7, 0.05)",
             width: "100%",
-            borderRadius: "8px",
+            borderRadius: 0,
           }}
         >
           View Info
         </Button>
-    </div>
+      </CardActions>
+    </Card>
   );
 };
 

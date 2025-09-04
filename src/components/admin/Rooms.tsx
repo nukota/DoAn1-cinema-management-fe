@@ -2,10 +2,6 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import {
   Button,
   CircularProgress,
-  Card,
-  CardContent,
-  Typography,
-  CardActions,
   Box,
   TextField,
   InputAdornment,
@@ -25,7 +21,9 @@ import { useRooms } from "../../providers/RoomsProvider";
 import { useCinemas } from "../../providers/CinemasProvider";
 import CreateRoom from "./dialogs/CreateRoom";
 import { toast } from "react-toastify";
+import AddIcon from "@mui/icons-material/Add";
 import { confirmDeletion } from "../../utils/confirmDeletion";
+import Room from "./items/Room";
 
 const Rooms: React.FC = () => {
   const {
@@ -164,180 +162,76 @@ const Rooms: React.FC = () => {
           gap: 2,
           alignItems: "center",
           mt: 2,
-          flexWrap: "wrap",
+          mb: 1,
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: { xs: "flex-start", md: "space-between" },
         }}
       >
-        <TextField
-          placeholder="Search"
-          size="small"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
+        <Box
           sx={{
-            width: 240,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "50px",
-              "& fieldset": {
-                borderColor: "#dadada",
-                borderWidth: 2,
-              },
-              "&:hover fieldset": {
-                borderColor: "#dadada",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#dadada",
-              },
-            },
+            display: "flex",
+            gap: 2,
           }}
-        />
-        <FormControl size="small" sx={{ width: 240 }}>
-          <InputLabel>Cinema</InputLabel>
-          <Select
-            value={selectedCinema?._id || ""}
-            onChange={handleCinemaChange}
-            label="Cinema"
-            sx={{
-              borderRadius: "50px",
-              "& fieldset": {
-                borderColor: "#dadada",
-                borderWidth: 2,
-              },
-              "&:hover fieldset": {
-                borderColor: "#dadada",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#dadada",
-              },
+        >
+          <TextField
+            placeholder="Search"
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
             }}
+            sx={{
+              width: 240,
+              backgroundColor: "white",
+              borderRadius: "4px",
+            }}
+          />
+          <FormControl
+            size="small"
+            sx={{ width: 240, backgroundColor: "white", borderRadius: "4px" }}
           >
-            <MenuItem value="">All Cinemas</MenuItem>
-            {cinemas.map((cinema) => (
-              <MenuItem key={cinema._id} value={cinema._id}>
-                {cinema.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Cinema</InputLabel>
+            <Select
+              value={selectedCinema?._id || ""}
+              onChange={handleCinemaChange}
+              label="Cinema"
+              sx={{
+                borderRadius: "4px",
+              }}
+            >
+              <MenuItem value="">All Cinemas</MenuItem>
+              {cinemas.map((cinema) => (
+                <MenuItem key={cinema._id} value={cinema._id}>
+                  {cinema.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <Button
           onClick={handleAddNewClick}
           variant="contained"
           color="primary"
-          sx={{
-            width: "114px",
-            height: "40px",
-            ml: "auto",
-          }}
+          startIcon={<AddIcon />}
+          disableElevation
         >
           Add New
         </Button>
       </Box>
 
-      <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border border-light-gray rounded-b-xl rounded-md pl-12 py-6 pr-4 flex flex-col">
-        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 py-3 overflow-y-visible overflow-x-clip list-scrollbar">
+      <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[1px] border-light-gray rounded-md p-8 flex flex-col">
+        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 overflow-y-visible overflow-x-clip list-scrollbar">
           {filteredRooms.map((room) => (
-            <Card
+            <Room
               key={room._id}
-              sx={{
-                width: 180,
-                height: 200,
-                display: "flex",
-                flexDirection: "column",
-                border: "2px solid #dc2626",
-                borderRadius: 2,
-                boxShadow: "none",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                },
-              }}
-            >
-              <CardContent sx={{ flexGrow: 1, p: 2 }}>
-                <Typography
-                  component="h3"
-                  sx={{
-                    fontSize: "20px",
-                    fontWeight: 500,
-                    color: "#374151",
-                    textAlign: "flex-start",
-                    mb: 2,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {room.name}
-                </Typography>
-
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      height: "21px",
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#333",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        flex: 1,
-                      }}
-                    >
-                      {room.cinema?.name}
-                    </Typography>
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      height: "21px",
-                    }}
-                  >
-                    <Typography variant="body2" sx={{ color: "#000" }}>
-                      Capacity:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#000",
-                        ml: 0.5,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {room.seat_count}
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-
-              <CardActions sx={{ p: 0 }}>
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={() => handleInfoClick(room)}
-                  sx={{
-                    backgroundColor: "rgba(184, 0, 7, 0.05)",
-                    width: "100%",
-                    borderRadius: 0,
-                  }}
-                >
-                  View Info
-                </Button>
-              </CardActions>
-            </Card>
+              room={room}
+              handleInfoClick={() => handleInfoClick(room)}
+            />
           ))}
         </div>
       </div>

@@ -11,13 +11,13 @@ interface OrderProps {
 const Order: React.FC<OrderProps> = ({ order, handleInfoClick }) => {
   return (
     <div
-      className="order w-full px-4 h-[160px] bg-[#f2f2f2] rounded-lg relative text-sm overflow-hidden text-black hover:bg-[#d4d4d4] transition-colors ease-in-out duration-200 group "
+      className="order w-full px-4 h-[160px] bg-[#f5f5f5] rounded-md relative text-sm overflow-hidden text-black hover:bg-[#eee] transition-colors ease-in-out duration-200 group "
       onClick={handleInfoClick}
     >
       <img
         src={orderBackgroundImg}
         alt="orderBackground"
-        className="absolute top-0 -left-4 h-[174px] object-cover rounded-lg opacity-[4%] transition-transform duration-200 ease-in-out group-hover:scale-[120%]"
+        className="absolute top-0 -left-4 h-[174px] object-cover rounded-lg opacity-[2%] transition-transform duration-200 ease-in-out group-hover:scale-[120%]"
       />
       <div className="order-info flex flex-col mt-1 items-start justify-between py-2 px-1">
         <div className="flex flex-row w-full items-center justify-between text-gray mb-2">
@@ -29,7 +29,9 @@ const Order: React.FC<OrderProps> = ({ order, handleInfoClick }) => {
         <p className="my-2">
           {order.ticketCount} tickets, {order.productCount} products
         </p>
-        <p className="text-base">Total: {order.total_price} </p>
+        <p className="text-base w-full text-right">
+          Total: {order.total_price}{" "}
+        </p>
       </div>
     </div>
   );
