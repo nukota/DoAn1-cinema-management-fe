@@ -1,14 +1,13 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Product from "./items/Product";
-import SearchImg from "../../assets/images/search.svg";
 import { ProductType } from "../../interfaces/types";
 import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
 import { toast } from "react-toastify";
-import { CircularProgress, Fab } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { CircularProgress } from "@mui/material";
 import { confirmDeletion } from "../../utils/confirmDeletion";
+import CustomTabs from "./elements/Tabs";
 
 const Products: React.FC = () => {
   const {
@@ -20,7 +19,6 @@ const Products: React.FC = () => {
     loading,
   } = useProducts();
   const [activeTab, setActiveTab] = useState<string>("All");
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
     null
   );
@@ -31,16 +29,8 @@ const Products: React.FC = () => {
     fetchProductsData();
   }, []);
 
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
-  };
-
   const handleAddNewClick = () => {
     setCreateDialogOpen(true);
-  };
-
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
   };
 
   const handleInfoClick = (product: ProductType) => {
@@ -103,24 +93,13 @@ const Products: React.FC = () => {
       toast.info("Deletion canceled.");
     }
   };
-  const filteredProducts = products.filter((product) => {
-    const matchesTab =
-      activeTab === "All" ||
-      (activeTab === "Food and Drinks"
-        ? product.category === "Food" || product.category === "Drink"
-        : activeTab === "Others"
-        ? product.category !== "Food" &&
-          product.category !== "Drink" &&
-          product.category !== "Souvenirs"
-        : product.category === activeTab);
-    const searchTermLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      (product.name && product.name.toLowerCase().includes(searchTermLower)) ||
-      (product.category &&
-        product.category.toLowerCase().includes(searchTermLower)) ||
-      (product.price && product.price.toString().includes(searchTermLower));
-    return matchesTab && matchesSearch;
-  });
+
+  const productTabs = [
+    { label: "All", value: "All" },
+    { label: "Food and Drinks", value: "Food and Drinks" },
+    { label: "Souvenirs", value: "Souvenirs" },
+    { label: "Others", value: "Others" },
+  ];
 
   if (loading) {
     return (
@@ -132,78 +111,28 @@ const Products: React.FC = () => {
   }
 
   return (
-    <div className="products flex flex-col relative">
-      <div className="text-40px font-medium text-dark-gray">Products</div>
-      <div className="flex items-center mt-2">
-        <div className="SearchBar relative w-full max-w-[240px] h-8">
-          <input
-            type="text"
-            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <img
-            src={SearchImg}
-            alt="Search"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
-        </div>
-      </div>
-      <div className="product-tabs flex mt-4 z-20">
-        <button
-          className={`tab ${activeTab === "All" ? "active" : ""}`}
-          onClick={() => handleTabClick("All")}
-        >
-          <span>All</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Food and Drinks" ? "active" : ""}`}
-          onClick={() => handleTabClick("Food and Drinks")}
-        >
-          <span>Food and Drinks</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Souvenirs" ? "active" : ""}`}
-          onClick={() => handleTabClick("Souvenirs")}
-        >
-          <span>Souvenirs</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Others" ? "active" : ""}`}
-          onClick={() => handleTabClick("Others")}
-        >
-          <span>Others</span>
-        </button>
-      </div>
-      <div className="relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 flex flex-col">
-        <div className="list flex-1 grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-2 py-3 overflow-y-auto overflow-x-clip max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[550px] xl:max-h-[600px] list-scrollbar">
-          {filteredProducts.map((product) => (
+    <>
+      <CustomTabs
+        title="Products"
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        tabs={productTabs}
+        data={products}
+        gridCols="grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9"
+        gap="gap-2"
+        onAddNew={handleAddNewClick}
+        searchColumns={["name", "category", "price"]}
+      >
+        {(filteredProducts: ProductType[]) =>
+          filteredProducts.map((product) => (
             <Product
               key={product._id}
               product={product}
               handleInfoClick={() => handleInfoClick(product)}
             />
-          ))}
-        </div>
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={handleAddNewClick}
-          sx={{
-            position: "absolute",
-            bottom: 24,
-            right: 36,
-            backgroundColor: "#dc2626",
-            "&:hover": {
-              backgroundColor: "#b91c1c",
-            },
-            zIndex: 20,
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </div>
+          ))
+        }
+      </CustomTabs>
       {selectedProduct && (
         <DetailProduct
           product={selectedProduct}
@@ -218,7 +147,7 @@ const Products: React.FC = () => {
         onClose={handleCloseDialog}
         onAdd={handleAddNewProduct}
       />
-    </div>
+    </>
   );
 };
 

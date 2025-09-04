@@ -16,6 +16,7 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useRevenue } from "../../providers/RevenueProvider";
 import dayjs from "dayjs";
+import { Height } from "@mui/icons-material";
 
 const now = dayjs();
 const earliestYear = 2025;
@@ -184,7 +185,7 @@ const AdminHome: React.FC = () => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        mb={4}
+        mb={2}
       >
         <Typography
           color="black"
@@ -195,12 +196,22 @@ const AdminHome: React.FC = () => {
         >
           Dashboard
         </Typography>
-        <FormControl size="small" sx={{ minWidth: 120, alignSelf: "flex-end" }}>
-          <InputLabel>Month</InputLabel>
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 120,
+            alignSelf: "flex-end",
+            flexDirection: "row",
+            gap: 1,
+          }}
+        >
+          <Typography sx={{ alignSelf: "center", fontWeight: 500 }}>
+            Month:{" "}
+          </Typography>
           <Select
             value={selectedMonth}
-            label="Month"
             onChange={(e) => setSelectedMonth(e.target.value)}
+            sx={{ backgroundColor: "white" }}
           >
             {months.map((m) => (
               <MenuItem key={m.value} value={m.value}>
@@ -210,14 +221,15 @@ const AdminHome: React.FC = () => {
           </Select>
         </FormControl>
       </Box>
-      <Grid container spacing={2} sx={{ mb: 2 }}>
+      <Grid container spacing={1} sx={{ mb: 1 }}>
         {/* 1. Total Revenue */}
         <Grid item xs={12} sm={6} md={3}>
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               p: 2,
-              borderRadius: 3,
+              border: "1px solid #dadada",
+              borderRadius: 2,
               background: "#fff",
               color: "#000",
               minHeight: 148,
@@ -267,10 +279,11 @@ const AdminHome: React.FC = () => {
         {/* 2. Movie Revenue & Ticket Count */}
         <Grid item xs={12} sm={6} md={3}>
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               p: 2,
-              borderRadius: 3,
+              border: "1px solid #dadada",
+              borderRadius: 2,
               background: "#fff",
               color: "#000",
               minHeight: 148,
@@ -338,10 +351,11 @@ const AdminHome: React.FC = () => {
         {/* 3. Product Revenue & Count */}
         <Grid item xs={12} sm={6} md={3}>
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               p: 2,
-              borderRadius: 3,
+              border: "1px solid #dadada",
+              borderRadius: 2,
               background: "#fff",
               color: "#000",
               minHeight: 148,
@@ -411,10 +425,11 @@ const AdminHome: React.FC = () => {
         {/* 4. Most Watched Movie & Most Bought Product */}
         <Grid item xs={12} sm={6} md={3}>
           <Paper
-            elevation={3}
+            elevation={0}
             sx={{
               p: 2,
-              borderRadius: 3,
+              border: "1px solid #dadada",
+              borderRadius: 2,
               background: "#fff",
               color: "#000",
               minHeight: 148,
@@ -489,10 +504,11 @@ const AdminHome: React.FC = () => {
         </Grid>
       </Grid>
       <Paper
-        elevation={4}
+        elevation={0}
         sx={{
           p: 4,
-          borderRadius: 4,
+          border: "1px solid #dadada",
+          borderRadius: 2,
           width: "100%",
           mx: "auto",
         }}

@@ -69,7 +69,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
               Delete Selected ({selectedRows.length})
             </Button>
           )}
-          {onAddNew && onAddNew && (
+          {onAddNew ? (
             <Button
               onClick={onAddNew}
               variant="contained"
@@ -79,6 +79,8 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
             >
               {addButtonText}
             </Button>
+          ) : (
+            <div className="w-24 h-9">{/* Placeholder for alignment */}</div>
           )}
         </div>
       )}

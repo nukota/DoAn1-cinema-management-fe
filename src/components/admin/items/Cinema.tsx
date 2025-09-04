@@ -15,7 +15,7 @@ const Cinema: React.FC<CinemaProps> = ({
   handleInfoClick,
 }) => {
   return (
-    <div className="cinema w-full min-w-[300px] h-[200px] lg:w-[340px] xl:w-[320px] lg:h-[200px] flex-shrink-0 flex-grow-0 rounded-xl bg-white border-red border-2 flex flex-col items-start justify-start relative overflow-clip">
+    <div className="cinema w-full min-w-[300px] h-[200px] lg:w-[340px] xl:w-[320px] lg:h-[200px] flex-shrink-0 flex-grow-0 rounded-xl bg-white border-red border-2 flex flex-col items-start justify-start relative overflow-hidden">
       <div className="w-full flex items-start justify-between p-3 mt-3 z-10 relative">
         <span className="mr-auto text-2xl font-medium ml-3 self-center z-10 truncate">
           {cinema.name}

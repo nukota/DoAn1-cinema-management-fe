@@ -11,7 +11,6 @@ import { Button } from "@mui/material";
 import Profile from "../admin/Profile";
 import BuyTicket from "./BuyTicket";
 import PrintTicket from "./PrintTicket";
-import Payments from "../admin/Payments";
 import Orders from "../admin/Orders";
 
 const Employee: React.FC = () => {
@@ -76,13 +75,6 @@ const Employee: React.FC = () => {
                 to="/employee/orders"
                 isSelected={location.pathname === "/employee/orders"}
               />,
-              <NavSelection
-                key="payments"
-                icon={PaymentsImg}
-                title="Payments"
-                to="/employee/payments"
-                isSelected={location.pathname === "/employee/payments"}
-              />,
             ]}
             botChildren={[]}
             notificationChildren={[]}
@@ -98,7 +90,6 @@ const Employee: React.FC = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="/print-ticket" element={<PrintTicket />} />
             <Route path="/orders" element={<Orders />} />
-            <Route path="/payments" element={<Payments />} />
             <Route path="profile" element={<Profile />} />
           </Routes>
         </div>

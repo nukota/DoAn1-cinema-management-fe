@@ -1,10 +1,5 @@
-import React, { useEffect } from "react";
-import {
-  GridActionsCellItem,
-  GridColDef,
-  GridRenderCellParams,
-} from "@mui/x-data-grid";
-import { Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { ShowtimeType } from "../../interfaces/types";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { toast } from "react-toastify";
@@ -15,6 +10,7 @@ import { DeleteOutline } from "@mui/icons-material";
 const Showtimes: React.FC = () => {
   const { showtimes, fetchShowtimesData, deleteShowtime, loading } =
     useShowtimes();
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
     fetchShowtimesData();
@@ -43,11 +39,36 @@ const Showtimes: React.FC = () => {
     }
   };
 
+  const handleDeleteSelectedShowtimes = async () => {
+    if (selectedRows.length === 0) return;
+
+    const confirmed = await confirmDeletion(
+      "Delete Showtimes",
+      `Are you sure you want to delete ${selectedRows.length} showtime(s)? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        await Promise.all(selectedRows.map((id) => deleteShowtime(String(id))));
+        await fetchShowtimesData();
+        setSelectedRows([]);
+        toast.success(
+          `${selectedRows.length} showtime(s) deleted successfully!`
+        );
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    } else {
+      toast.info("Deletion canceled.");
+    }
+  };
+
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "ID", width: 120 },
+    { field: "_id", headerName: "ID", width: 60 },
     {
       field: "movie_title",
       headerName: "Movie",
+      flex: 1,
       width: 200,
       valueGetter: (_, row) => row.movie?.title || "N/A",
     },
@@ -108,7 +129,10 @@ const Showtimes: React.FC = () => {
       loadingMessage="Loading showtimes..."
       rows={showtimes}
       columns={columns}
-      showCheckboxSelection={false}
+      selectedRows={selectedRows}
+      onRowSelectionChange={setSelectedRows}
+      onDeleteSelected={handleDeleteSelectedShowtimes}
+      showCheckboxSelection={true}
       getRowId={(row) => row._id}
     />
   );

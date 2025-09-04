@@ -106,15 +106,15 @@ const Customers: React.FC = () => {
 
   // DataGrid columns
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "ID", width: 120 },
-    { field: "full_name", headerName: "Name", flex: 1, minWidth: 160 },
-    { field: "phone", headerName: "Phone Number", width: 140 },
-    { field: "cccd", headerName: "CCCD", width: 120 },
-    { field: "dateOfBirth", headerName: "Dob", width: 130 },
+    { field: "_id", headerName: "ID", width: 60 },
+    { field: "full_name", headerName: "Name", flex: 1.5 },
+    { field: "phone", headerName: "Phone Number", flex: 1 },
+    { field: "cccd", headerName: "CCCD", flex: 1 },
+    { field: "dateOfBirth", headerName: "Dob", flex: 1 },
     {
       field: "actions",
       type: "actions",
-      headerName: "User Action",
+      headerName: "Action",
       width: 100,
       getActions: (params) => [
         <GridActionsCellItem

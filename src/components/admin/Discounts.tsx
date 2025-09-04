@@ -106,9 +106,9 @@ const Discounts: React.FC = () => {
   );
 
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "ID", width: 100 },
-    { field: "code", headerName: "CODE", width: 120 },
-    { field: "discount_type", headerName: "Type", width: 100 },
+    { field: "_id", headerName: "ID", width: 60 },
+    { field: "code", headerName: "CODE", flex: 1, width: 120 },
+    { field: "discount_type", headerName: "Type", flex: 0.5, width: 100 },
     {
       field: "value",
       headerName: "Value",

@@ -8,7 +8,6 @@ import Discounts from "./Discounts";
 import Orders from "./Orders";
 import Customers from "./Customers";
 import Employees from "./Employees";
-import Payments from "./Payments";
 import Products from "./Products";
 import Movies from "./Movies";
 // import Rooms from "./Rooms";
@@ -25,7 +24,6 @@ import ShowtimesImg from "./../../assets/images/showtimes.svg";
 import RoomsImg from "./../../assets/images/rooms.svg";
 import OrdersImg from "./../../assets/images/orders.svg";
 import DiscountsImg from "./../../assets/images/discounts.svg";
-import PaymentsImg from "./../../assets/images/receipts.svg";
 import SettingsImg from "./../../assets/images/settings.svg";
 import ReviewsImg from "./../../assets/images/customerRatings.svg";
 import { Button } from "@mui/material";
@@ -145,13 +143,6 @@ const Admin: React.FC = () => {
                 isSelected={location.pathname === "/admin/orders"}
               />,
               <NavSelection
-                key="payments"
-                icon={PaymentsImg}
-                title="Payments"
-                to="/admin/payments"
-                isSelected={location.pathname === "/admin/payments"}
-              />,
-              <NavSelection
                 key="discounts"
                 icon={DiscountsImg}
                 title="Discounts"
@@ -196,7 +187,6 @@ const Admin: React.FC = () => {
             <Route path="products" element={<Products />} />
             <Route path="showtimes" element={<Showtimes />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="payments" element={<Payments />} />
             <Route path="discounts" element={<Discounts />} />
             <Route path="reviews" element={<Reviews />} />
             <Route path="settings" element={<Settings />} />

@@ -1,5 +1,4 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
-import SearchImg from "../../assets/images/search.svg";
 import {
   Button,
   CircularProgress,
@@ -8,7 +7,14 @@ import {
   Typography,
   CardActions,
   Box,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   CinemaType,
   RoomType,
@@ -46,7 +52,7 @@ const Rooms: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleCinemaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCinemaChange = (event: any) => {
     const cinemaId = event.target.value;
     if (!cinemaId) {
       setSelectedCinema(null);
@@ -152,89 +158,114 @@ const Rooms: React.FC = () => {
   return (
     <div className="rooms flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Rooms</div>
-      <div className="flex flex-col 1270-break-point:flex-row mt-4">
-        <div className="SearchBar relative w-full max-w-[240px] h-8">
-          <input
-            type="text"
-            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <img
-            src={SearchImg}
-            alt="Search"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
-        </div>
-        <div className="SearchBar relative w-full max-w-[240px] h-8 ml-4">
-          <select
-            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          mt: 2,
+          flexWrap: "wrap",
+        }}
+      >
+        <TextField
+          placeholder="Search"
+          size="small"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            width: 240,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "50px",
+              "& fieldset": {
+                borderColor: "#dadada",
+                borderWidth: 2,
+              },
+              "&:hover fieldset": {
+                borderColor: "#dadada",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#dadada",
+              },
+            },
+          }}
+        />
+        <FormControl size="small" sx={{ width: 240 }}>
+          <InputLabel>Cinema</InputLabel>
+          <Select
             value={selectedCinema?._id || ""}
             onChange={handleCinemaChange}
-          >
-            <option value="">All Cinemas</option>
-            {cinemas.map((cinema) => (
-              <option key={cinema._id} value={cinema._id}>
-                {cinema.name}
-              </option>
-            ))}
-          </select>
-          <img
-            src={SearchImg}
-            alt="Cinema"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
-          <img
-            src={SearchImg}
-            alt="Cinema"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
-        </div>
-        <div className="1270-break-point:ml-auto 1270-break-point:mt-0 mt-2">
-          <Button
-            onClick={handleAddNewClick}
-            variant="contained"
-            color="primary"
+            label="Cinema"
             sx={{
-              width: "114px",
-              height: "32px",
+              borderRadius: "50px",
+              "& fieldset": {
+                borderColor: "#dadada",
+                borderWidth: 2,
+              },
+              "&:hover fieldset": {
+                borderColor: "#dadada",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#dadada",
+              },
             }}
           >
-            Add New
-          </Button>
-        </div>
-      </div>
+            <MenuItem value="">All Cinemas</MenuItem>
+            {cinemas.map((cinema) => (
+              <MenuItem key={cinema._id} value={cinema._id}>
+                {cinema.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          onClick={handleAddNewClick}
+          variant="contained"
+          color="primary"
+          sx={{
+            width: "114px",
+            height: "40px",
+            ml: "auto",
+          }}
+        >
+          Add New
+        </Button>
+      </Box>
 
-      <div className="relative mt-[8px] w-full h-full min-w-[400px] sm:min-w-[680px] bg-white rounded-xl pl-4 sm:pl-12 py-6 pr-4">
-        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-6 py-3 overflow-y-visible overflow-x-clip list-scrollbar">
+      <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border border-light-gray rounded-b-xl rounded-md pl-12 py-6 pr-4 flex flex-col">
+        <div className="list grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 py-3 overflow-y-visible overflow-x-clip list-scrollbar">
           {filteredRooms.map((room) => (
             <Card
               key={room._id}
               sx={{
-                width: 170,
-                height: 180,
+                width: 180,
+                height: 200,
                 display: "flex",
                 flexDirection: "column",
-                border: "2px solid #dadada",
-                borderRadius: 3,
+                border: "2px solid #dc2626",
+                borderRadius: 2,
+                boxShadow: "none",
                 transition: "all 0.2s ease",
                 "&:hover": {
-                  borderColor: "#dc2626",
-                  transform: "translateY(-2px)",
+                  transform: "translateY(-4px)",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 },
               }}
             >
               <CardContent sx={{ flexGrow: 1, p: 2 }}>
                 <Typography
-                  variant="h6"
                   component="h3"
                   sx={{
-                    fontSize: "18px",
+                    fontSize: "20px",
                     fontWeight: 500,
                     color: "#374151",
-                    textAlign: "center",
+                    textAlign: "flex-start",
                     mb: 2,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -254,15 +285,8 @@ const Rooms: React.FC = () => {
                   >
                     <Typography
                       variant="body2"
-                      sx={{ color: "#374151", fontSize: "16px" }}
-                    >
-                      Cinema:
-                    </Typography>
-                    <Typography
-                      variant="body2"
                       sx={{
-                        color: "#000",
-                        ml: 0.5,
+                        color: "#333",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -280,10 +304,7 @@ const Rooms: React.FC = () => {
                       height: "21px",
                     }}
                   >
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#374151", fontSize: "16px" }}
-                    >
+                    <Typography variant="body2" sx={{ color: "#000" }}>
                       Capacity:
                     </Typography>
                     <Typography
@@ -302,14 +323,15 @@ const Rooms: React.FC = () => {
                 </Box>
               </CardContent>
 
-              <CardActions sx={{ p: 2, pt: 0 }}>
+              <CardActions sx={{ p: 0 }}>
                 <Button
-                  variant="outlined"
-                  color="secondary"
+                  variant="text"
+                  color="primary"
                   onClick={() => handleInfoClick(room)}
                   sx={{
+                    backgroundColor: "rgba(184, 0, 7, 0.05)",
                     width: "100%",
-                    borderRadius: 2,
+                    borderRadius: 0,
                   }}
                 >
                   View Info

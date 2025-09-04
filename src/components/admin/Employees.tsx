@@ -105,7 +105,7 @@ const Employees: React.FC = () => {
       headerName: "ID",
       flex: 0.6,
       minWidth: 80,
-      maxWidth: 120,
+      maxWidth: 60,
       align: "center",
     },
     {
@@ -153,8 +153,8 @@ const Employees: React.FC = () => {
       type: "actions",
       headerName: "Actions",
       flex: 0.8,
-      minWidth: 100,
-      maxWidth: 120,
+      minWidth: 80,
+      maxWidth: 100,
       getActions: (params) => [
         <GridActionsCellItem
           key="info"

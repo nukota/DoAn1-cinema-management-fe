@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomDataGrid from "./elements/DataGrid";
 import { InfoOutlined } from "@mui/icons-material";
+import { Rating } from "@mui/material";
 
 const Reviews: React.FC = () => {
   const { reviews, fetchReviewsData, deleteReview, loading } = useReviews();
@@ -55,7 +56,7 @@ const Reviews: React.FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "Review ID", width: 120 },
+    { field: "_id", headerName: "ID", width: 60 },
     {
       field: "movie_title",
       headerName: "Movie",
@@ -71,8 +72,23 @@ const Reviews: React.FC = () => {
     {
       field: "rating",
       headerName: "Rating",
-      width: 100,
-      valueFormatter: (value: any) => `${value}/5`,
+      width: 150,
+      renderCell: (params) => (
+        <Rating
+          value={params.value || 0}
+          readOnly
+          size="small"
+          precision={0.5}
+          sx={{
+            "& .MuiRating-iconFilled": {
+              color: "#dc2626",
+            },
+            "& .MuiRating-iconEmpty": {
+              color: "#e0e0e0",
+            },
+          }}
+        />
+      ),
     },
     {
       field: "comment",

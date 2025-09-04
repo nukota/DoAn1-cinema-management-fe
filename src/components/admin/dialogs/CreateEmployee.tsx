@@ -1,35 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  Autocomplete,
-  IconButton,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useCinemas } from "../../../providers/CinemasProvider";
-import { toast } from "react-toastify";
-const CustomDialogContent = styled(DialogContent)({
-  "&::-webkit-scrollbar": {
-    width: "8px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: "#f1f1f1",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: "#999",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-thumb:hover": {
-    background: "#666",
-  },
-});
+import CreateDialog from "./template/CreateDialog";
 
 interface CreateEmployeeProps {
   open: boolean;
@@ -43,27 +14,31 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   onClose,
   onAdd,
 }) => {
-  const [fullname, setFullname] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [phone, setPhone] = useState<String>("");
-  const [dob, setDob] = useState<String>("");
-  const [cccd, setCccd] = useState<String>("");
-  const [cinemaId, setCinemaId] = useState<string>();
-  const [shift, setShift] = useState<string | null>(null);
+  const [fullname, setFullname] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [dob, setDob] = useState<string>("");
+  const [cccd, setCccd] = useState<string>("");
+  const [cinemaId, setCinemaId] = useState<string>("");
+  const [shift, setShift] = useState<string>("");
   const [position, setPosition] = useState<string>("");
-  const [password, setPassword] = useState<String>("");
-  const [confirmPassword, setConfirmPassword] = useState<String>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  const { cinemas, fetchCinemasData } = useCinemas(); // Use the useCinemas hook
+  const [error, setError] = useState<string>("");
+
+  const { cinemas, fetchCinemasData } = useCinemas();
 
   useEffect(() => {
     fetchCinemasData();
   }, []);
+
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev);
   };
@@ -81,12 +56,12 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       !shift ||
       !position
     ) {
-      toast.error("Please fill in all required fields.");
+      setError("Please fill in all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -101,223 +76,125 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       position,
       password,
     };
-    onAdd(newEmployee);
+    const success = await onAdd(newEmployee);
+    if (success) {
+      setError("");
+    }
   };
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      sx={{
-        maxHeight: "90vh",
-        overflow: "auto",
-        placeSelf: "center",
-      }}
-    >
-      <DialogTitle
-        sx={{
-          fontSize: 24,
-          fontWeight: "bold",
-          fontFamily: "inherit",
-          padding: "16px 24px",
-        }}
-      >
-        Add Employee
-      </DialogTitle>
-      <CustomDialogContent>
-        <Typography
-          variant="h6"
-          gutterBottom
-          color="primary"
-          fontWeight={550}
-          sx={{ mt: 1 }}
-        >
-          Personal Info
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Full Name:
-          </Typography>
-          <TextField
-            placeholder="Full Name"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            CCCD:
-          </Typography>
-          <TextField
-            placeholder="CCCD"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={cccd}
-            onChange={(e) => setCccd(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Date of birth:
-          </Typography>
-          <TextField
-            type="date"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Phone Num:
-          </Typography>
-          <TextField
-            placeholder="Phone Number"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Email:
-          </Typography>
-          <TextField
-            placeholder="Email"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Password:
-          </Typography>
-          <TextField
-            placeholder="Password"
-            fullWidth
-            margin="dense"
-            size="small"
-            type={showPassword ? "text" : "password"} // Toggle between text and password
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={togglePasswordVisibility} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Confirm Password:
-          </Typography>
-          <TextField
-            placeholder="Confirm Password"
-            fullWidth
-            margin="dense"
-            size="small"
-            type={showConfirmPassword ? "text" : "password"}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  onClick={toggleConfirmPasswordVisibility}
-                  edge="end"
-                >
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-          />
-        </Box>
-        <Typography
-          variant="h6"
-          gutterBottom
-          color="primary"
-          fontWeight={550}
-          sx={{ mt: 2 }}
-        >
-          Employment Info
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Cinema:
-          </Typography>
-          <Autocomplete
-            options={cinemas}
-            value={cinemas.find((c) => c._id === cinemaId) || null}
-            fullWidth
-            onChange={(_, newValue) => setCinemaId(newValue?._id)}
-            getOptionLabel={(option) => `(ID: ${option._id}) ${option.name}`}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="Cinema"
-                margin="dense"
-                size="small"
-              />
-            )}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Position:
-          </Typography>
-          <TextField
-            placeholder="Position"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={position}
-            onChange={(e) => setPosition(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Shift:
-          </Typography>
-          <Autocomplete
-            options={shifts}
-            value={shift}
-            fullWidth
-            onChange={(_, newValue) => setShift(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="Shift"
-                margin="dense"
-                size="small"
-              />
-            )}
-          />
-        </Box>
-      </CustomDialogContent>
+  const handleClose = () => {
+    setError("");
+    onClose();
+  };
 
-      <DialogActions sx={{ mb: 1.5, mr: 2 }}>
-        <Button
-          onClick={handleAddClick}
-          color="primary"
-          variant="contained"
-          sx={{ width: 130 }}
-        >
-          Add
-        </Button>
-      </DialogActions>
-    </Dialog>
+  const sections = [
+    {
+      title: "Personal Info",
+      fields: [
+        {
+          name: "fullname",
+          label: "Full Name",
+          type: "text" as const,
+          placeholder: "Full Name",
+          value: fullname,
+          onChange: setFullname,
+        },
+        {
+          name: "cccd",
+          label: "CCCD",
+          type: "text" as const,
+          placeholder: "CCCD",
+          value: cccd,
+          onChange: setCccd,
+        },
+        {
+          name: "dob",
+          label: "Date of birth",
+          type: "date" as const,
+          value: dob,
+          onChange: setDob,
+        },
+        {
+          name: "phone",
+          label: "Phone Num",
+          type: "tel" as const,
+          placeholder: "Phone Number",
+          value: phone,
+          onChange: setPhone,
+        },
+        {
+          name: "email",
+          label: "Email",
+          type: "email" as const,
+          placeholder: "Email",
+          value: email,
+          onChange: setEmail,
+        },
+        {
+          name: "password",
+          label: "Password",
+          type: "password" as const,
+          placeholder: "Password",
+          value: password,
+          onChange: setPassword,
+          showPassword: showPassword,
+          onTogglePassword: togglePasswordVisibility,
+        },
+        {
+          name: "confirmPassword",
+          label: "Confirm Password",
+          type: "password" as const,
+          placeholder: "Confirm Password",
+          value: confirmPassword,
+          onChange: setConfirmPassword,
+          showPassword: showConfirmPassword,
+          onTogglePassword: toggleConfirmPasswordVisibility,
+        },
+      ],
+    },
+    {
+      title: "Employment Info",
+      fields: [
+        {
+          name: "cinema",
+          label: "Cinema",
+          type: "autocomplete" as const,
+          placeholder: "Cinema",
+          value: cinemas.find((c) => c._id === cinemaId) || null,
+          onChange: (newValue: any) => setCinemaId(newValue?._id || ""),
+          options: cinemas,
+          getOptionLabel: (option: any) => `(ID: ${option._id}) ${option.name}`,
+        },
+        {
+          name: "position",
+          label: "Position",
+          type: "text" as const,
+          placeholder: "Position",
+          value: position,
+          onChange: setPosition,
+        },
+        {
+          name: "shift",
+          label: "Shift",
+          type: "autocomplete" as const,
+          placeholder: "Shift",
+          value: shift,
+          onChange: setShift,
+          options: shifts,
+        },
+      ],
+    },
+  ];
+
+  return (
+    <CreateDialog
+      open={open}
+      onClose={handleClose}
+      title="Add Employee"
+      sections={sections}
+      onAdd={handleAddClick}
+      error={error}
+    />
   );
 };
 

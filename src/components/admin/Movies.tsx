@@ -1,15 +1,13 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Movie from "./items/Movie";
-import SearchImg from "../../assets/images/search.svg";
-import CalendarImg from "../../assets/images/calendar.svg";
 import { MovieType } from "../../interfaces/types";
 import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
-import { CircularProgress, Fab } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { CircularProgress } from "@mui/material";
 import { confirmDeletion } from "../../utils/confirmDeletion";
+import CustomTabs from "./elements/Tabs";
 
 const Movies: React.FC = () => {
   const {
@@ -21,8 +19,6 @@ const Movies: React.FC = () => {
     loading,
   } = useMovies();
   const [activeTab, setActiveTab] = useState<string>("All");
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
@@ -30,22 +26,6 @@ const Movies: React.FC = () => {
   useEffect(() => {
     fetchMoviesData();
   }, []);
-
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
-  };
-
-  const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-  };
-
-  const handleCalendarClick = () => {
-    document.getElementById("date-picker")?.focus();
-  };
-
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
 
   const handleAddNewClick = () => {
     setAddDialogOpen(true);
@@ -108,34 +88,12 @@ const Movies: React.FC = () => {
     }
   };
 
-  const filteredMovies = movies.filter((movie) => {
-    const matchesTab = activeTab === "All" || movie.status === activeTab;
-    const searchTermLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      (movie._id && movie._id.toLowerCase().includes(searchTermLower)) ||
-      (movie.title && movie.title.toLowerCase().includes(searchTermLower)) ||
-      (movie.status && movie.status.toLowerCase().includes(searchTermLower)) ||
-      (movie.director && movie.director.includes(searchTermLower)) ||
-      (movie.actors &&
-        movie.actors.some((actor) =>
-          actor.toLowerCase().includes(searchTermLower)
-        )) ||
-      (movie.genre &&
-        movie.genre.some((genre) =>
-          genre.toLowerCase().includes(searchTermLower)
-        )) ||
-      (movie.country &&
-        movie.country.toLowerCase().includes(searchTermLower)) ||
-      (movie.description &&
-        movie.description.toLowerCase().includes(searchTermLower));
-
-    const matchesDate =
-      !selectedDate ||
-      (movie.release_date &&
-        new Date(movie.release_date) <= new Date(selectedDate));
-
-    return matchesTab && matchesSearch && matchesDate;
-  });
+  const movieTabs = [
+    { label: "All", value: "All" },
+    { label: "Now Playing", value: "Now Playing" },
+    { label: "Coming Soon", value: "Coming Soon" },
+    { label: "Stopped", value: "Stopped" },
+  ];
 
   if (loading) {
     return (
@@ -147,100 +105,41 @@ const Movies: React.FC = () => {
   }
 
   return (
-    <div className="movies flex flex-col">
-      <div className="text-40px font-medium text-dark-gray">Movies</div>
-      <div className="flex items-center mt-4">
-        <div className="DateFilterBar relative w-full max-w-[240px] h-8 -mt-2">
-          <input
-            type="date"
-            id="date-picker"
-            className="w-full h-full pr-5 pl-10 text-sm text-red rounded-full text-gray-700 bg-white border-red border-2 focus:outline-none focus:ring-1"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-          <img
-            src={CalendarImg}
-            alt="Calendar"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 cursor-pointer"
-            style={{
-              filter:
-                "invert(10%) sepia(88%) saturate(6604%) hue-rotate(352deg) brightness(73%) contrast(105%)",
-            }}
-            onClick={handleCalendarClick}
-          />
-        </div>
-        <div className="SearchBar relative ml-5 w-full max-w-[240px] h-8 -mt-2">
-          <input
-            type="text"
-            className="size-full pl-10 pr-5 text-sm text-dark-gray rounded-full text-gray-700 bg-white border-line-gray border-2 focus:outline-none focus:ring-1"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <img
-            src={SearchImg}
-            alt="Search"
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4"
-          />
-        </div>
-      </div>
-      <div className="movie-tabs flex mt-4 z-20">
-        <button
-          className={`tab ${activeTab === "All" ? "active" : ""}`}
-          onClick={() => handleTabClick("All")}
-        >
-          <span>All</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Now Playing" ? "active" : ""}`}
-          onClick={() => handleTabClick("Now Playing")}
-        >
-          <span>Now Playing</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Coming Soon" ? "active" : ""}`}
-          onClick={() => handleTabClick("Coming Soon")}
-        >
-          <span>Coming Soon</span>
-        </button>
-        <button
-          className={`tab ${activeTab === "Stopped" ? "active" : ""}`}
-          onClick={() => handleTabClick("Stopped")}
-        >
-          <span>Stopped</span>
-        </button>
-      </div>
-      <div className="content relative -mt-[2px] min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[2px] border-light-gray rounded-b-xl rounded-tr-xl rounded-tl-none pl-12 py-6 pr-4 flex flex-col">
-        <div className="list flex-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-y-8 py-3 overflow-y-auto max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[550px] xl:max-h-[600px] list-scrollbar">
-          {filteredMovies.map((movie) => (
+    <>
+      <CustomTabs
+        title="Movies"
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        tabs={movieTabs}
+        data={movies}
+        gridCols="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+        onAddNew={handleAddNewClick}
+        dateColumns={["release_date"]}
+        searchColumns={[
+          "_id",
+          "title",
+          "status",
+          "director",
+          "actors",
+          "genre",
+          "country",
+          "description",
+        ]}
+      >
+        {(filteredMovies: MovieType[]) =>
+          filteredMovies.map((movie) => (
             <Movie
               key={movie._id}
               movie={movie}
               handleInfoClick={() => handleInfoClick(movie)}
             />
-          ))}
-        </div>
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={handleAddNewClick}
-          sx={{
-            position: "absolute",
-            bottom: 24,
-            right: 36,
-            backgroundColor: "#dc2626",
-            "&:hover": {
-              backgroundColor: "#b91c1c",
-            },
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </div>
+          ))
+        }
+      </CustomTabs>
       {selectedMovie && (
         <DetailMovie
           open={DetailDialogOpen}
-          movie={selectedMovie!}
+          movie={selectedMovie}
           onClose={handleCloseDialog}
           onDelete={() => handleDeleteMovie(selectedMovie)}
           onSave={handleOnSave}
@@ -251,7 +150,7 @@ const Movies: React.FC = () => {
         onClose={handleCloseDialog}
         onAdd={handleAddNewMovie}
       />
-    </div>
+    </>
   );
 };
 
