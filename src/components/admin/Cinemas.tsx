@@ -150,17 +150,18 @@ const Cinemas: React.FC = () => {
   }
 
   return (
-    <div className="cinemas flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
+    <div className="cinemas flex flex-col w-full h-full max-w-full min-h-[673px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Cinemas</div>
       <Box
         sx={{
           display: "flex",
           gap: 2,
-          alignItems: "center",
+          rowGap: 1,
           mt: 2,
           mb: 1,
           flexDirection: { xs: "column", md: "row" },
           justifyContent: { xs: "flex-start", md: "space-between" },
+          alignItems: { xs: "flex-start", md: "center" },
         }}
       >
         <Box
@@ -200,7 +201,7 @@ const Cinemas: React.FC = () => {
       </Box>
 
       <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[1px] border-light-gray rounded-md p-8 flex flex-col">
-        <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 overflow-y-visible overflow-x-clip list-scrollbar">
+        <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 overflow-y-visible overflow-x-clip list-scrollbar">
           {filteredCinemas.map((cinema) => (
             <Cinema
               key={cinema._id}

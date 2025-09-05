@@ -19,7 +19,7 @@ const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
   const { rooms, fetchRoomsData } = useRooms();
   const { isLoggedIn } = useAuth();
-  
+
   const [selectedMovie, setSelectedMovie] = useState<string>("");
   const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -31,8 +31,10 @@ const QuickBook: React.FC = () => {
 
   const handleBook = () => {
     if (allSelected) {
-      const movie = currentShowtime.find((movie) => movie._id === selectedMovie);
-  
+      const movie = currentShowtime.find(
+        (movie) => movie._id === selectedMovie
+      );
+
       if (movie && movie.showtimes) {
         const selectedShowtime = movie.showtimes.find((showtime) => {
           const room = rooms.find((room) => room._id === showtime.room_id);
@@ -112,42 +114,42 @@ const QuickBook: React.FC = () => {
   }, [selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
-  if (selectedCinema) {
-    const movie = currentShowtime.find(
-      (movie) => movie._id === selectedMovie
-    );
-    if (movie) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const lastDay = new Date(today);
-      lastDay.setDate(today.getDate() + 6);
-
-      const dates = Array.from(
-        new Set(
-          movie
-            .showtimes!.filter((showtime) => {
-              const room = rooms.find(
-                (room) => room._id === showtime.room_id
-              );
-              if (room?.cinema.name !== selectedCinema) return false;
-              const showDate = new Date(showtime.showtime);
-              showDate.setHours(0, 0, 0, 0);
-              return showDate >= today && showDate <= lastDay;
-            })
-            .map(
-              (showtime) =>
-                new Date(showtime.showtime).toISOString().split("T")[0]
-            )
-        )
+    if (selectedCinema) {
+      const movie = currentShowtime.find(
+        (movie) => movie._id === selectedMovie
       );
-      setFilteredDates(dates);
+      if (movie) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const lastDay = new Date(today);
+        lastDay.setDate(today.getDate() + 6);
+
+        const dates = Array.from(
+          new Set(
+            movie
+              .showtimes!.filter((showtime) => {
+                const room = rooms.find(
+                  (room) => room._id === showtime.room_id
+                );
+                if (room?.cinema.name !== selectedCinema) return false;
+                const showDate = new Date(showtime.showtime);
+                showDate.setHours(0, 0, 0, 0);
+                return showDate >= today && showDate <= lastDay;
+              })
+              .map(
+                (showtime) =>
+                  new Date(showtime.showtime).toISOString().split("T")[0]
+              )
+          )
+        );
+        setFilteredDates(dates);
+      }
+    } else {
+      setFilteredDates([]);
     }
-  } else {
-    setFilteredDates([]);
-  }
-  setSelectedDate("");
-  setSelectedTime("");
-}, [selectedCinema, selectedMovie, currentShowtime, rooms]);
+    setSelectedDate("");
+    setSelectedTime("");
+  }, [selectedCinema, selectedMovie, currentShowtime, rooms]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -272,9 +274,7 @@ const QuickBook: React.FC = () => {
           transition: "all 0.5s ease-in-out",
         }}
       >
-        <div className="text-white text-3xl ml-2 mr-4 font-regular font-['Poppins']">
-          QUICK BOOK
-        </div>
+        <div className="text-white text-3xl ml-2 mr-4">QUICK BOOK</div>
         <FormControl variant="outlined" sx={{ width: 180 }}>
           <Select
             value={selectedMovie}

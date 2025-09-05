@@ -1,34 +1,7 @@
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  Autocomplete,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { toast } from "react-toastify";
+import { Box, Typography } from "@mui/material";
 import { countryOptions } from "../../../enum/enum";
-const CustomDialogContent = styled(DialogContent)({
-  "&::-webkit-scrollbar": {
-    width: "8px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: "#f1f1f1",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: "#999",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-thumb:hover": {
-    background: "#666",
-  },
-  overflowX: "hidden",
-});
+import CreateDialog from "./template/CreateDialog";
 
 const statusOptions: string[] = [
   "Coming Soon",
@@ -45,323 +18,224 @@ interface CreateMovieProps {
 
 const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
   const [title, setTitle] = useState<string>("");
-  const [status, setStatus] = useState<
-    "Stopped" | "Unknown" | "Now Playing" | "Coming Soon"
-  >("Unknown");
+  const [status, setStatus] = useState<string>("Unknown");
   const [posterURL, setPosterURL] = useState<string>("");
-  const [genre, setGenre] = useState<string>("");
+  const [genre, setGenre] = useState<string[]>([]);
   const [duration, setDuration] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [ageLimit, setAgeLimit] = useState<string>("");
   const [releaseDate, setReleaseDate] = useState<string>("");
   const [director, setDirector] = useState<string>("");
-  const [actors, setActors] = useState<string>("");
+  const [actors, setActors] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
   const [trailerURL, setTrailerURL] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       !title ||
       !posterURL ||
       !status ||
-      !genre ||
+      !genre.length ||
       !duration ||
       !country ||
       !ageLimit ||
       !releaseDate ||
       !director ||
-      !actors ||
+      !actors.length ||
       !description ||
       !trailerURL
     ) {
-      toast.error("All fields are required");
+      setError("All fields are required");
       return;
     }
-    if (
-      isNaN(Number(duration)) ||
-      isNaN(Number(ageLimit))
-    ) {
-      toast.error("Duration, Age Limit, and Rating must be numbers");
+    if (isNaN(Number(duration)) || isNaN(Number(ageLimit))) {
+      setError("Duration and Age Limit must be numbers");
       return;
     }
     const movieData = {
       title,
       status,
       poster_url: posterURL,
-      genre: genre.split(",").map((g) => g.trim()),
+      genre,
       duration: Number(duration),
       country,
       age_limit: Number(ageLimit),
       release_date: releaseDate,
       director: director,
-      actors: actors.split(",").map((name) => name.trim()),
+      actors,
       description,
       trailer_url: trailerURL,
     };
-    onAdd(movieData);
+    const success = await onAdd(movieData);
+    if (success) {
+      setTitle("");
+      setStatus("Unknown");
+      setPosterURL("");
+      setGenre([]);
+      setDuration("");
+      setCountry("");
+      setAgeLimit("");
+      setReleaseDate("");
+      setDirector("");
+      setActors([]);
+      setDescription("");
+      setTrailerURL("");
+      setError("");
+    }
   };
 
+  const handleClose = () => {
+    setError("");
+    onClose();
+  };
+
+  const sections = [
+    {
+      title: "Basic Info",
+      fields: [
+        {
+          name: "title",
+          label: "Title",
+          type: "text" as const,
+          placeholder: "Title",
+          value: title,
+          onChange: setTitle,
+        },
+        {
+          name: "status",
+          label: "Status",
+          type: "autocomplete" as const,
+          placeholder: "Status",
+          value: status,
+          onChange: setStatus,
+          options: statusOptions,
+        },
+        {
+          name: "posterURL",
+          label: "Poster URL",
+          type: "text" as const,
+          placeholder: "Poster URL",
+          value: posterURL,
+          onChange: setPosterURL,
+        },
+        {
+          name: "genre",
+          label: "Genre",
+          type: "list" as const,
+          placeholder: "Action, Drama, Comedy",
+          value: genre,
+          onChange: setGenre,
+        },
+        {
+          name: "duration",
+          label: "Duration",
+          type: "number" as const,
+          placeholder: "Duration (minutes)",
+          value: duration,
+          onChange: setDuration,
+        },
+        {
+          name: "country",
+          label: "Nation",
+          type: "autocomplete" as const,
+          placeholder: "Nation",
+          value: country,
+          onChange: setCountry,
+          options: countryOptions,
+        },
+      ],
+    },
+    {
+      title: "Details",
+      fields: [
+        {
+          name: "ageLimit",
+          label: "Age Limit",
+          type: "number" as const,
+          placeholder: "Age Limit (years)",
+          value: ageLimit,
+          onChange: setAgeLimit,
+        },
+        {
+          name: "releaseDate",
+          label: "Release Date",
+          type: "date" as const,
+          value: releaseDate,
+          onChange: setReleaseDate,
+        },
+        {
+          name: "director",
+          label: "Director",
+          type: "text" as const,
+          placeholder: "Director",
+          value: director,
+          onChange: setDirector,
+        },
+        {
+          name: "actors",
+          label: "Cast",
+          type: "list" as const,
+          placeholder: "Actor 1, Actor 2, Actor 3",
+          value: actors,
+          onChange: setActors,
+        },
+        {
+          name: "description",
+          label: "Description",
+          type: "longtext" as const,
+          placeholder: "Description",
+          value: description,
+          onChange: setDescription,
+        },
+        {
+          name: "trailerURL",
+          label: "Trailer URL",
+          type: "text" as const,
+          placeholder: "Trailer URL",
+          value: trailerURL,
+          onChange: setTrailerURL,
+        },
+      ],
+    },
+  ];
+
   return (
-    <Dialog
+    <CreateDialog
       open={open}
-      onClose={onClose}
-      sx={{
-        maxHeight: "90vh",
-        overflow: "auto",
-        placeSelf: "center",
-      }}
+      onClose={handleClose}
+      title="Add Movie"
+      sections={sections}
+      onAdd={handleSubmit}
+      error={error}
     >
-      <DialogTitle
-        sx={{
-          fontSize: 24,
-          fontWeight: "bold",
-          fontFamily: "inherit",
-          padding: "16px 24px",
-        }}
-      >
-        Add Movie
-      </DialogTitle>
-      <CustomDialogContent>
-        <Box display={"flex"} flexDirection={"row"} gap={2}>
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Title:
-              </Typography>
-              <TextField
-                placeholder="Title"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Poster:
-              </Typography>
-              <TextField
-                placeholder="Poster URL"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={posterURL}
-                onChange={(e) => setPosterURL(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Status:
-              </Typography>
-              <Autocomplete
-                options={statusOptions}
-                value={status}
-                sx={{ width: 280 }}
-                onChange={(_, newValue) => {
-                  if (newValue && statusOptions.includes(newValue)) {
-                    setStatus(
-                      newValue as
-                        | "Stopped"
-                        | "Unknown"
-                        | "Now Playing"
-                        | "Coming Soon"
-                    );
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Type"
-                    margin="dense"
-                    size="small"
-                  />
-                )}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 70 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Genre:
-              </Typography>
-              <Box
-                sx={{ width: 280 }}
-                display={"flex"}
-                flexDirection={"column"}
-                gap={1}
-              >
-                <TextField
-                  placeholder="Genre"
-                  sx={{ width: 280 }}
-                  margin="dense"
-                  size="small"
-                  value={genre}
-                  onChange={(e) => setGenre(e.target.value)}
-                />
-                <Typography
-                  color="#999999"
-                  fontSize={12}
-                  fontStyle={"italic"}
-                  sx={{ mt: -1, mb: 1 }}
-                >
-                  Fill in each name seperated by a comma (,)
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Duration:
-              </Typography>
-              <TextField
-                placeholder="Duration (minutes)"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={duration}
-                type="number"
-                onChange={(e) => setDuration(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Nation:
-              </Typography>
-              <Autocomplete
-                options={countryOptions}
-                value={country}
-                sx={{ width: 280 }}
-                onChange={(_, newValue) => setCountry(newValue || "")}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Nation"
-                    margin="dense"
-                    size="small"
-                  />
-                )}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Age Limit:
-              </Typography>
-              <TextField
-                placeholder="Age Limit (years old)"
-                type="number"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={ageLimit}
-                onChange={(e) => setAgeLimit(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Release Date:
-              </Typography>
-              <TextField
-                type="date"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={releaseDate}
-                onChange={(e) => setReleaseDate(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Director:
-              </Typography>
-              <TextField
-                placeholder="Director"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={director}
-                onChange={(e) => setDirector(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 70 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Cast:
-              </Typography>
-              <Box
-                sx={{ width: 280 }}
-                display={"flex"}
-                flexDirection={"column"}
-                gap={1}
-              >
-                <TextField
-                  placeholder="Cast"
-                  sx={{ width: 280 }}
-                  margin="dense"
-                  size="small"
-                  value={actors}
-                  onChange={(e) => setActors(e.target.value)}
-                />
-                <Typography
-                  color="#999999"
-                  fontSize={12}
-                  fontStyle={"italic"}
-                  sx={{ mt: -1, mb: 1 }}
-                >
-                  Fill in each name seperated by a comma (,)
-                </Typography>
-              </Box>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Description:
-              </Typography>
-              <TextField
-                placeholder="Description"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-              <Typography sx={{ mr: 2, marginTop: 1, width: 120 }}>
-                Trailer:
-              </Typography>
-              <TextField
-                placeholder="Trailer URL"
-                sx={{ width: 280 }}
-                margin="dense"
-                size="small"
-                value={trailerURL}
-                onChange={(e) => setTrailerURL(e.target.value)}
-              />
-            </Box>
-          </Box>
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <img
-              src={posterURL}
-              alt="Movie Poster"
-              style={{
-                width: 160,
-                height: 200,
-                objectFit: "cover",
-                borderRadius: 8,
-              }}
-              className="bg-[#eee] mt-4"
-            />
-            <Typography>Poster</Typography>
-          </Box>
-        </Box>
-      </CustomDialogContent>
-      <DialogActions sx={{ mb: 1.5, mr: 2 }}>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          sx={{ width: 130 }}
+      {posterURL && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          sx={{ mt: 2 }}
         >
-          Add
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <img
+            src={posterURL}
+            alt="Movie Poster"
+            style={{
+              width: 160,
+              height: 200,
+              objectFit: "cover",
+              borderRadius: 8,
+            }}
+            className="bg-[#eee]"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+          <Typography variant="caption" sx={{ mt: 1 }}>
+            Poster Preview
+          </Typography>
+        </Box>
+      )}
+    </CreateDialog>
   );
 };
 

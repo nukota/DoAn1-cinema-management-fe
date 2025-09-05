@@ -91,7 +91,11 @@ const Dialog: React.FC<DialogProps> = ({
             {section.fields.map((field, fieldIndex) => (
               <Box
                 key={fieldIndex}
-                sx={{ display: "flex", alignItems: "center", height: 45 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: field.type === "longtext" ? 115 : 45,
+                }}
               >
                 <Typography sx={{ mr: 2, marginTop: 1, width: 180 }}>
                   {field.label}:

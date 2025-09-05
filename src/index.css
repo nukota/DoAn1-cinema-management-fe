@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 * {
-  font-family: "Poppins", "Inter", sans-serif;
+  font-family: "Poppins", "Inter", "Comfortaa", sans-serif;
 }
 
 .nav-selection {

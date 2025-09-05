@@ -10,10 +10,12 @@ export interface FormField {
     | "password"
     | "longtext"
     | "date"
+    | "datetime-local"
     | "email"
     | "tel"
     | "number"
-    | "autocomplete";
+    | "autocomplete"
+    | "list";
   placeholder?: string;
   required?: boolean;
   options?: any[]; // For autocomplete
@@ -65,6 +67,29 @@ const Field: React.FC<FieldProps> = ({ field }) => {
           placeholder={field.placeholder}
           value={field.value}
           onChange={(e) => field.onChange(e.target.value)}
+        />
+      );
+
+    case "list":
+      return (
+        <TextField
+          {...commonProps}
+          placeholder={field.placeholder}
+          value={
+            Array.isArray(field.value)
+              ? field.value.join(", ")
+              : field.value || ""
+          }
+          onChange={(e) => {
+            const inputValue = e.target.value;
+            const listValue = inputValue
+              ? inputValue
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter((item) => item !== "")
+              : [];
+            field.onChange(listValue);
+          }}
         />
       );
 

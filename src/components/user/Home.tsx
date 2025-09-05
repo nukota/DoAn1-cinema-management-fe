@@ -32,8 +32,15 @@ const UserHome: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col relative custom-scrollbar overflow-hidden">
+      <div
+        className="absolute w-full h-[50vh] top-[50vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
+        }}
+      />
       <img
-        className="absolute w-full h-[100vh] top-0 z-0 opacity-20"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-15"
         src={wallPaperImg}
         alt="Wallpaper"
       />
@@ -55,8 +62,9 @@ const UserHome: React.FC = () => {
           variant="h2"
           sx={{
             fontWeight: "bold",
-            fontFamily: "Poppins",
+            fontFamily: "Jost",
             color: "white",
+            letterSpacing: 4,
             mb: 2,
           }}
         >
@@ -66,7 +74,7 @@ const UserHome: React.FC = () => {
           variant="h4"
           sx={{
             fontWeight: "bold",
-            fontFamily: "Poppins",
+            fontFamily: "Jost",
             color: "gray",
           }}
         >

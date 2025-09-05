@@ -103,11 +103,10 @@ const UserHeader: React.FC = () => {
         variant="contained"
         size="small"
         color="primary"
-        sx={{ borderRadius: "20px" }}
         className="flex-shrink-0"
         onClick={handleBuyTicketClicked}
       >
-        <p className="text-black text-sm font-semibold">Book Ticket Now</p>
+        <p className="text-black"></p>Book Ticket Now
       </Button>
 
       <div className="flex items-center ml-auto mr-6 w-[calc(100vw - 240px)] space-x-4 flex-shrink-0">
@@ -130,14 +129,15 @@ const UserHeader: React.FC = () => {
                 </InputAdornment>
               ),
               sx: {
-                padding: "0 8px",
+                padding: "0 6px",
                 height: "100%",
                 fontSize: "0.875rem",
               },
             }}
+            // color="primary"
             sx={{
               backgroundColor: "white",
-              borderRadius: "99px",
+              borderRadius: "4px",
               height: "30px",
               width: "200px",
             }}
@@ -192,7 +192,6 @@ const UserHeader: React.FC = () => {
               variant="contained"
               size="small"
               color="secondary"
-              sx={{ borderRadius: "20px", fontSize: "14px", color: "black" }}
               onClick={handleLoginClick}
             >
               SignIn or SignUp

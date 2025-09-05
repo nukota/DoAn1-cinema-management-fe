@@ -131,7 +131,8 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
           sx={{
             display: "flex",
             gap: 2,
-            alignItems: "center",
+            rowGap: 1,
+            alignItems: { xs: "flex-start", md: "center" },
             mt: 2,
             mb: 1,
             flexDirection: { xs: "column", md: "row" },

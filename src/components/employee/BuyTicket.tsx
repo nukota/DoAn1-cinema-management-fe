@@ -1,21 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Box,
   Button,
   Stepper,
   Step,
   StepLabel,
   Typography,
-  TextField,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
   Paper,
 } from "@mui/material";
 import {
@@ -25,18 +14,19 @@ import {
   ShowtimeType,
 } from "../../interfaces/types";
 import CalendarImg from "../../assets/images/calendar.svg";
-import ShowtimeUnit from "./items/ShowtimeUnit";
-import ProductItem from "./items/ProductItem";
-import VisaImg from "../../assets/images/visa.png";
-import MomoImg from "../../assets/images/momo.png";
-import CashImg from "../../assets/images/cash.png";
-import BankingImg from "../../assets/images/banking.png";
 import { useSeats } from "../../providers/SeatProvider";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useCustomers } from "../../providers/CustomersProvider";
 import { useOrders } from "../../providers/OrdersProvider";
-import qrCodeImg from "../../assets/images/qrCode.jpeg";
+
+// Import section components
+import SelectTickets from "./elements/buy-ticket-sections/SelectTickets";
+import SelectSeats from "./elements/buy-ticket-sections/SelectSeats";
+import SelectProducts from "./elements/buy-ticket-sections/SelectProducts";
+import CustomerInformation from "./elements/buy-ticket-sections/CustomerInformation";
+import Payment from "./elements/buy-ticket-sections/Payment";
+import PrintTicket from "./elements/buy-ticket-sections/PrintTicket";
 const steps = [
   "Select Ticket",
   "Select Seats",
@@ -229,67 +219,6 @@ const BuyTicket: React.FC = () => {
     });
   };
 
-  const renderSeatGrid = () => {
-    const rows = "ABCDEFGHIJKLMN".split("");
-    const grid = [];
-
-    for (let row = 1; row <= 14; row++) {
-      for (let col = -8; col <= 8; col++) {
-        const seat = seats.find(
-          (s) =>
-            rows.indexOf(s.seat_name[0]) + 1 === row && s.seat_column === col
-        );
-
-        grid.push(
-          <Box
-            key={`${row}-${col}`}
-            sx={{
-              width: "42px",
-              height: "26px",
-              display: "flex",
-              textAlign: "center",
-              justifyContent: "center",
-              borderRadius: "4px",
-              backgroundColor: seat
-                ? seat.available
-                  ? selectedSeats.includes(seat)
-                    ? "#b80007"
-                    : "#fafafa"
-                  : "#ccc"
-                : "transparent",
-              cursor: seat && seat.available ? "pointer" : "not-allowed",
-            }}
-            onClick={() => seat && seat.available && handleSeatClick(seat._id)}
-          >
-            <Typography
-              align="center"
-              sx={{
-                fontSize: "12px",
-                fontWeight: 500,
-                color: seat
-                  ? seat.available
-                    ? selectedSeats.includes(seat)
-                      ? "#fff"
-                      : "#000"
-                    : "#666"
-                  : "#ccc",
-              }}
-            >
-              {seat ? seat.seat_name : ""}
-            </Typography>
-          </Box>
-        );
-      }
-    }
-    return grid;
-  };
-
-  const filteredAccounts = customers.filter(
-    (account) =>
-      account.full_name.toLowerCase().includes(filterName.toLowerCase()) &&
-      account.phone.includes(filterPhone)
-  );
-
   const filteredShowtimes = currentShowtime.filter((movie: MovieType) =>
     movie.showtimes?.some(
       (showtime: any) =>
@@ -298,8 +227,8 @@ const BuyTicket: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full py-2 relative">
-      <div className="z-[1] w-full h-full max-w-[1200px] m-auto flex flex-col items-start text-black">
+    <div className="flex flex-col h-full w-full py-2 relative">
+      <div className="z-[1] w-full h-full m-auto flex flex-col items-start text-black">
         <Typography
           variant="h4"
           color="black"
@@ -315,14 +244,15 @@ const BuyTicket: React.FC = () => {
           ))}
         </Stepper>
         <Paper
-          elevation={3}
+          elevation={0}
           sx={{
             width: "100%",
             minHeight: 600,
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            borderRadius: 3,
+            borderRadius: 2,
+            border: "1px solid #dadada",
             background: "#fff",
             position: "relative",
           }}
@@ -336,627 +266,62 @@ const BuyTicket: React.FC = () => {
           ) : (
             <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative px-4 pt-4">
               {activeStep === 0 && (
-                <div className="flex gap-4 w-full">
-                  {filteredShowtimes.length === 0 ? (
-                    <Box
-                      sx={{
-                        width: "100%",
-                        height: "400px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Typography
-                        sx={{ fontSize: "24px" }}
-                        color="#dadada"
-                        align="center"
-                      >
-                        There&apos;s no showtime on this date
-                      </Typography>
-                    </Box>
-                  ) : (
-                    filteredShowtimes.map((movie: MovieType) => (
-                      <div
-                        key={movie._id}
-                        className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0 overflow-clip"
-                      >
-                        {/* Movie Image */}
-                        <div
-                          className="image w-full h-[240px] bg-[#dadada] object-cover"
-                          style={{
-                            backgroundImage: `url(${movie.poster_url})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                          }}
-                        />
-                        <Typography
-                          className="text-center font-bold mt-4 mb-2 px-2 py-2 h-[64px]"
-                          sx={{
-                            fontSize: "16px",
-                            color: "#484848",
-                            textAlign: "center",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {movie.title}
-                        </Typography>
-                        <div className="grid grid-cols-3 gap-2 px-4 overflow-y-auto custom-scrollbar flex-1 w-full">
-                          {movie.showtimes
-                            ?.filter(
-                              (showtime: any) =>
-                                new Date(showtime.showtime).toLocaleDateString(
-                                  "en-CA"
-                                ) === selectedDate
-                            )
-                            .map((showtime: any) => (
-                              <ShowtimeUnit
-                                key={showtime._id}
-                                showtimeData={showtime}
-                                selected={
-                                  selectedShowtime?.showtime._id ===
-                                  showtime._id
-                                }
-                                onClick={() =>
-                                  handleShowtimeSelect(movie, showtime)
-                                }
-                              />
-                            ))}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                <SelectTickets
+                  filteredShowtimes={filteredShowtimes}
+                  selectedDate={selectedDate}
+                  selectedShowtime={selectedShowtime}
+                  onShowtimeSelect={handleShowtimeSelect}
+                />
               )}
               {activeStep === 1 && (
-                <div className="w-full h-[480px] overflow-y-scroll custom-scrollbar flex flex-col gap-4 pb-4">
-                  {/* Ticket Count Picker */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      paddingLeft: "16px",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        fontWeight: 400,
-                        fontSize: "18px",
-                        paddingRight: "8px",
-                      }}
-                    >
-                      Number of Tickets:
-                    </Typography>
-                    {/* Decrement Button */}
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        setTicketCount((prev) => Math.max(0, prev - 1))
-                      }
-                      style={{
-                        minWidth: "40px",
-                        height: "40px",
-                        fontSize: "24px",
-                      }}
-                      disabled={selectedSeats.length >= ticketCount}
-                    >
-                      -
-                    </Button>
-
-                    {/* Ticket Count Input */}
-                    <TextField
-                      type="number"
-                      value={ticketCount}
-                      size="small"
-                      onChange={(e) => {
-                        const value = Math.max(0, Number(e.target.value));
-                        setTicketCount(value);
-                        setSelectedSeats([]); // Reset selected seats when ticket count changes
-                      }}
-                      inputProps={{ min: 0 }}
-                      style={{ width: "60px", textAlign: "center" }}
-                    />
-
-                    {/* Increment Button */}
-                    <Button
-                      variant="outlined"
-                      onClick={() => setTicketCount((prev) => prev + 1)}
-                      style={{
-                        minWidth: "40px",
-                        height: "40px",
-                        fontSize: "24px",
-                      }}
-                    >
-                      +
-                    </Button>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      padding: "16px",
-                      border: "1px solid #ccc",
-                      borderRadius: "18px",
-                    }}
-                  >
-                    {/* Screen Representation */}
-                    {loading ? (
-                      <Typography>Loading seats...</Typography>
-                    ) : (
-                      <>
-                        <Typography
-                          style={{ fontSize: "24px", fontWeight: 400 }}
-                        >
-                          SCREEN
-                        </Typography>
-                        <div
-                          style={{
-                            width: "80%",
-                            minWidth: "400px",
-                            height: "4px",
-                            textAlign: "center",
-                            backgroundColor: "#ccc",
-                            borderRadius: "8px",
-                            fontSize: "24px",
-                            color: "#333",
-                            marginBottom: "16px",
-                          }}
-                        />
-
-                        {/* Seat Map */}
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(17, 42px)",
-                            gridTemplateRows: "repeat(14, 30px)",
-                            justifyContent: "center",
-                            gap: "8px",
-                            margin: "16px 0",
-                          }}
-                        >
-                          {renderSeatGrid()}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                <SelectSeats
+                  seats={seats}
+                  selectedSeats={selectedSeats}
+                  ticketCount={ticketCount}
+                  loading={loading}
+                  onSeatClick={handleSeatClick}
+                  onTicketCountChange={(count) => {
+                    setTicketCount(count);
+                    setSelectedSeats([]); // Reset selected seats when ticket count changes
+                  }}
+                />
               )}
               {activeStep === 2 && (
-                <div className="w-full max-h-[480px] overflow-y-auto grid grid-cols-4 gap-y-4 z-10 custom-scrollbar">
-                  {products.map((product) => (
-                    <ProductItem
-                      key={product._id}
-                      product={product}
-                      amount={selectedProducts[product._id] || 0}
-                      setAmount={handleSetAmount}
-                    />
-                  ))}
-                </div>
+                <SelectProducts
+                  products={products}
+                  selectedProducts={selectedProducts}
+                  onSetAmount={handleSetAmount}
+                />
               )}
               {activeStep === 3 && (
-                <Box sx={{ width: "100%" }}>
-                  {/* Tabs for Existed Account and Guest */}
-                  <Tabs
-                    value={selectedTab}
-                    onChange={handleTabChange}
-                    aria-label="Customer Tabs"
-                    sx={{ mb: 2 }}
-                  >
-                    <Tab label="Existed Account" />
-                    <Tab label="Guest" />
-                  </Tabs>
-
-                  {/* Existed Account Tab */}
-                  {selectedTab === 0 && (
-                    <Box>
-                      {/* Filter Fields */}
-                      <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-                        <TextField
-                          label="Name"
-                          variant="outlined"
-                          value={filterName}
-                          onChange={(e) => setFilterName(e.target.value)}
-                          fullWidth
-                        />
-                        <TextField
-                          label="Phone"
-                          variant="outlined"
-                          value={filterPhone}
-                          onChange={(e) => setFilterPhone(e.target.value)}
-                          fullWidth
-                        />
-                      </Box>
-
-                      {/* Customer List */}
-                      <List sx={{ maxHeight: "380px", overflowY: "auto" }}>
-                        {filteredAccounts.map((account) => (
-                          <ListItem
-                            key={account._id}
-                            disablePadding
-                            sx={{ mb: 0.5 }}
-                          >
-                            <ListItemButton
-                              sx={{
-                                padding: "4px 8px",
-                                borderRadius: "4px",
-                              }}
-                              onClick={() =>
-                                handleAccountSelect(
-                                  `${account.full_name} (${account.phone})`
-                                )
-                              }
-                            >
-                              <ListItemText
-                                primary={`${account.full_name} (${account.phone})`}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Box>
-                  )}
-
-                  {/* Guest Tab */}
-                  {selectedTab === 1 && (
-                    <Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                        }}
-                      >
-                        <TextField
-                          label="Phone"
-                          variant="outlined"
-                          value={guestPhone}
-                          onChange={(e) => setGuestPhone(e.target.value)}
-                          fullWidth
-                        />
-                        <TextField
-                          label="Email"
-                          variant="outlined"
-                          value={guestEmail}
-                          onChange={(e) => setGuestEmail(e.target.value)}
-                          fullWidth
-                        />
-                      </Box>
-                    </Box>
-                  )}
-                </Box>
+                <CustomerInformation
+                  selectedTab={selectedTab}
+                  filterName={filterName}
+                  filterPhone={filterPhone}
+                  guestPhone={guestPhone}
+                  guestEmail={guestEmail}
+                  customers={customers}
+                  onTabChange={handleTabChange}
+                  onFilterNameChange={setFilterName}
+                  onFilterPhoneChange={setFilterPhone}
+                  onGuestPhoneChange={setGuestPhone}
+                  onGuestEmailChange={setGuestEmail}
+                  onAccountSelect={handleAccountSelect}
+                />
               )}
               {activeStep === 4 && (
-                <Box
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    height: "500px",
-                    gap: 4,
-                  }}
-                >
-                  {/* Radio Group for Payment Methods */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 400, my: 3 }}>
-                      Select Payment Method
-                    </Typography>
-                    <RadioGroup
-                      value={selectedPaymentMethod}
-                      onChange={handlePaymentMethodChange}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                        pl: 4,
-                      }}
-                    >
-                      <FormControlLabel
-                        value="cash"
-                        disabled={isPaid}
-                        control={<Radio />}
-                        label={
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <img
-                              src={CashImg}
-                              alt="Cash"
-                              style={{ width: "40px", height: "40px" }}
-                            />
-                            <Typography>Cash</Typography>
-                          </Box>
-                        }
-                      />
-                      <FormControlLabel
-                        value="visa/mastercard"
-                        disabled={isPaid}
-                        control={<Radio />}
-                        label={
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <img
-                              src={VisaImg}
-                              alt="Visa/Mastercard"
-                              style={{ width: "40px", height: "40px" }}
-                            />
-                            <Typography>Visa/Mastercard</Typography>
-                          </Box>
-                        }
-                      />
-                      <FormControlLabel
-                        value="momo"
-                        disabled={isPaid}
-                        control={<Radio />}
-                        label={
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <img
-                              src={MomoImg}
-                              alt="Momo"
-                              style={{ width: "40px", height: "40px" }}
-                            />
-                            <Typography>Momo (E-Wallet)</Typography>
-                          </Box>
-                        }
-                      />
-                      <FormControlLabel
-                        value="banking"
-                        disabled={isPaid}
-                        control={<Radio />}
-                        label={
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <img
-                              src={BankingImg}
-                              alt="Banking"
-                              style={{ width: "40px", height: "40px" }}
-                            />
-                            <Typography>Banking</Typography>
-                          </Box>
-                        }
-                      />
-                    </RadioGroup>
-                  </Box>
-                  {/* Conditional Rendering for Text Fields */}
-                  <Box
-                    sx={{
-                      flex: 2,
-                      borderLeft: "1px solid #ccc",
-                      pl: 6,
-                      py: 2,
-                      pr: 2,
-                    }}
-                  >
-                    {selectedPaymentMethod === "cash" && (
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#333",
-                          height: "100%",
-                          alignItems: "center",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        Please prepare the exact amount in cash to complete the
-                        payment.
-                      </Typography>
-                    )}
-                    {selectedPaymentMethod === "visa/mastercard" && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                        }}
-                      >
-                        <TextField
-                          label="Card Number"
-                          variant="outlined"
-                          fullWidth
-                        />
-                        <TextField
-                          label="Cardholder Name"
-                          variant="outlined"
-                          fullWidth
-                        />
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                          <TextField
-                            label="CVV"
-                            variant="outlined"
-                            fullWidth
-                            sx={{ flex: 1 }}
-                            inputProps={{
-                              maxLength: 4,
-                              inputMode: "numeric",
-                              pattern: "[0-9]*",
-                            }}
-                          />
-                          <TextField
-                            label="Expiry Date (MM/YY)"
-                            variant="outlined"
-                            sx={{ width: 120 }}
-                            inputProps={{
-                              maxLength: 5,
-                              inputMode: "numeric",
-                              pattern: "(0[1-9]|1[0-2])\\/([0-9]{2})",
-                              placeholder: "MM/YY",
-                            }}
-                            // Optionally, add validation logic for MM/YY format and valid date
-                          />
-                        </Box>
-                      </Box>
-                    )}
-                    {selectedPaymentMethod === "momo" && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "100%",
-                        }}
-                      >
-                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover flex items-center justify-center">
-                          <img
-                            src={qrCodeImg}
-                            alt="Momo QR Code"
-                            style={{
-                              width: "260px",
-                              height: "260px",
-                              objectFit: "contain",
-                              borderRadius: "12px",
-                            }}
-                          />
-                        </div>
-
-                        {/* Mock payment details */}
-                        <Box sx={{ mt: 1, width: "100%", maxWidth: 320 }}>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Receiver: <b>MTM CINEMA</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Account Number: <b>0909090909</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            E-Wallet: <b>Momo</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Message: <b>CM-MOMO-TICKET-123456</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Amount: <b>200,000 VND</b>
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="body1"
-                          sx={{ color: "#999", textAlign: "center" }}
-                        >
-                          Scan the QR code above to complete the payment using
-                          Momo.
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {selectedPaymentMethod === "banking" && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "100%",
-                        }}
-                      >
-                        <div className="w-[320px] h-[320px] rounded-xl bg-[#dadada] object-cover flex items-center justify-center">
-                          <img
-                            src={qrCodeImg}
-                            alt="Banking QR Code"
-                            style={{
-                              width: "260px",
-                              height: "260px",
-                              objectFit: "contain",
-                              borderRadius: "12px",
-                            }}
-                          />
-                        </div>
-
-                        {/* Mock payment details */}
-                        <Box sx={{ mt: 1, width: "100%", maxWidth: 320 }}>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Receiver: <b>MTM CINEMA</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Account Number: <b>222233334444</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Bank: <b>Vietcombank</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Message: <b>CM-BANK-TICKET-654321</b>
-                          </Typography>
-                          <Typography variant="body1" sx={{ color: "#333" }}>
-                            Amount: <b>200,000 VND</b>
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="body1"
-                          sx={{ color: "#999", textAlign: "center" }}
-                        >
-                          Scan the QR code above to complete the payment using
-                          Internet Banking.
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
+                <Payment
+                  selectedPaymentMethod={selectedPaymentMethod}
+                  isPaid={isPaid}
+                  onPaymentMethodChange={handlePaymentMethodChange}
+                />
               )}
               {activeStep === 5 && (
-                <div className="p-4">
-                  <Typography
-                    variant="h5"
-                    sx={{ fontWeight: 500, width: "100%", mt: 4 }}
-                  >
-                    Ticket has been successfully booked!
-                  </Typography>
-                  {pdfUrl ? (
-                    <>
-                      <Typography
-                        variant="h5"
-                        color="gray"
-                        sx={{ fontWeight: 400, width: "100%", mt: 2 }}
-                      >
-                        An invoice has been generated. You can preview in opened
-                        tab.
-                      </Typography>
-                      <iframe
-                        ref={iframeRef}
-                        src={pdfUrl}
-                        style={{ display: "none" }}
-                        title="Print PDF"
-                      />
-                    </>
-                  ) : (
-                    <Typography color="text.secondary" sx={{ mt: 4 }}>
-                      PDF is not available.
-                    </Typography>
-                  )}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ mt: 4 }}
-                    onClick={handlePrint}
-                    disabled={!pdfUrl}
-                  >
-                    Print Ticket
-                  </Button>
-                </div>
+                <PrintTicket
+                  pdfUrl={pdfUrl}
+                  iframeRef={iframeRef}
+                  onPrint={handlePrint}
+                />
               )}
             </div>
           )}

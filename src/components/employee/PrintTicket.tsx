@@ -56,7 +56,7 @@ const PrintTicket: React.FC = () => {
           Print Ticket
         </Typography>
         <Paper
-          elevation={3}
+          elevation={0}
           sx={{
             width: "100%",
             minHeight: 560,
@@ -64,7 +64,8 @@ const PrintTicket: React.FC = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            borderRadius: 3,
+            borderRadius: 2,
+            border: "1px solid #dadada",
             background: "#fff",
           }}
         >
