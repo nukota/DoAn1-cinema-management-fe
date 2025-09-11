@@ -4,13 +4,14 @@ import Header from "../admin/elements/Header";
 import NavBar from "../admin/elements/NavBar";
 import NavSelection from "../admin/elements/NavSelection";
 import OrdersImg from "../../assets/images/orders.svg";
-import PaymentsImg from "./../../assets/images/receipts.svg";
 import BuyTicketImg from "../../assets/images/buyTicket.svg";
 import PrintTicketImg from "../../assets/images/printTicket.svg";
+import ModeratorImg from "../../assets/images/messageQuestion.svg";
 import { Button } from "@mui/material";
 import Profile from "../admin/Profile";
 import BuyTicket from "./BuyTicket";
 import PrintTicket from "./PrintTicket";
+import Moderator from "./Moderator";
 import Orders from "../admin/Orders";
 
 const Employee: React.FC = () => {
@@ -69,6 +70,13 @@ const Employee: React.FC = () => {
                 isSelected={location.pathname === "/employee/print-ticket"}
               />,
               <NavSelection
+                key="moderator"
+                icon={ModeratorImg}
+                title="Moderate Comments"
+                to="/employee/moderator"
+                isSelected={location.pathname === "/employee/moderator"}
+              />,
+              <NavSelection
                 key="orders"
                 icon={OrdersImg}
                 title="Orders"
@@ -89,6 +97,7 @@ const Employee: React.FC = () => {
             <Route path="/" element={<BuyTicket />} />
             <Route path="profile" element={<Profile />} />
             <Route path="/print-ticket" element={<PrintTicket />} />
+            <Route path="/moderator" element={<Moderator />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="profile" element={<Profile />} />
           </Routes>

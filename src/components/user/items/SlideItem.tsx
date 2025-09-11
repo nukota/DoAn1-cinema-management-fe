@@ -6,7 +6,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@mui/material";
+import { Box, Dialog, DialogContent } from "@mui/material";
 import { MovieType } from "../../../interfaces/types";
 import { useAuth } from "../../../providers/AuthProvider";
 
@@ -57,27 +57,43 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
       <div className="text-xl font-medium text-white absolute top-[376px] w-full flex justify-center">
         <span className="truncate">{movie.title}</span>
       </div>
-      <div className="absolute top-[426px] w-full items-center flex flex-row justify-between">
+      <Box
+        className="absolute top-[426px] w-full items-center flex flex-row"
+        sx={{
+          border: 1,
+          borderColor: "secondary.main",
+          borderRadius: 2,
+          boxSizing: "border-box",
+          backgroundColor: "transparent",
+        }}
+      >
         <Button
           variant="text"
-          size="small"
+          fullWidth
           color="secondary"
           startIcon={<PlayCircleIcon sx={{ fontSize: 10 }} />}
-          sx={{ fontSize: 12, fontWeight: 600 }}
+          sx={{ fontSize: 12, fontWeight: 600, flex: 1 }}
           onClick={handlePlayTrailerClicked}
         >
           Play Trailer
         </Button>
         <Button
           variant="contained"
-          size="small"
+          fullWidth
           color="secondary"
-          sx={{ fontSize: 12, fontWeight: 500, color: "#000", px: 2 }}
+          sx={{
+            fontSize: 12,
+            fontWeight: 500,
+            color: "#000",
+            px: 2,
+            flex: 0.75,
+          }}
           onClick={handleBuyTicketClicked}
+          disableElevation
         >
           Buy Ticket
         </Button>
-      </div>
+      </Box>
       <div className="absolute slide-item-filter w-[240px] h-[360px] bg-black z-10" />
       <div className="absolute slide-item-info w-full h-[170px] z-[11]">
         <div className="text-white flex flex-col py-4 pl-6">
@@ -85,14 +101,16 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
           <div className="text-sm pl-2 flex flex-col space-y-2">
             <div>
               <StyleIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
-              {Array.isArray(movie.genre) ? movie.genre.join(", ") : movie.genre}
+              {Array.isArray(movie.genre)
+                ? movie.genre.join(", ")
+                : movie.genre}
             </div>
             <div>
               <AccessTimeIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
               {(() => {
-              const hours = Math.floor(movie.duration / 60);
-              const minutes = movie.duration % 60;
-              return `${hours > 0 ? `${hours}h ` : ""}${minutes}m`;
+                const hours = Math.floor(movie.duration / 60);
+                const minutes = movie.duration % 60;
+                return `${hours > 0 ? `${hours}h ` : ""}${minutes}m`;
               })()}
             </div>
             <div>
@@ -100,7 +118,8 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
               {movie.age_limit ? `T${movie.age_limit}` : "None"}
             </div>
             <div>
-              <PublicIcon sx={{ fontSize: 16, color: "#ebd113" }} /> {movie.country}
+              <PublicIcon sx={{ fontSize: 16, color: "#ebd113" }} />{" "}
+              {movie.country}
             </div>
           </div>
         </div>
