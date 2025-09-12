@@ -118,7 +118,7 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
 
   return (
     <div
-      className={`flex flex-col w-full h-full max-w-full min-h-screen ${className}`}
+      className={`flex flex-col w-full h-full max-w-full min-h-screen xl:min-h-[800px] ${className}`}
     >
       {/* Title */}
       <div className="text-xl sm:text-2xl md:text-3xl lg:text-[40px] font-medium text-dark-gray mb-2">

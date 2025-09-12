@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { TextField, InputAdornment, Button } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import {
+  TextField,
+  InputAdornment,
+  Button,
+  IconButton,
+  Tooltip,
+  Box,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import { Mic, CameraAlt } from "@mui/icons-material";
 import logo from "../../../assets/images/logo.svg";
 import NotificationImg from "../../../assets/images/notification.svg";
 import ArrowDownImg from "../../../assets/images/arrowDown.svg";
 import profileImg from "../../../assets/images/profile.png";
 import { useAuth } from "../../../providers/AuthProvider";
-import { IconButton, Menu, MenuItem } from "@mui/material";
 import { toast } from "react-toastify";
 
 const UserHeader: React.FC = () => {
@@ -46,6 +54,63 @@ const UserHeader: React.FC = () => {
     if (searchPhrase.trim()) {
       navigate(`/user/movie-list?query=${encodeURIComponent(searchPhrase)}`);
     }
+  };
+
+  const handleVoiceSearch = () => {
+    // Check if speech recognition is supported
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      toast.error("Voice search is not supported in this browser");
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.start();
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchPhrase(transcript);
+      navigate(`/user/movie-list?query=${encodeURIComponent(transcript)}`);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      toast.error("Voice search failed. Please try again.");
+    };
+  };
+
+  const handleImageSearch = () => {
+    // Create a file input element
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        // For now, show toast. In a real app, you'd upload to an image recognition service
+        toast.info(
+          `Image search feature coming soon! Selected file: ${file.name}`
+        );
+
+        // Here you would typically:
+        // 1. Upload the image to an AI service (Google Vision API, AWS Rekognition, etc.)
+        // 2. Extract text/objects from the image
+        // 3. Use the extracted information to search movies
+      }
+    };
+
+    input.click();
   };
 
   const handleNotificationClick = () => {
@@ -117,15 +182,34 @@ const UserHeader: React.FC = () => {
             size="small"
             value={searchPhrase}
             onChange={(e) => setSearchPhrase(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleSearchClick();
+              }
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Button
-                    onClick={handleSearchClick}
-                    sx={{ minWidth: 0, padding: 0 }}
-                  >
-                    <SearchIcon />
-                  </Button>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    <Tooltip title="Voice Search">
+                      <IconButton
+                        size="small"
+                        onClick={handleVoiceSearch}
+                        sx={{ color: "#999", p: 0.5 }}
+                      >
+                        <Mic fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Image Search">
+                      <IconButton
+                        size="small"
+                        onClick={handleImageSearch}
+                        sx={{ color: "#999", p: 0.5 }}
+                      >
+                        <CameraAlt fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </InputAdornment>
               ),
               sx: {
@@ -139,7 +223,7 @@ const UserHeader: React.FC = () => {
               backgroundColor: "white",
               borderRadius: "4px",
               height: "30px",
-              width: "200px",
+              width: "240px",
             }}
           />
         )}

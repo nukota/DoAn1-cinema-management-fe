@@ -150,7 +150,7 @@ const Cinemas: React.FC = () => {
   }
 
   return (
-    <div className="cinemas flex flex-col w-full h-full max-w-full min-h-[673px] overflow-y-visible scrollbar-hide relative">
+    <div className="cinemas flex flex-col w-full h-full max-w-full min-h-screen xl:min-h-[800px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Cinemas</div>
       <Box
         sx={{

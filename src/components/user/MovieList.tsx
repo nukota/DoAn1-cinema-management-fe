@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Box, Typography, TextField } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import { Mic, CameraAlt } from "@mui/icons-material";
 import SlideItem from "./items/SlideItem";
 import { MovieType } from "../../interfaces/types";
 import { useMovies } from "../../providers/MoviesProvider";
+import wallPaperImg from "../../assets/images/wallpaper.jpg";
 
 const MovieList: React.FC = () => {
   const { movies, fetchMoviesData } = useMovies();
@@ -18,9 +27,9 @@ const MovieList: React.FC = () => {
     fetchData();
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const query = searchParams.get("query") || "";
-    setSearchValue(query); 
+    setSearchValue(query);
     if (query) {
       const filtered = movies.filter((movie: MovieType) =>
         movie.title.toLowerCase().includes(query.toLowerCase())
@@ -40,6 +49,64 @@ const MovieList: React.FC = () => {
     setFilteredMovies(filtered);
   };
 
+  const handleVoiceSearch = () => {
+    // Check if speech recognition is supported
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      alert("Voice search is not supported in this browser");
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.start();
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchValue(transcript);
+      const filtered = movies.filter((movie: MovieType) =>
+        movie.title.toLowerCase().includes(transcript.toLowerCase())
+      );
+      setFilteredMovies(filtered);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      alert("Voice search failed. Please try again.");
+    };
+  };
+
+  const handleImageSearch = () => {
+    // Create a file input element
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        // For now, show alert. In a real app, you'd upload to an image recognition service
+        alert(`Image search feature coming soon! Selected file: ${file.name}`);
+
+        // Here you would typically:
+        // 1. Upload the image to an AI service (Google Vision API, AWS Rekognition, etc.)
+        // 2. Extract text/objects from the image
+        // 3. Use the extracted information to search movies
+      }
+    };
+
+    input.click();
+  };
+
   return (
     <Box
       sx={{
@@ -52,14 +119,28 @@ const MovieList: React.FC = () => {
         alignItems: "center",
       }}
     >
+      <div
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,1) 100%)",
+        }}
+      />
+      <img
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
+        src={wallPaperImg}
+        alt="Wallpaper"
+      />
       <Typography
-        variant="h2"
+        variant="h3"
         sx={{
-          color: "#484848",
+          fontWeight: "bold",
+          fontFamily: "Jost",
+          color: "white",
           marginBottom: 4,
           textAlign: "center",
           marginTop: 6,
-          fontFamily: "Poppins",
+          fontSize: { xs: "2.5rem", lg: "3rem", xl: "3.5rem" },
         }}
       >
         ALL MOVIES
@@ -69,10 +150,42 @@ const MovieList: React.FC = () => {
         variant="outlined"
         size="small"
         fullWidth
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Tooltip title="Voice Search">
+                  <IconButton
+                    size="small"
+                    onClick={handleVoiceSearch}
+                    sx={{ color: "#999" }}
+                  >
+                    <Mic fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Image Search">
+                  <IconButton
+                    size="small"
+                    onClick={handleImageSearch}
+                    sx={{ color: "#999" }}
+                  >
+                    <CameraAlt fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </InputAdornment>
+          ),
+          sx: {
+            padding: "0 6px",
+            height: "100%",
+            fontSize: "0.875rem",
+          },
+        }}
         sx={{
-          marginBottom: 4,
           backgroundColor: "white",
-          borderRadius: 100,
+          borderRadius: "4px",
+          height: "30px",
+          marginBottom: 4,
           maxWidth: 600,
         }}
         value={searchValue}

@@ -7,13 +7,90 @@ import {
   Typography,
   Button,
   SelectChangeEvent,
+  Paper,
 } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { keyframes } from "@emotion/react";
+import {
+  KeyboardArrowDown,
+  MovieOutlined,
+  LocationOnOutlined,
+  CalendarTodayOutlined,
+  AccessTimeOutlined,
+  LocalMoviesOutlined,
+} from "@mui/icons-material";
+import { keyframes, styled } from "@mui/material/styles";
 import { useShowtimes } from "../../../providers/ShowtimesProvider";
 import { useRooms } from "../../../providers/RoomsProvider";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../providers/AuthProvider";
+
+// Styled components for elegant design
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  background:
+    "linear-gradient(135deg, rgba(17, 17, 17, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%)",
+  backdropFilter: "blur(10px)",
+  borderRadius: "20px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  padding: theme.spacing(3),
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  "&:hover": {
+    transform: "translateY(-2px)",
+    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.4)",
+  },
+}));
+
+const StyledSelect = styled(Select)(({ value }) => ({
+  height: "56px",
+  borderRadius: "12px",
+  backgroundColor: value
+    ? "rgba(220, 38, 38, 0.1)"
+    : "rgba(255, 255, 255, 0.05)",
+  border: `2px solid ${value ? "#dc2626" : "rgba(255, 255, 255, 0.1)"}`,
+  transition: "all 0.3s ease",
+  "& .MuiSelect-select": {
+    color: value ? "#dc2626" : "#999",
+    fontWeight: 600,
+    fontSize: "16px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    border: "none",
+  },
+  "&:hover": {
+    backgroundColor: value
+      ? "rgba(220, 38, 38, 0.15)"
+      : "rgba(255, 255, 255, 0.08)",
+    borderColor: value ? "#b91c1c" : "rgba(255, 255, 255, 0.2)",
+  },
+  "&.Mui-focused": {
+    backgroundColor: value
+      ? "rgba(220, 38, 38, 0.15)"
+      : "rgba(255, 255, 255, 0.08)",
+    borderColor: "#dc2626",
+  },
+}));
+
+const StyledButton = styled(Button)(({ disabled }) => ({
+  height: "56px",
+  borderRadius: "12px",
+  fontSize: "18px",
+  fontWeight: 700,
+  textTransform: "none",
+  background: disabled
+    ? "linear-gradient(135deg, #666 0%, #555 100%)"
+    : "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+  boxShadow: disabled ? "none" : "0 4px 15px rgba(220, 38, 38, 0.4)",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  "&:hover": {
+    background: disabled
+      ? "linear-gradient(135deg, #666 0%, #555 100%)"
+      : "linear-gradient(135deg, #b91c1c 0%, #991b1b 100%)",
+    transform: disabled ? "none" : "translateY(-2px)",
+    boxShadow: disabled ? "none" : "0 6px 20px rgba(220, 38, 38, 0.6)",
+  },
+}));
 
 const QuickBook: React.FC = () => {
   const { getCurrentShowtime, currentShowtime } = useShowtimes();
@@ -209,7 +286,7 @@ const QuickBook: React.FC = () => {
   };
 
   const renderArrow = () => {
-    return <KeyboardArrowDownIcon sx={{ color: "#999999", mr: 1 }} />;
+    return <KeyboardArrowDown sx={{ color: "#999999", mr: 1 }} />;
   };
 
   const menuProps = {
@@ -234,204 +311,250 @@ const QuickBook: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="w-full px-[8%] h-[100px] z-30">
-        <Box
+      <Box
+        sx={{
+          width: "100%",
+          px: { xs: 2, sm: 4, md: "8%" },
+          py: 3,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <StyledPaper
           sx={{
-            borderColor: "#111",
-            borderWidth: "2px",
-            borderStyle: "solid",
-            borderRadius: "8px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "start",
-            padding: "16px",
-            backgroundColor: "#111",
+            textAlign: "center",
+            background:
+              "linear-gradient(135deg, rgba(40, 40, 40, 0.9) 0%, rgba(60, 60, 60, 0.9) 100%)",
           }}
         >
-          <div className="text-[#999] text-3xl ml-2 mr-4 font-regular font-['Poppins']">
+          <LocalMoviesOutlined sx={{ fontSize: 48, color: "#999", mb: 2 }} />
+          <Typography
+            variant="h5"
+            sx={{
+              color: "#999",
+              fontWeight: 500,
+              fontFamily: "'Poppins', sans-serif",
+            }}
+          >
             Please sign in to use quick booking feature
-          </div>
-        </Box>
-      </div>
+          </Typography>
+        </StyledPaper>
+      </Box>
     );
   }
 
   return (
-    <div className="w-full px-[8%] h-[100px] z-30">
-      <Box
+    <Box
+      sx={{
+        width: "100%",
+        px: { xs: 2, sm: 4, md: "8%" },
+        py: 3,
+      }}
+    >
+      <StyledPaper
         sx={{
           animation: allSelected ? `${shake} 0.5s ease-in-out` : "none",
-          borderColor: allSelected ? "secondary.main" : "#111",
-          borderWidth: "2px",
-          borderStyle: "solid",
-          borderRadius: "8px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px",
-          backgroundColor: "#111",
-          transition: "all 0.5s ease-in-out",
+          borderColor: allSelected ? "#dc2626" : "rgba(255, 255, 255, 0.1)",
         }}
       >
-        <div className="text-white text-3xl ml-2 mr-4">QUICK BOOK</div>
-        <FormControl variant="outlined" sx={{ width: 180 }}>
-          <Select
-            value={selectedMovie}
-            onChange={handleMovieChange}
-            displayEmpty
-            IconComponent={renderArrow}
-            MenuProps={menuProps}
-            sx={{
-              height: "45px",
-              color: selectedMovie ? "black" : "#999999",
-              fontSize: "18px",
-              fontWeight: "semibold",
-              backgroundColor: selectedMovie ? "secondary.main" : "#111",
-              border: selectedMovie ? "" : "2px solid #999999",
-              "& .MuiSelect-select": {
-                color: selectedMovie ? "black" : "#999999",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none",
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>Movie</em>
-            </MenuItem>
-            {currentShowtime.map((movie) => (
-              <MenuItem key={movie._id} value={movie._id}>
-                {movie.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl
-          variant="outlined"
-          sx={{ width: 180 }}
-          disabled={!selectedMovie}
-        >
-          <Select
-            value={selectedCinema}
-            onChange={handleCinemaChange}
-            displayEmpty
-            IconComponent={renderArrow}
-            MenuProps={menuProps}
-            sx={{
-              height: "45px",
-              color: selectedCinema ? "black" : "#999999",
-              fontSize: "18px",
-              fontWeight: "semibold",
-              backgroundColor: selectedCinema ? "secondary.main" : "#111",
-              border: selectedCinema ? "" : "2px solid #999999",
-              "& .MuiSelect-select": {
-                color: selectedCinema ? "black" : "#999999",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none",
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>Cinema</em>
-            </MenuItem>
-            {filteredCinemas.map((cinema) => (
-              <MenuItem key={cinema} value={cinema}>
-                {cinema}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl
-          variant="outlined"
-          sx={{ width: 180 }}
-          disabled={!selectedCinema}
-        >
-          <Select
-            value={selectedDate}
-            onChange={handleDateChange}
-            displayEmpty
-            IconComponent={renderArrow}
-            MenuProps={menuProps}
-            sx={{
-              height: "45px",
-              color: selectedDate ? "black" : "#999999",
-              fontSize: "18px",
-              fontWeight: "semibold",
-              backgroundColor: selectedDate ? "secondary.main" : "#111",
-              border: selectedDate ? "" : "2px solid #999999",
-              "& .MuiSelect-select": {
-                color: selectedDate ? "black" : "#999999",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none",
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>Date</em>
-            </MenuItem>
-            {filteredDates.map((date) => (
-              <MenuItem key={date} value={date}>
-                {new Date(date).toLocaleDateString()}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl
-          variant="outlined"
-          sx={{ width: 180 }}
-          disabled={!selectedDate}
-        >
-          <Select
-            value={selectedTime}
-            onChange={handleTimeChange}
-            displayEmpty
-            IconComponent={renderArrow}
-            MenuProps={menuProps}
-            sx={{
-              height: "45px",
-              color: selectedTime ? "black" : "#999999",
-              fontSize: "18px",
-              fontWeight: "semibold",
-              backgroundColor: selectedTime ? "secondary.main" : "#111",
-              border: selectedTime ? "" : "2px solid #999999",
-              "& .MuiSelect-select": {
-                color: selectedTime ? "black" : "#999999",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none",
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>Time</em>
-            </MenuItem>
-            {filteredTimes.map((time) => (
-              <MenuItem key={time} value={time}>
-                {time}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button
+        <Box
           sx={{
-            height: "50px",
-            width: "180px",
-            marginRight: 1,
-            backgroundColor: allSelected ? "secondary.main" : "gray",
-            transition: "background-color 0.5s ease-in-out",
+            display: "flex",
+            flexDirection: { xs: "column", "1536px": "row" },
+            alignItems: "center",
+            gap: 3,
           }}
-          variant="contained"
-          onClick={handleBook}
         >
-          <Typography sx={{ fontSize: 24, fontWeight: "medium" }}>
-            BOOK
-          </Typography>
-        </Button>
-      </Box>
-    </div>
+          {/* Title Section */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 2,
+            }}
+          >
+            <LocalMoviesOutlined sx={{ fontSize: 32, color: "white" }} />
+            <Typography
+              variant="h4"
+              sx={{
+                color: "white",
+                fontWeight: 700,
+                fontSize: { xs: "1.5rem", sm: "2rem" },
+                background: "linear-gradient(135deg, #ffffff 0%, #dc2626 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              QUICK BOOK
+            </Typography>
+          </Box>
+
+          {/* Selection Controls */}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr", // 1 column on extra small screens
+                sm: "1fr 1fr", // 2 columns on small screens
+                md: "1fr 1fr", // 2 columns on medium screens
+                lg: "1fr 1fr 1fr 1fr", // 4 columns on large screens
+              },
+              gap: 2,
+            }}
+          >
+            {/* Movie Selection */}
+            <FormControl variant="outlined" sx={{ minWidth: 180 }}>
+              <StyledSelect
+                value={selectedMovie}
+                onChange={handleMovieChange as any}
+                displayEmpty
+                IconComponent={renderArrow}
+                MenuProps={menuProps}
+              >
+                <MenuItem value="">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <MovieOutlined sx={{ fontSize: 20, color: "#999" }} />
+                    <em>Select Movie</em>
+                  </Box>
+                </MenuItem>
+                {currentShowtime.map((movie) => (
+                  <MenuItem key={movie._id} value={movie._id}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <MovieOutlined sx={{ fontSize: 20, color: "#dc2626" }} />
+                      {movie.title}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </StyledSelect>
+            </FormControl>
+
+            {/* Cinema Selection */}
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 180 }}
+              disabled={!selectedMovie}
+            >
+              <StyledSelect
+                value={selectedCinema}
+                onChange={handleCinemaChange as any}
+                displayEmpty
+                IconComponent={renderArrow}
+                MenuProps={menuProps}
+              >
+                <MenuItem value="">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <LocationOnOutlined sx={{ fontSize: 20, color: "#999" }} />
+                    <em>Select Cinema</em>
+                  </Box>
+                </MenuItem>
+                {filteredCinemas.map((cinema) => (
+                  <MenuItem key={cinema} value={cinema}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <LocationOnOutlined
+                        sx={{ fontSize: 20, color: "#dc2626" }}
+                      />
+                      {cinema}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </StyledSelect>
+            </FormControl>
+
+            {/* Date Selection */}
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 180 }}
+              disabled={!selectedCinema}
+            >
+              <StyledSelect
+                value={selectedDate}
+                onChange={handleDateChange as any}
+                displayEmpty
+                IconComponent={renderArrow}
+                MenuProps={menuProps}
+              >
+                <MenuItem value="">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <CalendarTodayOutlined
+                      sx={{ fontSize: 20, color: "#999" }}
+                    />
+                    <em>Select Date</em>
+                  </Box>
+                </MenuItem>
+                {filteredDates.map((date) => (
+                  <MenuItem key={date} value={date}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <CalendarTodayOutlined
+                        sx={{ fontSize: 20, color: "#dc2626" }}
+                      />
+                      {new Date(date).toLocaleDateString()}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </StyledSelect>
+            </FormControl>
+
+            {/* Time Selection */}
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 180 }}
+              disabled={!selectedDate}
+            >
+              <StyledSelect
+                value={selectedTime}
+                onChange={handleTimeChange as any}
+                displayEmpty
+                IconComponent={renderArrow}
+                MenuProps={menuProps}
+              >
+                <MenuItem value="">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <AccessTimeOutlined sx={{ fontSize: 20, color: "#999" }} />
+                    <em>Select Time</em>
+                  </Box>
+                </MenuItem>
+                {filteredTimes.map((time) => (
+                  <MenuItem key={time} value={time}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <AccessTimeOutlined
+                        sx={{ fontSize: 20, color: "#dc2626" }}
+                      />
+                      {time}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </StyledSelect>
+            </FormControl>
+          </Box>
+
+          {/* Book Button */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: { xs: 1, xl: 0 },
+            }}
+          >
+            <StyledButton
+              variant="contained"
+              onClick={handleBook}
+              disabled={!allSelected}
+              sx={{
+                minWidth: 200,
+                width: { xs: "100%", sm: "300px" },
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <LocalMoviesOutlined />
+                BOOK NOW
+              </Box>
+            </StyledButton>
+          </Box>
+        </Box>
+      </StyledPaper>
+    </Box>
   );
 };
 

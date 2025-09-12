@@ -4,11 +4,18 @@ import wallPaperImg from "../../assets/images/wallpaper.jpg";
 
 const AboutUs: React.FC = () => {
   return (
-    <div className="bg-[#090909] w-full h-full flex flex-col justify-center relative">
+    <div className="bg-black w-full h-full flex flex-col justify-center relative">
+      <div
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
+        }}
+      />
       <img
-        className="absolute w-full h-full top-0 z-0 opacity-10"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
         src={wallPaperImg}
-        alt="Cinema wallpaper"
+        alt="Wallpaper"
       />
       <Box
         sx={{
@@ -26,25 +33,40 @@ const AboutUs: React.FC = () => {
         }}
       >
         <Typography
-          variant="h4"
+          variant="h3"
           color="white"
-          sx={{ fontWeight: "medium", marginTop: "10px", marginBottom: "24px", alignSelf: "center" }}
+          sx={{
+            fontWeight: "medium",
+            fontFamily: "Jost",
+            marginTop: "10px",
+            marginBottom: "24px",
+            alignSelf: "center",
+          }}
         >
           ABOUT US
         </Typography>
         <Typography sx={{ mb: 2 }}>
-          Welcome to <b>UIT Cinema</b>! We are dedicated to providing the best movie experience for our community. Our cinema features state-of-the-art sound and projection technology, comfortable seating, and a wide selection of the latest blockbusters and beloved classics.
+          Welcome to <b>UIT Cinema</b>! We are dedicated to providing the best
+          movie experience for our community. Our cinema features
+          state-of-the-art sound and projection technology, comfortable seating,
+          and a wide selection of the latest blockbusters and beloved classics.
         </Typography>
         <Typography sx={{ mb: 2 }}>
-          <b>Our Mission:</b> To create a welcoming and enjoyable environment where movie lovers of all ages can come together to enjoy the magic of cinema.
+          <b>Our Mission:</b> To create a welcoming and enjoyable environment
+          where movie lovers of all ages can come together to enjoy the magic of
+          cinema.
         </Typography>
         <Typography sx={{ mb: 2 }}>
           <b>What We Offer:</b>
           <ul style={{ marginLeft: 24 }}>
-            <li>Modern, comfortable theaters with high-quality audio and visuals</li>
+            <li>
+              Modern, comfortable theaters with high-quality audio and visuals
+            </li>
             <li>Online ticket booking and seat selection</li>
             <li>A variety of snacks and beverages at our concession stands</li>
-            <li>Special screenings, events, and promotions for our loyal customers</li>
+            <li>
+              Special screenings, events, and promotions for our loyal customers
+            </li>
             <li>Friendly and helpful staff ready to assist you</li>
             <li>Accessible facilities for all guests</li>
             <li>Membership and loyalty programs with exclusive benefits</li>
@@ -68,7 +90,8 @@ const AboutUs: React.FC = () => {
           . We look forward to seeing you at the movies!
         </Typography>
         <Typography sx={{ mt: 2, fontStyle: "italic" }}>
-          Thank you for choosing UIT Cinema – where every seat is the best seat in the house!
+          Thank you for choosing UIT Cinema – where every seat is the best seat
+          in the house!
         </Typography>
       </Box>
       <div className="w-full bg-black z-20"></div>

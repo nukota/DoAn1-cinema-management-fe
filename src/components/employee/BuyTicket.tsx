@@ -227,8 +227,8 @@ const BuyTicket: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full w-full py-2 relative">
-      <div className="z-[1] w-full h-full m-auto flex flex-col items-start text-black">
+    <div className="flex flex-col h-full w-full py-2 pr-2 relative">
+      <div className="z-[1] w-full min-w-[1200px] h-full m-auto flex flex-col items-start text-black">
         <Typography
           variant="h4"
           color="black"
@@ -247,7 +247,8 @@ const BuyTicket: React.FC = () => {
           elevation={0}
           sx={{
             width: "100%",
-            minHeight: 600,
+            minWidth: "1200px",
+            minHeight: { xs: "600px", xl: "800px" },
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
@@ -264,7 +265,7 @@ const BuyTicket: React.FC = () => {
               </Typography>
             </div>
           ) : (
-            <div className="overflow-x-scroll custom-scrollbar w-[1200px] h-full relative px-4 pt-4">
+            <div className="overflow-x-scroll custom-scrollbar h-full relative px-4 pt-4">
               {activeStep === 0 && (
                 <SelectTickets
                   filteredShowtimes={filteredShowtimes}

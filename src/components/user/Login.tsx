@@ -134,9 +134,17 @@ const Login: React.FC = () => {
       <Backdrop open={loading} sx={{ color: "#fff", zIndex: 2000 }}>
         <CircularProgress color="inherit" />
       </Backdrop>
+      <div
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%)",
+        }}
+      />
       <img
-        className="absolute w-full h-[640px] top-[60px] z-0 opacity-20 object-cover"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
         src={wallPaperImg}
+        alt="Wallpaper"
       />
       <Box
         sx={{
@@ -150,7 +158,7 @@ const Login: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           paddingInline: "14px",
-          height: 'auto',
+          height: "auto",
           overflow: "auto",
           zIndex: 10,
         }}
@@ -445,8 +453,7 @@ const Login: React.FC = () => {
           </TabPanel>
         </TabContext>
       </Box>
-      <div className="z-10 bg-black">
-      </div>
+      <div className="z-10 bg-black"></div>
     </div>
   );
 };

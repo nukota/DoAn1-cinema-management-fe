@@ -5,9 +5,17 @@ import { TextField, Typography, Button } from "@mui/material";
 const Contact: React.FC = () => {
   return (
     <div className="bg-black w-full h-full flex flex-col justify-center relative">
+      <div
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
+        }}
+      />
       <img
-        className="absolute w-full h-full top-0 z-0 opacity-20"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
         src={wallPaperImg}
+        alt="Wallpaper"
       />
       <Box
         sx={{

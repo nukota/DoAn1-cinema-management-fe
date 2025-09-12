@@ -86,7 +86,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
       )}
 
       {/* DataGrid Container */}
-      <div className="rounded-md overflow-hidden min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] bg-white">
+      <div className="rounded-md overflow-hidden min-h-[500px] md:min-h-[636px] bg-white">
         <MuiDataGrid
           columnHeaderHeight={48}
           rowHeight={40}

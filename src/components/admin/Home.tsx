@@ -518,7 +518,7 @@ const AdminHome: React.FC = () => {
             display: "flex",
             alignItems: "start",
             mb: 3,
-            flexDirection: { sm: "column", md: "row" },
+            flexDirection: { xs: "column", md: "row" },
             gap: { sm: 0, md: 2 },
           }}
         >

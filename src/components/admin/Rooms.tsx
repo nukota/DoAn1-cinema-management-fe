@@ -154,7 +154,7 @@ const Rooms: React.FC = () => {
   }
 
   return (
-    <div className="rooms flex flex-col h-[673px] overflow-y-visible scrollbar-hide relative">
+    <div className="rooms flex flex-col min-h-screen xl:min-h-[800px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Rooms</div>
       <Box
         sx={{
