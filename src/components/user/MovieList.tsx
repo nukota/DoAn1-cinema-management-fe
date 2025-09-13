@@ -120,14 +120,14 @@ const MovieList: React.FC = () => {
       }}
     >
       <div
-        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[-1]"
         style={{
           background:
             "linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,1) 100%)",
         }}
       />
       <img
-        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-15"
         src={wallPaperImg}
         alt="Wallpaper"
       />

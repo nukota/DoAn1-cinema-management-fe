@@ -119,25 +119,11 @@ const Reviews: React.FC = () => {
     },
   ];
 
-  if (loading) {
-    return (
-      <CustomDataGrid
-        title="Reviews Management"
-        loading={true}
-        loadingMessage="Loading reviews..."
-        rows={[]}
-        columns={columns}
-        showCheckboxSelection={false}
-      />
-    );
-  }
-
   return (
     <>
       <CustomDataGrid
         title="Reviews Management"
         loading={loading}
-        loadingMessage="Loading reviews..."
         rows={reviews}
         columns={columns}
         showCheckboxSelection={true}

@@ -1,13 +1,12 @@
 import React from "react";
 import { DataGrid as MuiDataGrid, GridColDef } from "@mui/x-data-grid";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, Skeleton, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 interface CustomDataGridProps {
   title: string;
   loading: boolean;
-  loadingMessage?: string;
   rows: any[];
   columns: GridColDef[];
   onAddNew?: () => void;
@@ -24,7 +23,6 @@ interface CustomDataGridProps {
 const CustomDataGrid: React.FC<CustomDataGridProps> = ({
   title,
   loading,
-  loadingMessage,
   rows,
   columns,
   onAddNew,
@@ -39,11 +37,60 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full pt-10">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">
-          {loadingMessage || "Loading..."}
-        </span>
+      <div className="flex flex-col w-full h-full max-w-full overflow-hidden bg-gray-50 min-h-screen">
+        {/* Title Skeleton */}
+        <Skeleton
+          variant="text"
+          sx={{ fontSize: "2.5rem", mb: 2 }}
+          width={300}
+        />
+
+        {/* Action Bar Skeleton */}
+        <div className="flex justify-end gap-4 items-center mb-2 sm:mb-2">
+          <Skeleton variant="rectangular" width={120} height={36} />
+        </div>
+
+        {/* DataGrid Skeleton */}
+        <div className="rounded-md overflow-hidden min-h-[500px] md:min-h-[636px] bg-white p-4">
+          {/* Header skeleton */}
+          <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                height={48}
+                sx={{ flex: 1 }}
+              />
+            ))}
+          </Box>
+
+          {/* Rows skeleton */}
+          {Array.from({ length: 10 }).map((_, rowIndex) => (
+            <Box key={rowIndex} sx={{ display: "flex", gap: 1, mb: 1 }}>
+              {Array.from({ length: 5 }).map((_, colIndex) => (
+                <Skeleton
+                  key={colIndex}
+                  variant="rectangular"
+                  height={40}
+                  sx={{ flex: 1 }}
+                />
+              ))}
+            </Box>
+          ))}
+
+          {/* Pagination skeleton */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 2,
+            }}
+          >
+            <Skeleton variant="text" width={100} />
+            <Skeleton variant="rectangular" width={200} height={32} />
+          </Box>
+        </div>
       </div>
     );
   }

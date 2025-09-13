@@ -166,7 +166,6 @@ const Discounts: React.FC = () => {
       <CustomDataGrid
         title="Discounts Management"
         loading={loading}
-        loadingMessage="Loading discounts..."
         rows={uniqueDiscounts}
         columns={columns}
         onAddNew={handleAddNewClick}

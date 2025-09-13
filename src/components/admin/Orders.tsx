@@ -65,15 +65,6 @@ const Orders: React.FC = () => {
     { label: "Cancelled", value: "cancelled" },
   ];
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">Loading orders...</span>
-      </div>
-    );
-  }
-
   return (
     <>
       <CustomTabs
@@ -81,6 +72,7 @@ const Orders: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         tabs={orderTabs}
+        loading={loading}
         data={orders}
         gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         gap="gap-2"

@@ -142,7 +142,7 @@ const Login: React.FC = () => {
         }}
       />
       <img
-        className="absolute w-full h-[100vh] top-0 z-0 opacity-10"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-15"
         src={wallPaperImg}
         alt="Wallpaper"
       />

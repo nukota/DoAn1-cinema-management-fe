@@ -101,15 +101,6 @@ const Products: React.FC = () => {
     { label: "Others", value: "Others" },
   ];
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">Loading products...</span>
-      </div>
-    );
-  }
-
   return (
     <>
       <CustomTabs
@@ -117,6 +108,7 @@ const Products: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         tabs={productTabs}
+        loading={loading}
         data={products}
         gridCols="grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9"
         gap="gap-2"

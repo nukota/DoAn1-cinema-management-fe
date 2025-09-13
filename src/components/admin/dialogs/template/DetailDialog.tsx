@@ -49,20 +49,20 @@ const DetailDialog: React.FC<DetailDialogProps> = ({
     }
   } else {
     // View mode - show Edit and/or Delete buttons
-    if (onEdit) {
-      actions.push({
-        label: "Edit",
-        onClick: onEdit,
-        variant: "contained",
-        color: "primary",
-      });
-    }
     if (onDelete) {
       actions.push({
         label: "Delete",
         onClick: onDelete,
         variant: "outlined",
         color: "error",
+      });
+    }
+    if (onEdit) {
+      actions.push({
+        label: "Edit",
+        onClick: onEdit,
+        variant: "contained",
+        color: "primary",
       });
     }
   }

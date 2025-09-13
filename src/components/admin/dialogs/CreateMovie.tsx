@@ -208,34 +208,8 @@ const CreateMovie: React.FC<CreateMovieProps> = ({ open, onClose, onAdd }) => {
       sections={sections}
       onAdd={handleSubmit}
       error={error}
-    >
-      {posterURL && (
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          sx={{ mt: 2 }}
-        >
-          <img
-            src={posterURL}
-            alt="Movie Poster"
-            style={{
-              width: 160,
-              height: 200,
-              objectFit: "cover",
-              borderRadius: 8,
-            }}
-            className="bg-[#eee]"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-          <Typography variant="caption" sx={{ mt: 1 }}>
-            Poster Preview
-          </Typography>
-        </Box>
-      )}
-    </CreateDialog>
+      showImage="posterURL"
+    />
   );
 };
 

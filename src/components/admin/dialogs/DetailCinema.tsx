@@ -1,31 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { CinemaType } from "../../../interfaces/types";
-const CustomDialogContent = styled(DialogContent)({
-  "&::-webkit-scrollbar": {
-    width: "8px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: "#f1f1f1",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: "#999",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-thumb:hover": {
-    background: "#666",
-  },
-});
+import DetailDialog, { FormSection } from "./template/DetailDialog";
 
 interface DetailCinemaProps {
   cinema: CinemaType;
@@ -56,11 +31,11 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
     }
   }, [cinema, open]);
 
-  const handleModifyClick = () => {
+  const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSaveClick = () => {
+  const handleSave = () => {
     if (!name || !address) {
       console.error("All fields are required");
       return;
@@ -74,107 +49,59 @@ const DetailCinema: React.FC<DetailCinemaProps> = ({
     setIsEditing(false);
   };
 
+  const handleCancel = () => {
+    // Reset to original values
+    if (cinema) {
+      setName(cinema.name);
+      setAddress(cinema.address);
+    }
+    setIsEditing(false);
+  };
+
+  const sections: FormSection[] = [
+    {
+      fields: [
+        {
+          name: "id",
+          label: "ID",
+          type: "text",
+          placeholder: "Auto generated",
+          value: cinema?._id || "",
+          onChange: () => {}, // ID is always read-only
+          disabled: true,
+        },
+        {
+          name: "name",
+          label: "Name",
+          type: "text",
+          placeholder: "Name",
+          value: name,
+          onChange: (value) => setName(value),
+        },
+        {
+          name: "address",
+          label: "Address",
+          type: "text",
+          placeholder: "Address",
+          value: address,
+          onChange: (value) => setAddress(value),
+        },
+      ],
+    },
+  ];
+
   return (
-    <Dialog
+    <DetailDialog
       open={open}
       onClose={onClose}
-      sx={{
-        maxHeight: "90vh",
-        overflow: "auto",
-        placeSelf: "center",
-      }}
-    >
-      <DialogTitle
-        sx={{
-          fontSize: 24,
-          fontWeight: "bold",
-          fontFamily: "inherit",
-          padding: "16px 24px",
-        }}
-      >
-        Detail Cinema
-      </DialogTitle>
-      <CustomDialogContent>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>ID:</Typography>
-          <TextField
-            placeholder="Auto generated"
-            fullWidth
-            value={cinema._id}
-            disabled
-            margin="dense"
-            size="small"
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Name:
-          </Typography>
-          <TextField
-            placeholder="Name"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={name}
-            disabled={!isEditing}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 156 }}>
-            Address:
-          </Typography>
-          <TextField
-            placeholder="Address"
-            fullWidth
-            margin="dense"
-            size="small"
-            value={address}
-            disabled={!isEditing}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-        </Box>
-      </CustomDialogContent>
-      <DialogActions sx={{ mb: 1.5, mr: 2 }}>
-        <Button
-          onClick={onClose}
-          color="primary"
-          variant="outlined"
-          sx={{ width: 130 }}
-        >
-          Cancel
-        </Button>
-        {isEditing ? (
-          <Button
-            onClick={handleSaveClick}
-            color="primary"
-            variant="contained"
-            sx={{ width: 130 }}
-          >
-            Save
-          </Button>
-        ) : (
-          <>
-            <Button
-              onClick={onDelete}
-              color="primary"
-              variant="outlined"
-              sx={{ width: 130 }}
-            >
-              Delete
-            </Button>
-            <Button
-              onClick={handleModifyClick}
-              color="primary"
-              variant="contained"
-              sx={{ width: 130 }}
-            >
-              Modify
-            </Button>
-          </>
-        )}
-      </DialogActions>
-    </Dialog>
+      title="Detail Cinema"
+      sections={sections}
+      isEditable={isEditing}
+      onEdit={handleEdit}
+      onSave={handleSave}
+      onCancel={handleCancel}
+      onDelete={onDelete}
+    />
   );
 };
 

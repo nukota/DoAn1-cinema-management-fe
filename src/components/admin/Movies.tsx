@@ -95,15 +95,6 @@ const Movies: React.FC = () => {
     { label: "Stopped", value: "Stopped" },
   ];
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">Loading movies...</span>
-      </div>
-    );
-  }
-
   return (
     <>
       <CustomTabs
@@ -111,6 +102,7 @@ const Movies: React.FC = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         tabs={movieTabs}
+        loading={loading}
         data={movies}
         gridCols="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7"
         onAddNew={handleAddNewClick}

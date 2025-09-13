@@ -171,11 +171,24 @@ const Payment: React.FC = () => {
       case 0:
         return (
           <Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2, justifyContent: "space-between" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: 2,
+                justifyContent: "space-between",
+              }}
+            >
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Select a Payment Method
               </Typography>
-              <Typography variant="body2" sx={{ mb: 2, color: userCredit === null ? 'text.disabled' : 'text.primary' }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  mb: 2,
+                  color: userCredit === null ? "text.disabled" : "text.primary",
+                }}
+              >
                 Credit: {userCredit !== null ? userCredit : "-"}
               </Typography>
             </Box>
@@ -201,31 +214,31 @@ const Payment: React.FC = () => {
                     // Ensure disabled is always boolean
                     const disabled = Boolean(
                       (d.movie_id && d.movie_id !== selectedMovieId) ||
-                      (d.credit && userCreditDefault < d.credit)
+                        (d.credit && userCreditDefault < d.credit)
                     );
                     return (
                       <MenuItem key={d._id} value={d._id} disabled={disabled}>
-                      <Box display="flex" flexDirection="column">
-                        <Typography variant="body1">{d.code}</Typography>
-                        <Typography variant="caption" color="text.secondary">
-                        {movie ? movie.title : ""}
-                        {d.credit ? ` | Credit required: ${d.credit}` : ""}
-                        {d.discount_type === "percentage"
-                          ? ` | Value: ${d.value}% off`
-                          : ` | Value: -${d.value.toLocaleString()} vnd`}
-                        {(() => {
-                          let reduced = 0;
-                          if (d.discount_type === "percentage") {
-                          reduced = (order.total_price * d.value) / 100;
-                          } else if (d.discount_type === "fixed") {
-                          reduced = d.value;
-                          }
-                          // Don't show negative reduction
-                          reduced = Math.min(reduced, order.total_price);
-                          return ` | Save: -${reduced.toLocaleString()} vnd`;
-                        })()}
-                        </Typography>
-                      </Box>
+                        <Box display="flex" flexDirection="column">
+                          <Typography variant="body1">{d.code}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {movie ? movie.title : ""}
+                            {d.credit ? ` | Credit required: ${d.credit}` : ""}
+                            {d.discount_type === "percentage"
+                              ? ` | Value: ${d.value}% off`
+                              : ` | Value: -${d.value.toLocaleString()} vnd`}
+                            {(() => {
+                              let reduced = 0;
+                              if (d.discount_type === "percentage") {
+                                reduced = (order.total_price * d.value) / 100;
+                              } else if (d.discount_type === "fixed") {
+                                reduced = d.value;
+                              }
+                              // Don't show negative reduction
+                              reduced = Math.min(reduced, order.total_price);
+                              return ` | Save: -${reduced.toLocaleString()} vnd`;
+                            })()}
+                          </Typography>
+                        </Box>
                       </MenuItem>
                     );
                   })}
@@ -396,7 +409,7 @@ const Payment: React.FC = () => {
       }}
     >
       <img
-        className="absolute w-full h-full top-0 z-0 opacity-10"
+        className="absolute w-full h-full top-0 z-0 opacity-15"
         src={wallPaperImg}
       />
       {/* Left Section: Stepper */}
@@ -635,7 +648,16 @@ const VisaForm = ({
     onValidChange(valid);
     onInfoChange({ cardNumber, cardName, expiry, cvc });
     setShowValidation(allFieldsFilled);
-  }, [cardNumber, cardName, expiry, cvc, valid, onValidChange, onInfoChange, allFieldsFilled]);
+  }, [
+    cardNumber,
+    cardName,
+    expiry,
+    cvc,
+    valid,
+    onValidChange,
+    onInfoChange,
+    allFieldsFilled,
+  ]);
 
   return (
     <Box

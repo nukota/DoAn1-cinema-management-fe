@@ -126,7 +126,6 @@ const Showtimes: React.FC = () => {
     <CustomDataGrid
       title="Showtimes Management"
       loading={loading}
-      loadingMessage="Loading showtimes..."
       rows={showtimes}
       columns={columns}
       selectedRows={selectedRows}

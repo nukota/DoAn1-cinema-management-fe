@@ -139,7 +139,6 @@ const Customers: React.FC = () => {
       <CustomDataGrid
         title="Customers Management"
         loading={loading}
-        loadingMessage="Loading customers..."
         rows={uniqueEmployees}
         columns={columns}
         onAddNew={handleAddNewClick}

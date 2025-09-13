@@ -12,6 +12,7 @@ interface CreateDialogProps {
   children?: ReactNode;
   onAdd: () => void;
   error?: string;
+  showImage?: string;
 }
 
 const CreateDialog: React.FC<CreateDialogProps> = ({
@@ -22,13 +23,13 @@ const CreateDialog: React.FC<CreateDialogProps> = ({
   children,
   onAdd,
   error,
+  showImage,
 }) => {
   const actions: DialogAction[] = [
     {
       label: "Cancel",
       onClick: onClose,
       variant: "outlined",
-      // color: "inherit",
     },
     {
       label: "Add",
@@ -46,6 +47,7 @@ const CreateDialog: React.FC<CreateDialogProps> = ({
       sections={sections}
       actions={actions}
       error={error}
+      showImage={showImage}
     >
       {children}
     </Dialog>

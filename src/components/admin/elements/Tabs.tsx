@@ -6,6 +6,7 @@ import {
   Button,
   TextField,
   InputAdornment,
+  Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -21,6 +22,7 @@ interface CustomTabsProps {
   onTabChange: (value: string) => void;
   tabs: TabItem[];
   data: any[]; // Raw data array
+  loading?: boolean; // Add loading prop
   gridCols?: string;
   gap?: string;
   className?: string;
@@ -37,6 +39,7 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
   onTabChange,
   tabs,
   data,
+  loading = false, // Add loading with default value
   gridCols = "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
   gap = "gap-y-8",
   className = "",
@@ -221,7 +224,20 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
         <div
           className={`list flex-1 grid ${gridCols} ${gap} py-6 pl-4 overflow-y-auto max-h-[400px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[550px] xl:max-h-[600px] list-scrollbar`}
         >
-          {children(filteredData)}
+          {loading
+            ? // Skeleton loading state
+              Array.from({ length: 12 }).map((_, index) => (
+                <div key={index} className="flex flex-col space-y-2">
+                  <Skeleton variant="rectangular" height={200} />
+                  <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
+                  <Skeleton
+                    variant="text"
+                    sx={{ fontSize: "0.875rem" }}
+                    width="60%"
+                  />
+                </div>
+              ))
+            : children(filteredData)}
         </div>
       </div>
     </div>

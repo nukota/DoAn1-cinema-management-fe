@@ -173,20 +173,11 @@ const Employees: React.FC = () => {
     },
   ];
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <span className="text-2xl text-gray mt-4">Loading employees...</span>
-      </div>
-    );
-  }
-
   return (
     <>
       <CustomDataGrid
         title="Employees Management"
         loading={loading}
-        loadingMessage="Loading employees..."
         rows={employees}
         columns={columns}
         onAddNew={handleAddNewClick}
