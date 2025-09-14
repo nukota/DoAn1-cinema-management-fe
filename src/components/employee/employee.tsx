@@ -72,7 +72,7 @@ const Employee: React.FC = () => {
               <NavSelection
                 key="moderator"
                 icon={ModeratorImg}
-                title="Moderate Comments"
+                title="Moderate"
                 to="/employee/moderator"
                 isSelected={location.pathname === "/employee/moderator"}
               />,

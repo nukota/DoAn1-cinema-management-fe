@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import { RoundedCorner } from "@mui/icons-material";
 
 interface TabItem {
   label: string;
@@ -227,8 +228,15 @@ const CustomTabs: React.FC<CustomTabsProps> = ({
           {loading
             ? // Skeleton loading state
               Array.from({ length: 12 }).map((_, index) => (
-                <div key={index} className="flex flex-col space-y-2">
-                  <Skeleton variant="rectangular" height={200} />
+                <div
+                  key={index}
+                  className="flex flex-col space-y-2 py-2 px-6 w-full"
+                >
+                  <Skeleton
+                    variant="rectangular"
+                    height={200}
+                    sx={{ borderRadius: "8px" }}
+                  />
                   <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
                   <Skeleton
                     variant="text"

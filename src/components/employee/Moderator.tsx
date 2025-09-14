@@ -3,11 +3,9 @@ import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { ReviewType } from "../../interfaces/types";
 import { useReviews } from "../../providers/ReviewsProvider";
 import { toast } from "react-toastify";
-import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomDataGrid from "../admin/elements/DataGrid";
 import {
   InfoOutlined,
-  DeleteOutlined,
   CheckCircleOutlined,
   ReportOutlined,
 } from "@mui/icons-material";
@@ -24,10 +22,9 @@ import {
 } from "@mui/material";
 
 const Moderator: React.FC = () => {
-  const { reviews, fetchReviewsData, deleteReview, loading } = useReviews();
+  const { reviews, fetchReviewsData, loading } = useReviews();
   const [selectedReview, setSelectedReview] = useState<ReviewType | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
     fetchReviewsData();
@@ -41,51 +38,6 @@ const Moderator: React.FC = () => {
   const handleCloseDialog = () => {
     setDetailDialogOpen(false);
     setSelectedReview(null);
-  };
-
-  const handleDeleteReview = async (review: ReviewType) => {
-    const confirmed = await confirmDeletion(
-      "Delete Review",
-      `Are you sure you want to delete this review by ${review.user?.full_name}? This action cannot be undone.`
-    );
-
-    if (confirmed) {
-      try {
-        await deleteReview(review._id!);
-        fetchReviewsData();
-        toast.success("Review deleted successfully.");
-      } catch (error) {
-        toast.error("Failed to delete review.");
-      }
-    } else {
-      toast.info("Deletion canceled.");
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    if (selectedRows.length === 0) {
-      toast.info("No reviews selected for deletion.");
-      return;
-    }
-
-    const confirmed = await confirmDeletion(
-      "Delete Selected Reviews",
-      `Are you sure you want to delete ${selectedRows.length} review(s)? This action cannot be undone.`
-    );
-
-    if (confirmed) {
-      try {
-        const deletePromises = selectedRows.map((id) => deleteReview(id));
-        await Promise.all(deletePromises);
-        fetchReviewsData();
-        setSelectedRows([]);
-        toast.success(`${selectedRows.length} review(s) deleted successfully!`);
-      } catch (error) {
-        toast.error("Failed to delete selected reviews.");
-      }
-    } else {
-      toast.info("Deletion canceled.");
-    }
   };
 
   const handleApproveReview = async (review: ReviewType) => {
@@ -148,23 +100,26 @@ const Moderator: React.FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "Review ID", width: 120 },
+    { field: "_id", headerName: "Review ID", width: 60 },
     {
       field: "movie_title",
       headerName: "Movie",
       width: 200,
+      flex: 0.35,
       valueGetter: (_, row) => row.movie?.title || "N/A",
     },
     {
       field: "user_name",
       headerName: "User",
       width: 180,
+      flex: 0.35,
       valueGetter: (_, row) => row.user?.full_name || "N/A",
     },
     {
       field: "rating",
       headerName: "Rating",
-      width: 120,
+      minWidth: 140,
+      flex: 0.25,
       renderCell: (params) => (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Rating value={params.value} readOnly size="small" />
@@ -207,6 +162,7 @@ const Moderator: React.FC = () => {
                 color: "white",
                 fontSize: "0.7rem",
                 height: "20px",
+                mr: 1,
               }}
             />
           </Box>
@@ -217,6 +173,7 @@ const Moderator: React.FC = () => {
       field: "created_at",
       headerName: "Date",
       width: 130,
+      flex: 0.25,
       valueFormatter: (value: any) =>
         value ? new Date(value).toLocaleDateString() : "N/A",
     },
@@ -267,20 +224,6 @@ const Moderator: React.FC = () => {
           onClick={() => handleReportReview(params.row)}
           showInMenu={false}
         />,
-        <GridActionsCellItem
-          key="delete"
-          icon={
-            <DeleteOutlined
-              sx={{
-                fontSize: { xs: 20, sm: 24, md: 28 },
-                color: "#f44336",
-              }}
-            />
-          }
-          label="Delete"
-          onClick={() => handleDeleteReview(params.row)}
-          showInMenu={false}
-        />,
       ],
     },
   ];
@@ -290,13 +233,9 @@ const Moderator: React.FC = () => {
       <CustomDataGrid
         title="Comment Moderation"
         loading={loading}
-        loadingMessage="Loading reviews..."
         rows={reviews}
         columns={columns}
-        showCheckboxSelection={true}
-        selectedRows={selectedRows}
-        onRowSelectionChange={setSelectedRows}
-        onDeleteSelected={handleDeleteSelected}
+        showCheckboxSelection={false}
         getRowId={(row) => row._id}
       />
 
@@ -404,13 +343,6 @@ const Moderator: React.FC = () => {
             startIcon={<ReportOutlined />}
           >
             Flag
-          </Button>
-          <Button
-            onClick={() => selectedReview && handleDeleteReview(selectedReview)}
-            color="error"
-            startIcon={<DeleteOutlined />}
-          >
-            Delete
           </Button>
           <Button onClick={handleCloseDialog}>Close</Button>
         </DialogActions>

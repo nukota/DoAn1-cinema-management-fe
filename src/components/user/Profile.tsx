@@ -71,22 +71,75 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="bg-black w-full flex flex-col justify-center relative">
+    <div className="bg-black w-full min-h-screen flex flex-col justify-center relative">
+      <div
+        className="absolute w-full h-[100vh] top-[0vh] pointer-events-none z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
+        }}
+      />
       <img
-        className="absolute w-full h-full top-0 z-0 opacity-20"
+        className="absolute w-full h-[100vh] top-0 z-0 opacity-15"
         src={wallPaperImg}
         alt="Wallpaper"
       />
-      <div className="w-[72%] ml-[14%] min-w-[840px] bg-white mt-[120px] mb-[60px] flex flex-row items-center px-[14px] h-[520px] overflow-auto z-10">
-        <div className="w-[50%] px-[24px]">
+      <div className="w-[72%] ml-[14%] min-w-[1100px] bg-white mt-[120px] mb-[60px] flex flex-row items-start px-[14px] h-[520px] xl:h-[700px] overflow-auto z-10">
+        <div className="w-[50%] px-[24px] h-full">
           <Box
             component="form"
-            sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+            sx={{
+              display: "flex",
+              position: "relative",
+              flexDirection: "column",
+              gap: 1,
+              height: "100%",
+            }}
           >
-            <h2 className="text-4xl font-semibold mb-1">Profile</h2>
-            <Typography variant="body1" sx={{ mb: 0, color: userCredit === null ? 'text.disabled' : 'text.primary', float: 'right' }}>
-              Credit: {userCredit !== null ? userCredit : "-"}
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 2,
+                mb: 2,
+                mt: 3,
+              }}
+            >
+              <h2 className="text-4xl font-semibold mb-1">Profile</h2>
+              {/* Credit Banner */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 2,
+                  border: `3px solid`,
+                  borderColor: "primary.main",
+                  padding: 1.5,
+                  color: "black",
+                  textAlign: "center",
+                  gap: 2,
+                  flexShrink: 0,
+                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.2)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: "bold", fontSize: "18px", flexShrink: 0 }}
+                >
+                  Available Credit
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: "bold", flexShrink: 0 }}
+                >
+                  {userCredit !== null ? userCredit : "Loading..."}
+                </Typography>
+              </Box>
+            </Box>
+
             <Typography
               variant="body1"
               marginTop="4px"
@@ -205,7 +258,22 @@ const UserProfile: React.FC = () => {
                 />
               </Box>
             </Box>
-            <Box sx={{ marginTop: 4, display: "flex", gap: 2 }}>
+            <Box
+              sx={{
+                position: "absolute",
+                display: "flex",
+                right: 0,
+                bottom: 20,
+                gap: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => navigate("/user")}
+              >
+                Back
+              </Button>
               {isEditing ? (
                 <>
                   <Button
@@ -231,16 +299,6 @@ const UserProfile: React.FC = () => {
                   Edit
                 </Button>
               )}
-              <Button
-                variant="outlined"
-                sx={{
-                  color: "gray",
-                  borderColor: "gray",
-                }}
-                onClick={() => navigate("/user")}
-              >
-                Back
-              </Button>
             </Box>
           </Box>
         </div>

@@ -74,13 +74,18 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 900, mx: "auto", mb: 4 }}>
-      <Typography
-        variant="h5"
-        sx={{ mb: 2, fontWeight: "bold", color: "#fff" }}
-      >
-        Reviews
-      </Typography>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 900,
+        mx: "auto",
+        mb: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <div className="text-white text-4xl font-bold">REVIEWS</div>
       {localLoading ? (
         <Box
           sx={{
@@ -134,7 +139,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
                       mb: 1,
                     }}
                   >
-                    <Typography sx={{ fontWeight: 600, mr: 1 }}>{`${review.user?.full_name}`}</Typography>
+                    <Typography
+                      sx={{ fontWeight: 600, mr: 1 }}
+                    >{`${review.user?.full_name}`}</Typography>
                     <Rating
                       value={review.rating}
                       readOnly

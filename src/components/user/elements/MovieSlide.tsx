@@ -29,10 +29,10 @@ const MovieSlide: React.FC<MovieSlideProps> = ({ title, movies }) => {
           640: {
             slidesPerView: 2,
           },
-          768: {
+          800: {
             slidesPerView: 3,
           },
-          1024: {
+          1048: {
             slidesPerView: 4,
           },
           1280: {

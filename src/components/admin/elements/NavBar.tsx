@@ -33,7 +33,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
         {React.Children.map(botChildren, (child, index) =>
           React.cloneElement(child as React.ReactElement, { key: index })
         )}
-        <div className="w-[200px] self-center text-sm text-line-gray font-light">
+        <div className="w-[200px] self-center text-sm text-line-gray font-light pl-2">
           Developed by Cong Thanh & Minh Tuan
         </div>
       </div>

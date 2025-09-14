@@ -119,17 +119,9 @@ const MovieDetail: React.FC = () => {
     fetchSeats();
   }, [selectedShowtime]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (!location.pathname.startsWith("/payment")) {
-  //       stopTimer();
-  //     }
-  //   };
-  // }, [stopTimer, navigate]);
-
   if (movieLoading || showtimesLoading || productsLoading) {
     return (
-      <div className="text-white text-center text-xl mt-10">
+      <div className="text-white text-center text-xl mt-10 bg-black min-h-screen">
         Loading movie details...
       </div>
     );
@@ -137,7 +129,7 @@ const MovieDetail: React.FC = () => {
 
   if (!movie) {
     return (
-      <div className="text-white text-center text-xl mt-10">
+      <div className="text-white text-center text-xl mt-10 bg-black min-h-screen">
         Movie not found
       </div>
     );
@@ -188,10 +180,8 @@ const MovieDetail: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="w-full bg-black z-20 mt-16"></div>
-      <ReviewSection
-        movieId={movie._id}
-      />
+      <div className="w-full bg-black z-20 mt-8" />
+      <ReviewSection movieId={movie._id} />
       <div className="overflow-hidden">
         <BookingFooter
           movie={movie}
@@ -206,5 +196,3 @@ const MovieDetail: React.FC = () => {
 };
 
 export default MovieDetail;
-
-

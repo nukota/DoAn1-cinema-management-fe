@@ -96,10 +96,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
               </div>
             </div>
             <div className="pt-6">
-              <div
-                className="text-white text-xl font-semibold"
-                style={{ fontFamily: "Poppins" }}
-              >
+              <div className="text-white text-xl font-semibold">
                 MORE INFORMATION:
               </div>
               <div className="text-sm mt-2">
@@ -123,10 +120,7 @@ const MovieInfo: React.FC<MovieInfoProps> = ({ movie }) => {
               </div>
             </div>
             <div className="pt-6">
-              <div
-                className="text-white text-xl font-semibold"
-                style={{ fontFamily: "Roboto" }}
-              >
+              <div className="text-white text-xl font-semibold">
                 MOVIE CONTENT:
               </div>
               <div className="text-sm">{movie.description}</div>

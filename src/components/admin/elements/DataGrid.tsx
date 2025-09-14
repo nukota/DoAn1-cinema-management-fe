@@ -1,6 +1,6 @@
 import React from "react";
 import { DataGrid as MuiDataGrid, GridColDef } from "@mui/x-data-grid";
-import { Button, Skeleton, Box } from "@mui/material";
+import { Button, Box, Typography, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -35,66 +35,6 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
   pageSize = 10,
   pageSizeOptions = [6, 10, 20],
 }) => {
-  if (loading) {
-    return (
-      <div className="flex flex-col w-full h-full max-w-full overflow-hidden bg-gray-50 min-h-screen">
-        {/* Title Skeleton */}
-        <Skeleton
-          variant="text"
-          sx={{ fontSize: "2.5rem", mb: 2 }}
-          width={300}
-        />
-
-        {/* Action Bar Skeleton */}
-        <div className="flex justify-end gap-4 items-center mb-2 sm:mb-2">
-          <Skeleton variant="rectangular" width={120} height={36} />
-        </div>
-
-        {/* DataGrid Skeleton */}
-        <div className="rounded-md overflow-hidden min-h-[500px] md:min-h-[636px] bg-white p-4">
-          {/* Header skeleton */}
-          <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                variant="rectangular"
-                height={48}
-                sx={{ flex: 1 }}
-              />
-            ))}
-          </Box>
-
-          {/* Rows skeleton */}
-          {Array.from({ length: 10 }).map((_, rowIndex) => (
-            <Box key={rowIndex} sx={{ display: "flex", gap: 1, mb: 1 }}>
-              {Array.from({ length: 5 }).map((_, colIndex) => (
-                <Skeleton
-                  key={colIndex}
-                  variant="rectangular"
-                  height={40}
-                  sx={{ flex: 1 }}
-                />
-              ))}
-            </Box>
-          ))}
-
-          {/* Pagination skeleton */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 2,
-            }}
-          >
-            <Skeleton variant="text" width={100} />
-            <Skeleton variant="rectangular" width={200} height={32} />
-          </Box>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col w-full h-full max-w-full overflow-hidden bg-gray-50 min-h-screen">
       {/* Title Bar */}
@@ -103,7 +43,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
       </div>
 
       {/* Action Bar */}
-      {(onAddNew || onDeleteSelected) && (
+      {onAddNew || onDeleteSelected ? (
         <div className="flex justify-end gap-4 items-center mb-2 sm:mb-2">
           {onDeleteSelected && selectedRows.length > 0 && onDeleteSelected && (
             <Button
@@ -130,90 +70,111 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
             <div className="w-24 h-9">{/* Placeholder for alignment */}</div>
           )}
         </div>
+      ) : (
+        <div className="h-16" />
       )}
 
       {/* DataGrid Container */}
-      <div className="rounded-md overflow-hidden min-h-[500px] md:min-h-[636px] bg-white">
-        <MuiDataGrid
-          columnHeaderHeight={48}
-          rowHeight={40}
-          rows={rows}
-          columns={columns}
-          getRowId={getRowId}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize,
+      {loading == false ? (
+        <div className="rounded-md overflow-hidden min-h-[500px] md:min-h-[636px] bg-white">
+          <MuiDataGrid
+            columnHeaderHeight={48}
+            rowHeight={40}
+            rows={rows}
+            columns={columns}
+            getRowId={getRowId}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize,
+                },
               },
-            },
-          }}
-          pageSizeOptions={pageSizeOptions}
-          checkboxSelection={showCheckboxSelection}
-          disableRowSelectionOnClick={!showCheckboxSelection}
-          onRowSelectionModelChange={(newSelection) => {
-            // Extract the ids from the selection model
-            const ids = newSelection.ids || new Set();
-            if (onRowSelectionChange) {
-              onRowSelectionChange(
-                Array.from(ids).map((id: any) => String(id))
-              );
-            }
-          }}
-          density="comfortable"
-          sx={{
-            // height: "100%",
-            "& .MuiDataGrid-columnHeaders": {
-              fontSize: { xs: "14px", sm: "16px" },
-              fontWeight: 600,
-              color: "#101010",
-            },
-            "& .MuiDataGrid-cell": {
-              fontSize: { xs: "12px", sm: "14px" },
-              color: "#666",
-              padding: { xs: "4px 6px", sm: "6px 8px" },
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              textAlign: "left",
-            },
-            "& .MuiDataGrid-row": {
-              minHeight: { xs: "48px", sm: "48px" },
-              "&:nth-of-type(odd)": {
-                backgroundColor: "#fff",
-              },
-              "&:nth-of-type(even)": {
-                backgroundColor: "#f8f8f8",
-              },
-              "&:nth-of-type(odd):hover": {
-                backgroundColor: "#ffebee !important",
-              },
-              "&:nth-of-type(even):hover": {
-                backgroundColor: "#ffe0e0 !important",
-              },
-              "&.Mui-selected": {
-                backgroundColor: "#fdd1d1ff !important",
-              },
-            },
-            "& .MuiDataGrid-toolbarContainer": {
-              padding: { xs: "8px", sm: "16px" },
-            },
-            // Mobile-specific adjustments
-            "@media (max-width: 768px)": {
-              "& .MuiDataGrid-columnHeaderTitle": {
-                fontSize: "11px",
+            }}
+            pageSizeOptions={pageSizeOptions}
+            checkboxSelection={showCheckboxSelection}
+            disableRowSelectionOnClick={!showCheckboxSelection}
+            onRowSelectionModelChange={(newSelection) => {
+              // Extract the ids from the selection model
+              const ids = newSelection.ids || new Set();
+              if (onRowSelectionChange) {
+                onRowSelectionChange(
+                  Array.from(ids).map((id: any) => String(id))
+                );
+              }
+            }}
+            density="comfortable"
+            sx={{
+              // height: "100%",
+              "& .MuiDataGrid-columnHeaders": {
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 600,
+                color: "#101010",
               },
               "& .MuiDataGrid-cell": {
-                fontSize: "11px",
-                padding: "6px 8px",
+                fontSize: { xs: "12px", sm: "14px" },
+                color: "#666",
+                padding: { xs: "4px 6px", sm: "6px 8px" },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                textAlign: "left",
               },
               "& .MuiDataGrid-row": {
-                minHeight: "44px",
+                minHeight: { xs: "48px", sm: "48px" },
+                "&:nth-of-type(odd)": {
+                  backgroundColor: "#fff",
+                },
+                "&:nth-of-type(even)": {
+                  backgroundColor: "#f8f8f8",
+                },
+                "&:nth-of-type(odd):hover": {
+                  backgroundColor: "#ffebee !important",
+                },
+                "&:nth-of-type(even):hover": {
+                  backgroundColor: "#ffe0e0 !important",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#fdd1d1ff !important",
+                },
               },
-            },
-          }}
-        />
-      </div>
+              "& .MuiDataGrid-toolbarContainer": {
+                padding: { xs: "8px", sm: "16px" },
+              },
+              // Mobile-specific adjustments
+              "@media (max-width: 768px)": {
+                "& .MuiDataGrid-columnHeaderTitle": {
+                  fontSize: "11px",
+                  fontWeight: 600,
+                },
+                "& .MuiDataGrid-cell": {
+                  fontSize: "11px",
+                  padding: "6px 8px",
+                },
+                "& .MuiDataGrid-row": {
+                  minHeight: "44px",
+                },
+              },
+            }}
+          />
+        </div>
+      ) : (
+        <div className="rounded-md border-[#e0e0e0] border overflow-hidden min-h-[500px] md:min-h-[636px] bg-white flex">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              gap: 4,
+            }}
+          >
+            <CircularProgress sx={{ color: "#555" }} />
+            <Typography variant="h6" sx={{ color: "#555" }}>
+              Loading...
+            </Typography>
+          </Box>
+        </div>
+      )}
     </div>
   );
 };

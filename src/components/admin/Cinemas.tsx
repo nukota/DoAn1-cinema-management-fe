@@ -8,6 +8,7 @@ import {
   Box,
   TextField,
   InputAdornment,
+  Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
@@ -140,15 +141,6 @@ const Cinemas: React.FC = () => {
     );
   });
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full pt-4">
-        <CircularProgress />
-        <span className="text-2xl text-gray mt-4">Loading cinemas...</span>
-      </div>
-    );
-  }
-
   return (
     <div className="cinemas flex flex-col w-full h-full max-w-full min-h-screen xl:min-h-[800px] overflow-y-visible scrollbar-hide relative">
       <div className="text-40px font-medium text-dark-gray">Cinemas</div>
@@ -201,16 +193,33 @@ const Cinemas: React.FC = () => {
       </Box>
 
       <div className="relative min-w-[360px] sm:min-w-[680px] w-full flex-1 bg-white border-[1px] border-light-gray rounded-md p-8 flex flex-col">
-        <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 overflow-y-visible overflow-x-clip list-scrollbar">
-          {filteredCinemas.map((cinema) => (
-            <Cinema
-              key={cinema._id}
-              cinema={cinema}
-              cinemaDetails={cinemaDetails[cinema._id]}
-              handleInfoClick={() => handleInfoClick(cinema)}
-            />
-          ))}
-        </div>
+        {loading == false ? (
+          <div className="list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 overflow-y-visible overflow-x-clip list-scrollbar">
+            {filteredCinemas.map((cinema) => (
+              <Cinema
+                key={cinema._id}
+                cinema={cinema}
+                cinemaDetails={cinemaDetails[cinema._id]}
+                handleInfoClick={() => handleInfoClick(cinema)}
+              />
+            ))}
+          </div>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              gap: 4,
+            }}
+          >
+            <CircularProgress sx={{ color: "#555" }} />
+            <Typography variant="h6" sx={{ color: "#555" }}>
+              Loading...
+            </Typography>
+          </Box>
+        )}
       </div>
       {selectedCinema && (
         <DetailCinema
