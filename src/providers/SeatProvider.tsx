@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { SeatType } from "../interfaces/types";
 
 interface SeatsContextType {
@@ -32,18 +33,13 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat`, {
+      const response = await axios.get(`${baseURL}/seat`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSeats(data);
+      setSeats(response.data);
     } catch (error: any) {
       console.error("Failed to fetch seats:", error);
       throw error;
@@ -56,18 +52,13 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat/room/${roomId}`, {
+      const response = await axios.get(`${baseURL}/seat/room/${roomId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSeats(data);
+      setSeats(response.data);
     } catch (error: any) {
       console.error("Failed to fetch seats by room ID:", error);
       throw error;
@@ -80,18 +71,16 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat/showtime/${showtimeId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${baseURL}/seat/showtime/${showtimeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSeats(data);
+      setSeats(response.data);
     } catch (error: any) {
       console.error("Failed to fetch seats by showtime ID:", error);
       throw error;
@@ -104,20 +93,14 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/seat`, newSeat, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newSeat),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const createdSeat = await response.json();
+      const createdSeat = response.data;
       setSeats((prevSeats) => [...prevSeats, createdSeat]);
     } catch (error: any) {
       console.error("Failed to create seat:", error);
@@ -131,20 +114,18 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat/${updatedSeat._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedSeat),
-      });
+      const response = await axios.patch(
+        `${baseURL}/seat/${updatedSeat._id}`,
+        updatedSeat,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const updatedData = await response.json();
+      const updatedData = response.data;
       setSeats((prevSeats) =>
         prevSeats.map((seat) =>
           seat._id === updatedData._id ? updatedData : seat
@@ -162,16 +143,11 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/seat/${seatId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/seat/${seatId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       setSeats((prevSeats) => prevSeats.filter((seat) => seat._id !== seatId));
     } catch (error: any) {

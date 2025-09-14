@@ -73,20 +73,18 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/review/${updatedReview._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedReview),
-      });
+      const response = await axios.patch(
+        `${baseURL}/review/${updatedReview._id}`,
+        updatedReview,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const updatedData = await response.json();
+      const updatedData = response.data;
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedData._id ? updatedData : review
@@ -104,16 +102,11 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/review/${reviewId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/review/${reviewId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review._id !== reviewId)
@@ -131,18 +124,13 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${baseURL}/review/movie/${movieId}`, {
+        const response = await axios.get(`${baseURL}/review/movie/${movieId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        return response.data;
       } catch (error: any) {
         console.error("Failed to fetch reviews by movieId:", error);
         throw error;

@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { MovieType, ShowtimeType } from "../interfaces/types";
 
 interface ShowtimesContextType {
@@ -40,18 +41,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime`, {
+      const response = await axios.get(`${baseURL}/showtime`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setShowtimes(data);
+      setShowtimes(response.data);
     } catch (error: any) {
       console.error("Failed to fetch showtimes:", error);
       throw error;
@@ -64,18 +60,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime/movie/${movieId}`, {
+      const response = await axios.get(`${baseURL}/showtime/movie/${movieId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setShowtimesByMovieId(data);
+      setShowtimesByMovieId(response.data);
     } catch (error: any) {
       console.error("Failed to fetch showtimes by movie ID:", error);
       throw error;
@@ -88,18 +79,12 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime`, {
-        method: "POST",
+      await axios.post(`${baseURL}/showtime`, newShowtime, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newShowtime),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       await fetchShowtimesData();
     } catch (error: any) {
@@ -114,21 +99,16 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(
+      await axios.patch(
         `${baseURL}/showtime/${updatedShowtime._id}`,
+        updatedShowtime,
         {
-          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedShowtime),
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       await fetchShowtimesData();
     } catch (error: any) {
@@ -143,16 +123,11 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime/${showtimeId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/showtime/${showtimeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       await fetchShowtimesData();
     } catch (error: any) {
@@ -167,17 +142,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/showtime/current`, {
+      const response = await axios.get(`${baseURL}/showtime/current`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
+      const responseData = response.data;
       const data = responseData.data || responseData;
 
       if (Array.isArray(data)) {

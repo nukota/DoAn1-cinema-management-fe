@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { MovieRevenueType, PrductRevenueType } from "../interfaces/types";
 
 interface RevenueContextType {
@@ -38,21 +39,14 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${baseURL}/revenue/all`, {
-          method: "POST",
+        const response = await axios.post(`${baseURL}/revenue/all`, payload, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        return response.data;
       } catch (error: any) {
         console.error("Failed to fetch all revenue:", error);
         throw error;
@@ -72,21 +66,18 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${baseURL}/revenue/date/movie`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
+        const response = await axios.post(
+          `${baseURL}/revenue/date/movie`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        return response.data;
       } catch (error: any) {
         console.error("Failed to fetch movie revenue by date:", error);
         throw error;
@@ -106,21 +97,18 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${baseURL}/revenue/date/product`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
+        const response = await axios.post(
+          `${baseURL}/revenue/date/product`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
+        return response.data;
       } catch (error: any) {
         console.error("Failed to fetch product revenue by date:", error);
         throw error;

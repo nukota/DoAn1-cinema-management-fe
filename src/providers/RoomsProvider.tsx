@@ -91,20 +91,18 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/room/${updatedRoom._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedRoom),
-      });
+      const response = await axios.patch(
+        `${baseURL}/room/${updatedRoom._id}`,
+        updatedRoom,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const updatedData = await response.json();
+      const updatedData = response.data;
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
           room._id === updatedData._id ? updatedData : room
@@ -122,16 +120,11 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/room/${roomId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/room/${roomId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
     } catch (error: any) {
