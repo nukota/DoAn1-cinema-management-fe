@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useCallback, useState } from "react";
+import axios from "axios";
 import { SettingType } from "../interfaces/types";
 
 type SettingContextType = {
@@ -21,20 +22,14 @@ export const SettingProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/setting`, {
+      const response = await axios.get(`${baseURL}/setting`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching setting failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setSetting(data);
-      return data;
-    } catch (error) {
+      setSetting(response.data);
+      return response.data;
+    } catch (error: any) {
       console.error("Failed to fetch setting:", error);
       throw error;
     } finally {
@@ -47,23 +42,15 @@ export const SettingProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await fetch(`${baseURL}/setting`, {
-          method: "PATCH",
+        const response = await axios.patch(`${baseURL}/setting`, payload, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload),
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg = errorData?.error?.message || "Updating setting failed.";
-          throw new Error(errorMsg);
-        }
-        const data = await response.json();
-        setSetting(data);
-        return data;
-      } catch (error) {
+        setSetting(response.data);
+        return response.data;
+      } catch (error: any) {
         console.error("Failed to update setting:", error);
         throw error;
       } finally {

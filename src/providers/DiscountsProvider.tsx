@@ -1,4 +1,11 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
+import axios from "axios";
 import { DiscountType } from "../interfaces/types";
 
 interface DiscountsContextType {
@@ -12,9 +19,13 @@ interface DiscountsContextType {
   loading: boolean;
 }
 
-const DiscountsContext = createContext<DiscountsContextType | undefined>(undefined);
+const DiscountsContext = createContext<DiscountsContextType | undefined>(
+  undefined
+);
 
-export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [discounts, setDiscounts] = useState<DiscountType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,19 +35,13 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount`, {
+      const response = await axios.get(`${baseURL}/discount`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching discounts failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setDiscounts(data);
-    } catch (error) {
+      setDiscounts(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch discounts:", error);
       throw error;
     } finally {
@@ -44,118 +49,105 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   }, [baseURL]);
 
-  const getDiscountById = useCallback(async (id: string) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching discount by ID failed.";
-        throw new Error(errorMsg);
+  const getDiscountById = useCallback(
+    async (id: string) => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get(`${baseURL}/discount/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return response.data;
+      } catch (error: any) {
+        console.error("Failed to get discount by id:", error);
+        throw error;
       }
-      const discount = await response.json();
-      return discount;
-    } catch (error) {
-      console.error("Failed to get discount by id:", error);
-      throw error;
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
-  const getDiscountByCode = useCallback(async (code: string) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount/code/${code}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching discount by code failed.";
-        throw new Error(errorMsg);
+  const getDiscountByCode = useCallback(
+    async (code: string) => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get(`${baseURL}/discount/code/${code}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return response.data;
+      } catch (error: any) {
+        console.error("Failed to get discount by code:", error);
+        throw error;
       }
-      const discount = await response.json();
-      return discount;
-    } catch (error) {
-      console.error("Failed to get discount by code:", error);
-      throw error;
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
-  const createDiscount = useCallback(async (newDiscount: DiscountType) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newDiscount),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating discount failed.";
-        throw new Error(errorMsg);
+  const createDiscount = useCallback(
+    async (newDiscount: DiscountType) => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.post(`${baseURL}/discount`, newDiscount, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const createdDiscount = response.data;
+        setDiscounts((prev) => [...prev, createdDiscount]);
+      } catch (error: any) {
+        console.error("Failed to create discount:", error);
+        throw error;
       }
-      const createdDiscount = await response.json();
-      setDiscounts((prev) => [...prev, createdDiscount]);
-    } catch (error) {
-      console.error("Failed to create discount:", error);
-      throw error;
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
-  const updateDiscount = useCallback(async (newDiscount: DiscountType) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount/${newDiscount._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newDiscount),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating discount failed.";
-        throw new Error(errorMsg);
+  const updateDiscount = useCallback(
+    async (newDiscount: DiscountType) => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.patch(
+          `${baseURL}/discount/${newDiscount._id}`,
+          newDiscount,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const updatedDiscount = response.data;
+        setDiscounts((prev) =>
+          prev.map((d) => (d._id === updatedDiscount._id ? updatedDiscount : d))
+        );
+      } catch (error: any) {
+        console.error("Failed to update discount:", error);
+        throw error;
       }
-      const updatedDiscount = await response.json();
-      setDiscounts((prev) =>
-        prev.map((d) => (d._id === updatedDiscount._id ? updatedDiscount : d))
-      );
-    } catch (error) {
-      console.error("Failed to update discount:", error);
-      throw error;
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
-  const deleteDiscount = useCallback(async (id: string) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/discount/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting discount failed.";
-        throw new Error(errorMsg);
+  const deleteDiscount = useCallback(
+    async (id: string) => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        await axios.delete(`${baseURL}/discount/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setDiscounts((prev) => prev.filter((d) => d._id !== id));
+      } catch (error: any) {
+        console.error("Failed to delete discount:", error);
+        throw error;
       }
-      setDiscounts((prev) => prev.filter((d) => d._id !== id));
-    } catch (error) {
-      console.error("Failed to delete discount:", error);
-      throw error;
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
   return (
     <DiscountsContext.Provider

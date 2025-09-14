@@ -1,4 +1,11 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useCallback,
+} from "react";
+import axios from "axios";
 import { UserType } from "../interfaces/types";
 
 interface CustomersContextType {
@@ -10,9 +17,13 @@ interface CustomersContextType {
   loading: boolean;
 }
 
-const CustomersContext = createContext<CustomersContextType | undefined>(undefined);
+const CustomersContext = createContext<CustomersContextType | undefined>(
+  undefined
+);
 
-export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CustomersProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [customers, setCustomers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -23,21 +34,17 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/role/customer`, {
+      const response = await axios.get(`${baseURL}/user/role/customer`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching customers failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setCustomers(data);
-    } catch (error) {
+      setCustomers(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch customers:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Fetching customers failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -48,24 +55,19 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/user`, newCustomer, {
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newCustomer),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating customer failed.";
-        throw new Error(errorMsg);
-      }
-      const createdCustomer = await response.json();
+      const createdCustomer = response.data;
       setCustomers((prevCustomers) => [...prevCustomers, createdCustomer]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create customer:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Creating customer failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -76,28 +78,27 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/${updatedCustomer._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedCustomer),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating customer failed.";
-        throw new Error(errorMsg);
-      }
-      const updatedData = await response.json();
+      const response = await axios.patch(
+        `${baseURL}/user/${updatedCustomer._id}`,
+        updatedCustomer,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const updatedData = response.data;
       setCustomers((prevCustomers) =>
         prevCustomers.map((customer) =>
           customer._id === updatedData._id ? updatedData : customer
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update customer:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Updating customer failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -108,23 +109,19 @@ export const CustomersProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/${customerId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/user/${customerId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting customer failed.";
-        throw new Error(errorMsg);
-      }
       setCustomers((prevCustomers) =>
         prevCustomers.filter((customer) => customer._id !== customerId)
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete customer:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Deleting customer failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }

@@ -46,14 +46,14 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           },
           body: JSON.stringify(payload),
         });
+
         if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg = errorData?.error?.message || "Fetching all revenue failed.";
-          throw new Error(errorMsg);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch all revenue:", error);
         throw error;
       } finally {
@@ -80,14 +80,14 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           },
           body: JSON.stringify(payload),
         });
+
         if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg = errorData?.error?.message || "Fetching movie revenue by date failed.";
-          throw new Error(errorMsg);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch movie revenue by date:", error);
         throw error;
       } finally {
@@ -114,14 +114,14 @@ export const RevenueProvider: React.FC<{ children: ReactNode }> = ({
           },
           body: JSON.stringify(payload),
         });
+
         if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg = errorData?.error?.message || "Fetching product revenue by date failed.";
-          throw new Error(errorMsg);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch product revenue by date:", error);
         throw error;
       } finally {

@@ -16,7 +16,6 @@ import { ProductsProvider } from "./providers/ProductsProvider";
 import { CustomersProvider } from "./providers/CustomersProvider";
 import { ShowtimesProvider } from "./providers/ShowtimesProvider";
 import { OrdersProvider } from "./providers/OrdersProvider";
-import { PaymentsProvider } from "./providers/PaymentsProvider";
 import { DiscountsProvider } from "./providers/DiscountsProvider";
 import { RoomsProvider } from "./providers/RoomsProvider";
 import { SeatProvider } from "./providers/SeatProvider";
@@ -38,46 +37,44 @@ const App: React.FC = () => {
                 <ReviewsProvider>
                   <ShowtimesProvider>
                     <OrdersProvider>
-                      <PaymentsProvider>
-                        <DiscountsProvider>
-                          <RoomsProvider>
-                            <SeatProvider>
-                              <UsersProvider>
-                                <SettingProvider>
-                                  <RevenueProvider>
-                                    <TimerProvider>
-                                      <ChatbotProvider>
-                                        <Routes>
-                                          <Route
-                                            path="/"
-                                            element={<Navigate to="/user" />}
-                                          />
-                                          <Route
-                                            path="/admin/*"
-                                            element={<Admin />}
-                                          />
-                                          <Route
-                                            path="/user/*"
-                                            element={<User />}
-                                          />
-                                          <Route
-                                            path="/employee/*"
-                                            element={<Employee />}
-                                          />
-                                          <Route
-                                            path="/*"
-                                            element={<AdminNotFound />}
-                                          />
-                                        </Routes>
-                                      </ChatbotProvider>
-                                    </TimerProvider>
-                                  </RevenueProvider>
-                                </SettingProvider>
-                              </UsersProvider>
-                            </SeatProvider>
-                          </RoomsProvider>
-                        </DiscountsProvider>
-                      </PaymentsProvider>
+                      <DiscountsProvider>
+                        <RoomsProvider>
+                          <SeatProvider>
+                            <UsersProvider>
+                              <SettingProvider>
+                                <RevenueProvider>
+                                  <TimerProvider>
+                                    <ChatbotProvider>
+                                      <Routes>
+                                        <Route
+                                          path="/"
+                                          element={<Navigate to="/user" />}
+                                        />
+                                        <Route
+                                          path="/admin/*"
+                                          element={<Admin />}
+                                        />
+                                        <Route
+                                          path="/user/*"
+                                          element={<User />}
+                                        />
+                                        <Route
+                                          path="/employee/*"
+                                          element={<Employee />}
+                                        />
+                                        <Route
+                                          path="/*"
+                                          element={<AdminNotFound />}
+                                        />
+                                      </Routes>
+                                    </ChatbotProvider>
+                                  </TimerProvider>
+                                </RevenueProvider>
+                              </SettingProvider>
+                            </UsersProvider>
+                          </SeatProvider>
+                        </RoomsProvider>
+                      </DiscountsProvider>
                     </OrdersProvider>
                   </ShowtimesProvider>
                 </ReviewsProvider>

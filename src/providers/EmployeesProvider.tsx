@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { EmployeeType } from "../interfaces/types";
 
 interface EmployeesContextType {
@@ -32,19 +33,13 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/employee`, {
+      const response = await axios.get(`${baseURL}/employee`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching Employees failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setEmployees(data);
-    } catch (error) {
+      setEmployees(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch Employees:", error);
       throw error;
     } finally {
@@ -56,22 +51,15 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/employee`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/employee`, newEmployee, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newEmployee),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating Employee failed.";
-        throw new Error(errorMsg);
-      }
-      const createdEmployee = await response.json();
+      const createdEmployee = response.data;
       setEmployees((prevEmployees) => [...prevEmployees, createdEmployee]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create Employee:", error);
       throw error;
     } finally {
@@ -83,29 +71,23 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(
+      const response = await axios.patch(
         `${baseURL}/employee/${updatedEmployee._id}`,
+        updatedEmployee,
         {
-          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedEmployee),
         }
       );
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating Employee failed.";
-        throw new Error(errorMsg);
-      }
-      const updatedData = await response.json();
+      const updatedData = response.data;
       setEmployees((prevEmployees) =>
         prevEmployees.map((Employee) =>
           Employee._id === updatedData._id ? updatedData : Employee
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update Employee:", error);
       throw error;
     } finally {
@@ -117,21 +99,15 @@ export const EmployeesProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/employee/${EmployeeId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/employee/${EmployeeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting Employee failed.";
-        throw new Error(errorMsg);
-      }
       setEmployees((prevEmployees) =>
         prevEmployees.filter((Employee) => Employee._id !== EmployeeId)
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete Employee:", error);
       throw error;
     } finally {

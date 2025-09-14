@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { RoomType, RoomWithSeatsType } from "../interfaces/types";
 
 interface RoomsContextType {
@@ -31,19 +32,13 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/room`, {
+      const response = await axios.get(`${baseURL}/room`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching rooms failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setRooms(data);
-    } catch (error) {
+      setRooms(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch rooms:", error);
       throw error;
     } finally {
@@ -55,22 +50,16 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/room`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/room`, newRoom, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newRoom),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating room failed.";
-        throw new Error(errorMsg);
-      }
-      const createdRoom = await response.json();
+
+      const createdRoom = response.data;
       setRooms((prevRooms) => [...prevRooms, createdRoom]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create room:", error);
       throw error;
     } finally {
@@ -82,21 +71,15 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/room/seats`, {
-        method: "POST",
+      await axios.post(`${baseURL}/room/seats`, room, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(room),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating room with seats failed.";
-        throw new Error(errorMsg);
-      }
+
       await fetchRoomsData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create room with seats:", error);
       throw error;
     } finally {
@@ -116,18 +99,18 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
         },
         body: JSON.stringify(updatedRoom),
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating room failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const updatedData = await response.json();
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
           room._id === updatedData._id ? updatedData : room
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update room:", error);
       throw error;
     } finally {
@@ -145,13 +128,13 @@ export const RoomsProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting room failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       setRooms((prevRooms) => prevRooms.filter((room) => room._id !== roomId));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete room:", error);
       throw error;
     } finally {

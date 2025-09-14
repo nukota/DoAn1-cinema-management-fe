@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode } from "react";
+import axios from "axios";
 
 interface User {
   id: string;
@@ -15,10 +16,10 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const baseURL = import.meta.env.VITE_API_BASE_URL;
-  const [users, setUsers] = useState<User[]>([
+  const users: User[] = [
     { id: "1", name: "John Doe", email: "john.doe@example.com" },
     { id: "2", name: "Jane Smith", email: "jane.smith@example.com" },
-  ]);
+  ];
 
   const getUserById = (id: string): User | undefined => {
     return users.find((user) => user.id === id);
@@ -27,18 +28,13 @@ const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const getCreditByUserId = async (id: string): Promise<number> => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/user/credit/${id}`, {
-        method: "GET",
+      const response = await axios.get(`${baseURL}/user/credit/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error("Failed to fetch user credit");
-      }
-      const data = await response.json();
-      return data.credit_points;
-    } catch (error) {
+      return response.data.credit_points;
+    } catch (error: any) {
       console.error("Error fetching user credit:", error);
       return 0;
     }

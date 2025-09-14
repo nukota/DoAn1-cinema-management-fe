@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { CinemaType } from "../interfaces/types";
 
 interface CinemasContextType {
@@ -30,22 +31,17 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/cinema`, {
+      const response = await axios.get(`${baseURL}/cinema`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg =
-          errorData?.error?.message || "Fetching cinemas failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setCinemas(data);
-    } catch (error) {
+      setCinemas(response.data);
+    } catch (error: any) {
       console.error(error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Fetching cinemas failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -55,7 +51,7 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(
+      const response = await axios.get(
         `${baseURL}/cinema/employeeandroom/${cinemaId}`,
         {
           headers: {
@@ -63,17 +59,13 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
           },
         }
       );
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg =
-          errorData?.error?.message || "Fetching cinema details failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
+      return response.data;
+    } catch (error: any) {
       console.error(error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message ||
+        "Fetching cinema details failed.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -82,75 +74,65 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
   const createCinema = useCallback(async (newCinema: CinemaType) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/cinema`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/cinema`, newCinema, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newCinema),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating cinema failed.";
-        throw new Error(errorMsg);
-      }
-      const createdCinema = await response.json();
+      const createdCinema = response.data;
       setCinemas((prevCinemas) => [...prevCinemas, createdCinema]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create cinema:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Creating cinema failed.";
+      throw new Error(errorMsg);
     }
   }, []);
 
   const updateCinema = useCallback(async (updatedCinema: CinemaType) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/cinema/${updatedCinema._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedCinema),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating cinema failed.";
-        throw new Error(errorMsg);
-      }
-      const updatedData = await response.json();
+      const response = await axios.patch(
+        `${baseURL}/cinema/${updatedCinema._id}`,
+        updatedCinema,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const updatedData = response.data;
       setCinemas((prevCinemas) =>
         prevCinemas.map((cinema) =>
           cinema._id === updatedData._id ? updatedData : cinema
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update cinema:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Updating cinema failed.";
+      throw new Error(errorMsg);
     }
   }, []);
 
   const deleteCinema = useCallback(async (_id: string) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/cinema/${_id}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/cinema/${_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting cinema failed.";
-        throw new Error(errorMsg);
-      }
       setCinemas((prevCinemas) =>
         prevCinemas.filter((cinema) => cinema._id !== _id)
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete cinema:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Deleting cinema failed.";
+      throw new Error(errorMsg);
     }
   }, []);
 

@@ -37,14 +37,14 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching seats failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       setSeats(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch seats:", error);
       throw error;
     } finally {
@@ -61,14 +61,14 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching seats by room ID failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       setSeats(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch seats by room ID:", error);
       throw error;
     } finally {
@@ -85,14 +85,14 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching seats by showtime ID failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const { data } = await response.json();
+
+      const data = await response.json();
       setSeats(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch seats by showtime ID:", error);
       throw error;
     } finally {
@@ -112,14 +112,14 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
         body: JSON.stringify(newSeat),
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating seat failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const createdSeat = await response.json();
       setSeats((prevSeats) => [...prevSeats, createdSeat]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create seat:", error);
       throw error;
     } finally {
@@ -139,18 +139,18 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
         body: JSON.stringify(updatedSeat),
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating seat failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const updatedData = await response.json();
       setSeats((prevSeats) =>
         prevSeats.map((seat) =>
           seat._id === updatedData._id ? updatedData : seat
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update seat:", error);
       throw error;
     } finally {
@@ -168,13 +168,13 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting seat failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       setSeats((prevSeats) => prevSeats.filter((seat) => seat._id !== seatId));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete seat:", error);
       throw error;
     } finally {

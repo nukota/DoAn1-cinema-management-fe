@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import axios from "axios";
 import { UserType } from "../interfaces/types";
 
 export interface AuthContextType {
@@ -50,22 +51,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchUserProfile = async (token: string, email: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/user/email?email=${email}`, {
+      const response = await axios.get(`${baseURL}/user/email?email=${email}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg =
-          errorData?.error?.message || "Failed to fetch user profile.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setUserProfile(data);
+      setUserProfile(response.data);
       setAccessToken(token);
       setIsLoggedIn(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch user profile:", error);
-      throw error;
+      const errorMsg =
+        error.response?.data?.error?.message || "Failed to fetch user profile.";
+      throw new Error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -75,18 +71,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       console.log("Attempting login...", { email, password });
-      const response = await fetch(`${baseURL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const message = errorData?.error?.message || "Sign In failed";
-        throw new Error(message);
-      }
-      const data = await response.json();
-      const { accessToken, refreshToken, user_id } = data;
+      const response = await axios.post(
+        `${baseURL}/auth/login`,
+        { email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const { accessToken, refreshToken, user_id } = response.data;
 
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
@@ -94,8 +86,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem("user_id", user_id);
       await fetchUserProfile(accessToken, email);
     } catch (error: any) {
-      console.error("Sign In failed:", error.message);
-      throw error;
+      console.error("Sign In failed:", error);
+      const message = error.response?.data?.error?.message || "Sign In failed";
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -104,19 +97,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleSignUp = async (data: SignUpData) => {
     setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/auth/register`, {
-        method: "POST",
+      await axios.post(`${baseURL}/auth/register`, data, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const message = errorData?.error?.message || "Sign Up failed";
-        throw new Error(message);
-      }
     } catch (error: any) {
-      console.error("Sign Up failed:", error.message);
-      throw error;
+      console.error("Sign Up failed:", error);
+      const message = error.response?.data?.error?.message || "Sign Up failed";
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -136,22 +123,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const sendEmail = useCallback(
     async (email: string) => {
       try {
-        const response = await fetch(`${baseURL}/auth/forgot-password`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg = errorData?.error?.message || "Failed to send email.";
-          throw new Error(errorMsg);
-        }
-        return await response.json();
-      } catch (error) {
+        const response = await axios.post(
+          `${baseURL}/auth/forgot-password`,
+          { email },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
         console.error("Failed to send forgot password email:", error);
-        throw error;
+        const errorMsg =
+          error.response?.data?.error?.message || "Failed to send email.";
+        throw new Error(errorMsg);
       }
     },
     [baseURL]
@@ -161,23 +147,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resetPassword = useCallback(
     async (token: string, newPassword: string) => {
       try {
-        const response = await fetch(`${baseURL}/auth/reset-password`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token, newPassword }),
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg =
-            errorData?.error?.message || "Failed to reset password.";
-          throw new Error(errorMsg);
-        }
-        return await response.json();
-      } catch (error) {
+        const response = await axios.post(
+          `${baseURL}/auth/reset-password`,
+          { token, newPassword },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
         console.error("Failed to reset password:", error);
-        throw error;
+        const errorMsg =
+          error.response?.data?.error?.message || "Failed to reset password.";
+        throw new Error(errorMsg);
       }
     },
     [baseURL]
@@ -203,7 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         handleLogout,
         handleSignUp,
         sendEmail,
-      resetPassword,
+        resetPassword,
       }}
     >
       {children}

@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { ProductType } from "../interfaces/types";
 
 interface ProductsContextType {
@@ -30,19 +31,14 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
   const fetchProductsData = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${baseURL}/product`, {
+      const response = await axios.get(`${baseURL}/product`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching products failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
+
+      setProducts(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch products:", error);
       throw error;
     } finally {
@@ -52,22 +48,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
 
   const createProduct = useCallback(async (newProduct: ProductType) => {
     try {
-      const response = await fetch(`${baseURL}/product`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/product`, newProduct, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        body: JSON.stringify(newProduct),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating product failed.";
-        throw new Error(errorMsg);
-      }
-      const createdProduct = await response.json();
+
+      const createdProduct = response.data;
       setProducts((prevProducts) => [...prevProducts, createdProduct]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create product:", error);
       throw error;
     }
@@ -75,26 +65,24 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
 
   const updateProduct = useCallback(async (updatedProduct: ProductType) => {
     try {
-      const response = await fetch(`${baseURL}/product/${updatedProduct._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify(updatedProduct),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating product failed.";
-        throw new Error(errorMsg);
-      }
-      const updatedData = await response.json();
+      const response = await axios.put(
+        `${baseURL}/product/${updatedProduct._id}`,
+        updatedProduct,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      const updatedData = response.data;
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product._id === updatedData._id ? updatedData : product
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update product:", error);
       throw error;
     }
@@ -102,21 +90,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({
 
   const deleteProduct = useCallback(async (productId: string) => {
     try {
-      const response = await fetch(`${baseURL}/product/${productId}`, {
-        method: "DELETE",
+      await axios.delete(`${baseURL}/product/${productId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting product failed.";
-        throw new Error(errorMsg);
-      }
+
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product._id !== productId)
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete product:", error);
       throw error;
     }

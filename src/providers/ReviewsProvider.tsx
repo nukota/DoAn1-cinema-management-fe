@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import axios from "axios";
 import { ReviewType } from "../interfaces/types";
 
 // Move baseURL to module scope
@@ -32,20 +33,14 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/review`, {
+      const response = await axios.get(`${baseURL}/review`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg =
-          errorData?.error?.message || "Fetching reviews failed.";
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      setReviews(data);
-    } catch (error) {
+
+      setReviews(response.data);
+    } catch (error: any) {
       console.error("Failed to fetch reviews:", error);
       throw error;
     } finally {
@@ -57,22 +52,16 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/review`, {
-        method: "POST",
+      const response = await axios.post(`${baseURL}/review`, newReview, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newReview),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating review failed.";
-        throw new Error(errorMsg);
-      }
-      const createdReview = await response.json();
+
+      const createdReview = response.data;
       setReviews((prevReviews) => [...prevReviews, createdReview]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create review:", error);
       throw error;
     } finally {
@@ -92,18 +81,18 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
         },
         body: JSON.stringify(updatedReview),
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating review failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const updatedData = await response.json();
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedData._id ? updatedData : review
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update review:", error);
       throw error;
     } finally {
@@ -121,15 +110,15 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting review failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review._id !== reviewId)
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete review:", error);
       throw error;
     } finally {
@@ -147,15 +136,14 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
             Authorization: `Bearer ${token}`,
           },
         });
+
         if (!response.ok) {
-          const errorData = await response.json();
-          const errorMsg =
-            errorData?.error?.message || "Fetching movie reviews failed.";
-          throw new Error(errorMsg);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
         return data;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch reviews by movieId:", error);
         throw error;
       } finally {

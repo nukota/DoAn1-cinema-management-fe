@@ -1,4 +1,11 @@
-import React, { createContext, useContext, ReactNode, useCallback, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useCallback,
+  useState,
+} from "react";
+import axios from "axios";
 
 type ChatbotResponse = {
   reply: string;
@@ -12,35 +19,38 @@ interface ChatbotContextType {
 
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
 
-export const ChatbotProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ChatbotProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [loading, setLoading] = useState(false);
   const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-  const sendMessage = useCallback(async (message: string): Promise<ChatbotResponse> => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${baseURL}/chatbot`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ message }),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to get chatbot reply.");
+  const sendMessage = useCallback(
+    async (message: string): Promise<ChatbotResponse> => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.post(
+          `${baseURL}/chatbot`,
+          { message },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
+        console.error("Chatbot sendMessage error:", error);
+        const errorMsg = error.response?.data || "Failed to get chatbot reply.";
+        throw new Error(errorMsg);
+      } finally {
+        setLoading(false);
       }
-      const data: ChatbotResponse = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Chatbot sendMessage error:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [baseURL]);
+    },
+    [baseURL]
+  );
 
   return (
     <ChatbotContext.Provider value={{ sendMessage, loading }}>

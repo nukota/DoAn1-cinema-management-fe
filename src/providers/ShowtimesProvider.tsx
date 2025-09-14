@@ -45,14 +45,14 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching showtimes failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       setShowtimes(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch showtimes:", error);
       throw error;
     } finally {
@@ -69,14 +69,14 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching showtimes by movie ID failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       setShowtimesByMovieId(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch showtimes by movie ID:", error);
       throw error;
     } finally {
@@ -96,13 +96,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
         },
         body: JSON.stringify(newShowtime),
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Creating showtime failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       await fetchShowtimesData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create showtime:", error);
       throw error;
     } finally {
@@ -125,13 +125,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
           body: JSON.stringify(updatedShowtime),
         }
       );
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Updating showtime failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       await fetchShowtimesData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update showtime:", error);
       throw error;
     } finally {
@@ -149,13 +149,13 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Deleting showtime failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       await fetchShowtimesData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to delete showtime:", error);
       throw error;
     } finally {
@@ -172,19 +172,21 @@ export const ShowtimesProvider: React.FC<{ children: ReactNode }> = ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData?.error?.message || "Fetching current showtime failed.";
-        throw new Error(errorMsg);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const { data } = await response.json();
+
+      const responseData = await response.json();
+      const data = responseData.data || responseData;
+
       if (Array.isArray(data)) {
         setCurrentShowtime(data);
       } else {
         console.error("Invalid data format: Expected an array in 'data'");
         setCurrentShowtime([]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch current showtimes:", error);
       throw error;
     } finally {
