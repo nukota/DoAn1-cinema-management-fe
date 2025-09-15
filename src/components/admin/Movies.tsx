@@ -5,7 +5,6 @@ import DetailMovie from "./dialogs/DetailMovie";
 import CreateMovie from "./dialogs/CreateMovie";
 import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
-import { CircularProgress } from "@mui/material";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomTabs from "./elements/Tabs";
 

@@ -5,7 +5,6 @@ import CreateProduct from "./dialogs/CreateProduct";
 import DetailProduct from "./dialogs/DetailProduct";
 import { useProducts } from "../../providers/ProductsProvider";
 import { toast } from "react-toastify";
-import { CircularProgress } from "@mui/material";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomTabs from "./elements/Tabs";
 

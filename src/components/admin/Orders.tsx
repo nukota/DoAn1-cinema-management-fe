@@ -3,7 +3,6 @@ import Order from "./items/Order";
 import { OrderType } from "../../interfaces/types";
 import DetailOrder from "./dialogs/DetailOrder";
 import { useOrders } from "../../providers/OrdersProvider";
-import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomTabs from "./elements/Tabs";
