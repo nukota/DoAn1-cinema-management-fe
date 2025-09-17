@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { countryOptions } from "../../../enum/enum";
+import { countryOptions } from "../../../interfaces/enum/enum";
 import CreateDialog from "./template/CreateDialog";
 
 const statusOptions: string[] = [

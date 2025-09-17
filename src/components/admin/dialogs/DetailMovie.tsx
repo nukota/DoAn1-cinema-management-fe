@@ -14,7 +14,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { MovieType } from "../../../interfaces/types";
 import { toast } from "react-toastify";
-import { countryOptions } from "../../../enum/enum";
+import { countryOptions } from "../../../interfaces/enum/enum";
 const CustomDialogContent = styled(DialogContent)({
   "&::-webkit-scrollbar": {
     width: "8px",

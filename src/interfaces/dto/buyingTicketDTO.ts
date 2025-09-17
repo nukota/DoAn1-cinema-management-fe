@@ -1,0 +1,105 @@
+// DTO for fetching movies with showtimes for ticket selection (Step 0)
+export interface MovieShowtimeDTO {
+  _id: string;
+  title: string;
+  poster_url: string;
+  showtimes: {
+    _id: string;
+    showtime: string; // ISO date string
+    price: number;
+    cinema_id: string;
+    room_id: string;
+  }[];
+}
+
+// DTO for fetching seats for seat selection (Step 1)
+export interface SeatDTO {
+  _id: string;
+  seat_name: string; // e.g., "A1", "B2"
+  seat_type: string; // e.g., "regular", "vip"
+  status: string; // e.g., "available", "occupied", "selected"
+  row: number;
+  column: number;
+}
+
+// DTO for fetching products for product selection (Step 2)
+export interface ProductDTO {
+  _id: string;
+  name: string;
+  price: number;
+  image: string; // URL to product image
+  type: string; // e.g., "Food", "Drink", "Combo"
+}
+
+// DTO for fetching customers for customer information (Step 3)
+export interface CustomerDTO {
+  _id: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+}
+
+// DTO for creating an order (Step 4 - Payment)
+export interface CreateOrderDTO {
+  total_price: number;
+  user_id?: string; // Optional for guest orders
+  email?: string; // Required for guest orders
+  payment_method: string; // "cash", "card", "momo", "banking"
+  discount_id?: string | null;
+  amount: number;
+  products: {
+    product_id: string;
+    quantity: number;
+  }[];
+  tickets: {
+    showtime_id: string;
+    price: number;
+    seats: {
+      seat_id: string;
+    }[];
+  };
+}
+
+// DTO for the response after creating an order (Step 5 - Print Ticket)
+export interface OrderResponseDTO {
+  order_id: string;
+  pdf_url?: string; // URL to generated PDF ticket
+  success: boolean;
+  message?: string;
+}
+
+// Additional DTOs for API endpoints
+
+// Request DTO for fetching seats by showtime
+export interface FetchSeatsRequestDTO {
+  showtime_id: string;
+}
+
+// Request DTO for fetching movies with showtimes by date
+export interface FetchMovieShowtimesRequestDTO {
+  date: string; // Format: YYYY-MM-DD
+}
+
+// Request DTO for searching customers
+export interface SearchCustomersRequestDTO {
+  name?: string;
+  phone?: string;
+}
+
+// Summary DTO for displaying order summary in payment step
+export interface OrderSummaryDTO {
+  movie_title: string;
+  showtime: string;
+  seats: string[]; // Array of seat names like ["A1", "B2"]
+  seat_count: number;
+  ticket_total: number;
+  products: {
+    name: string;
+    quantity: number;
+    unit_price: number;
+    total_price: number;
+  }[];
+  products_total: number;
+  final_total: number;
+  payment_method: string;
+}
