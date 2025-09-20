@@ -12,16 +12,6 @@ export interface MovieShowtimeDTO {
   }[];
 }
 
-// DTO for fetching seats for seat selection (Step 1)
-export interface SeatDTO {
-  _id: string;
-  seat_name: string; // e.g., "A1", "B2"
-  seat_type: string; // e.g., "regular", "vip"
-  status: string; // e.g., "available", "occupied", "selected"
-  row: number;
-  column: number;
-}
-
 // DTO for fetching products for product selection (Step 2)
 export interface ProductDTO {
   _id: string;
@@ -39,9 +29,14 @@ export interface CustomerDTO {
   email?: string;
 }
 
-// DTO for creating an order (Step 4 - Payment)
+// DO THIS (data backend send back)
+export interface BuyingTicketDTO {
+  movies: MovieShowtimeDTO[];
+  products: ProductDTO[];
+  customers: CustomerDTO[];
+}
 
-// DO THIS (data frontend send to backend)
+// DTO for creating an order (Step 4 - Payment)
 export interface CreateOrderDTO {
   total_price: number;
   user_id?: string; // Optional for guest orders
