@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { CinemaType } from "../../interfaces/types";
+import { CinemasPageItemDTO } from "../../interfaces/dto/cinemaDTO";
 import DetailCinema from "./dialogs/DetailCinema";
 import CreateCinema from "./dialogs/CreateCinema";
 import {
@@ -18,51 +19,40 @@ import { confirmDeletion } from "../../utils/confirmDeletion";
 import Cinema from "./items/Cinema";
 
 const Cinemas: React.FC = () => {
-  const fetchedIds = React.useRef<Set<string>>(new Set());
   const {
-    cinemas,
-    fetchCinemasData,
     fetchCinemaDetails,
     createCinema,
     updateCinema,
     deleteCinema,
     loading,
   } = useCinemas();
-  const [selectedCinema, setSelectedCinema] = useState<CinemaType | null>(null);
+  const [cinemas, setCinemas] = useState<CinemasPageItemDTO[]>([]);
+  const [selectedCinema, setSelectedCinema] = useState<CinemasPageItemDTO | null>(null);
   const [DetailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
   const [AddDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [cinemaDetails, setCinemaDetails] = useState<{
-    [key: string]: { employeeCount: number; roomCount: number };
-  }>({});
 
   useEffect(() => {
-    fetchCinemasData();
+    const loadData = async () => {
+      try {
+        const details: CinemasPageItemDTO[] = await fetchCinemaDetails();
+        setCinemas(details);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+      }
+    };
+    loadData();
   }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const fetchDetails = async (cinemaId: string) => {
-    if (cinemaDetails[cinemaId] || fetchedIds.current.has(cinemaId)) return;
-    fetchedIds.current.add(cinemaId);
-    try {
-      const details = await fetchCinemaDetails(cinemaId);
-      setCinemaDetails((prevDetails) => ({
-        ...prevDetails,
-        [cinemaId]: details,
-      }));
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
-    }
-  };
-
   const handleAddNewClick = () => {
     setAddDialogOpen(true);
   };
 
-  const handleInfoClick = (cinema: CinemaType) => {
+  const handleInfoClick = (cinema: CinemasPageItemDTO) => {
     setSelectedCinema(cinema);
     setDetailDialogOpen(true);
   };
@@ -84,6 +74,9 @@ const Cinemas: React.FC = () => {
       await createCinema(cinemaData as CinemaType);
       handleCloseDialog();
       toast.success("Cinema added successfully!");
+      // Refetch to update the list
+      const details: CinemasPageItemDTO[] = await fetchCinemaDetails();
+      setCinemas(details);
       return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
@@ -94,8 +87,12 @@ const Cinemas: React.FC = () => {
   const handleOnSave = async (updatedCinema: CinemaType): Promise<boolean> => {
     try {
       await updateCinema(updatedCinema);
-      setSelectedCinema(updatedCinema);
+      handleCloseDialog();
+      setSelectedCinema(null);
       toast.success("Cinema updated successfully!");
+      // Refetch to update the list
+      const details: CinemasPageItemDTO[] = await fetchCinemaDetails();
+      setCinemas(details);
       return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
@@ -114,9 +111,12 @@ const Cinemas: React.FC = () => {
     if (confirmed) {
       try {
         await deleteCinema(cinemaId);
-        fetchCinemasData();
         handleCloseDialog();
+        setSelectedCinema(null);
         toast.success("Cinema deleted successfully!");
+        // Refetch to update the list
+        const details: CinemasPageItemDTO[] = await fetchCinemaDetails();
+        setCinemas(details);
       } catch (error) {
         toast.error(error instanceof Error ? error.message : String(error));
       }
@@ -125,15 +125,7 @@ const Cinemas: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    cinemas.forEach((cinema) => {
-      if (!cinemaDetails[cinema._id] && !fetchedIds.current.has(cinema._id)) {
-        fetchDetails(cinema._id);
-      }
-    });
-  }, [cinemas]);
-
-  const filteredCinemas = cinemas.filter((cinema) => {
+  const filteredCinemas = (cinemas || []).filter((cinema) => {
     const searchTermLower = searchTerm.toLowerCase();
     return (
       cinema.name.toLowerCase().includes(searchTermLower) ||
@@ -199,7 +191,6 @@ const Cinemas: React.FC = () => {
               <Cinema
                 key={cinema._id}
                 cinema={cinema}
-                cinemaDetails={cinemaDetails[cinema._id]}
                 handleInfoClick={() => handleInfoClick(cinema)}
               />
             ))}

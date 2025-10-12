@@ -57,6 +57,9 @@ interface DialogProps {
   showImage?: string;
   actions?: DialogAction[];
   error?: string;
+  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
+  titleSx?: object;
+  contentSx?: object;
 }
 
 const Dialog: React.FC<DialogProps> = ({
@@ -68,6 +71,9 @@ const Dialog: React.FC<DialogProps> = ({
   showImage,
   actions = [],
   error,
+  maxWidth,
+  titleSx,
+  contentSx,
 }) => {
   // Find the image URL from the fields if showImage prop is provided
   const getImageUrl = () => {
@@ -90,15 +96,15 @@ const Dialog: React.FC<DialogProps> = ({
     <MuiDialog
       open={open}
       onClose={onClose}
-      maxWidth={showImage ? "md" : "sm"}
+      maxWidth={maxWidth || (showImage ? "md" : "sm")}
       fullWidth
     >
       <DialogTitle
-        sx={{ fontWeight: "bold", fontSize: 24, padding: "16px 24px" }}
+        sx={{ fontWeight: "bold", fontSize: 24, padding: "16px 24px", ...titleSx }}
       >
         {title}
       </DialogTitle>
-      <CustomDialogContent>
+      <CustomDialogContent sx={contentSx}>
         <Box sx={{ display: "flex", gap: showImage ? 3 : 0 }}>
           {/* Left side - Form content */}
           <Box sx={{ flex: showImage ? 1 : "auto", minWidth: 0 }}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { CinemaType } from "../../../interfaces/types";
+import { CinemasPageItemDTO } from "../../../interfaces/dto/cinemaDTO";
 import {
   Card,
   CardContent,
@@ -13,14 +13,12 @@ import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 
 interface CinemaProps {
-  cinema: CinemaType;
-  cinemaDetails: { employeeCount: number; roomCount: number } | undefined;
+  cinema: CinemasPageItemDTO;
   handleInfoClick: () => void;
 }
 
 const Cinema: React.FC<CinemaProps> = ({
   cinema,
-  cinemaDetails,
   handleInfoClick,
 }) => {
   return (
@@ -97,7 +95,7 @@ const Cinema: React.FC<CinemaProps> = ({
             <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
               Rooms:{" "}
               <span style={{ fontWeight: 700, color: "#dc2626" }}>
-                {cinemaDetails ? cinemaDetails.roomCount : "..."}
+                {cinema.room_count}
               </span>
             </Typography>
           </Box>
@@ -107,7 +105,7 @@ const Cinema: React.FC<CinemaProps> = ({
             <Typography variant="body1" sx={{ color: "#1a1a1a" }}>
               Staff:{" "}
               <span style={{ fontWeight: 700, color: "#dc2626" }}>
-                {cinemaDetails ? cinemaDetails.employeeCount : "..."}
+                {cinema.employee_count}
               </span>
             </Typography>
           </Box>

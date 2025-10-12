@@ -29,7 +29,6 @@ export interface CustomerDTO {
   email?: string;
 }
 
-// DO THIS (data backend send back)
 export interface BuyingTicketDTO {
   movies: MovieShowtimeDTO[];
   products: ProductDTO[];

@@ -11,7 +11,7 @@ import {
 import Paper from "@mui/material/Paper";
 import { OrderType } from "../../../interfaces/types";
 import { formatTime } from "../../../utils/formatUtils";
-import Dialog from "./template/CreateDialog";
+import Dialog from "./template/Dialog";
 
 interface DetailOrderProps {
   order: OrderType;
@@ -145,12 +145,16 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
               <Typography sx={{ fontSize: 14 }}>
                 Price:{" "}
                 {order.tickets.seats && order.tickets.seats.length > 1
-                  ? `${
-                      order.tickets.seats.length
-                    } x ${order.tickets.price.toFixed(0)} = ${(
-                      order.tickets.seats.length * order.tickets.price
-                    ).toFixed(0)} VND`
-                  : `${order.tickets.price.toFixed(0)} VND`}
+                  ? `${order.tickets.seats.length} x ${
+                      order.tickets.price ? order.tickets.price.toFixed(0) : "0"
+                    } = ${
+                      order.tickets.price
+                        ? (
+                            order.tickets.seats.length * order.tickets.price
+                          ).toFixed(0)
+                        : "0"
+                    } VND`
+                  : `${order.tickets.price ? order.tickets.price.toFixed(0) : "0"} VND`}
               </Typography>
               {!order.tickets.seats ||
               order.tickets.seats.length === 0 ||

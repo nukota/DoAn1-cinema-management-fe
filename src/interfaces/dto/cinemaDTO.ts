@@ -6,7 +6,6 @@ export type CinemasPageItemDTO = {
   room_count: number;
 };
 
-// DO THIS (date backend send back)
 export type CinemasPageDTO = {
   cinemas: CinemasPageItemDTO[];
 };
