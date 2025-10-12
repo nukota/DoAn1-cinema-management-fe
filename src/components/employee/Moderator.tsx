@@ -22,7 +22,8 @@ import {
 } from "@mui/material";
 
 const Moderator: React.FC = () => {
-  const { reviews, fetchReviewsData, loading } = useReviews();
+  const { reviews, fetchReviewsData, updateReview, deleteReview, loading } =
+    useReviews();
   const [selectedReview, setSelectedReview] = useState<ReviewType | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
 
@@ -41,50 +42,56 @@ const Moderator: React.FC = () => {
   };
 
   const handleApproveReview = async (review: ReviewType) => {
-    // Placeholder for approve functionality
-    toast.success(`Review by ${review.user?.full_name} marked as appropriate.`);
+    try {
+      // Update the review with isVerified set to true
+      await updateReview(review._id!, { isVerify: true });
+
+      toast.success(`Review by ${review.user?.full_name} has been approved.`);
+
+      // Close dialog if open
+      if (detailDialogOpen) {
+        handleCloseDialog();
+      }
+
+      // Refresh the reviews list to remove the approved review
+      await fetchReviewsData();
+    } catch (error) {
+      console.error("Failed to approve review:", error);
+      toast.error("Failed to approve review. Please try again.");
+    }
   };
 
-  const handleReportReview = async (review: ReviewType) => {
-    // Placeholder for report functionality
-    toast.warning(
-      `Review by ${review.user?.full_name} flagged for further review.`
-    );
+  const handleRejectReview = async (review: ReviewType) => {
+    try {
+      // Delete the review from the database
+      if (!review._id) {
+        toast.error("Invalid review ID");
+        return;
+      }
+
+      await deleteReview(review._id);
+
+      toast.success(
+        `Review by ${review.user?.full_name} has been rejected and deleted.`
+      );
+
+      // Close dialog if open
+      if (detailDialogOpen) {
+        handleCloseDialog();
+      }
+
+      // Refresh is automatic as deleteReview updates the state
+    } catch (error) {
+      console.error("Failed to reject review:", error);
+      toast.error("Failed to reject review. Please try again.");
+    }
   };
 
   const getReviewSentiment = (
-    comment: string
+    rating: number
   ): "positive" | "negative" | "neutral" => {
-    const positiveWords = [
-      "good",
-      "great",
-      "excellent",
-      "amazing",
-      "love",
-      "awesome",
-      "fantastic",
-      "wonderful",
-    ];
-    const negativeWords = [
-      "bad",
-      "terrible",
-      "awful",
-      "hate",
-      "horrible",
-      "disappointing",
-      "worst",
-    ];
-
-    const lowerComment = comment.toLowerCase();
-    const hasPositive = positiveWords.some((word) =>
-      lowerComment.includes(word)
-    );
-    const hasNegative = negativeWords.some((word) =>
-      lowerComment.includes(word)
-    );
-
-    if (hasPositive && !hasNegative) return "positive";
-    if (hasNegative && !hasPositive) return "negative";
+    if (rating >= 4) return "positive";
+    if (rating <= 2) return "negative";
     return "neutral";
   };
 
@@ -133,7 +140,7 @@ const Moderator: React.FC = () => {
       flex: 1,
       minWidth: 250,
       renderCell: (params) => {
-        const sentiment = getReviewSentiment(params.value);
+        const sentiment = getReviewSentiment(params.row.rating);
         return (
           <Box
             sx={{
@@ -211,17 +218,17 @@ const Moderator: React.FC = () => {
           showInMenu={false}
         />,
         <GridActionsCellItem
-          key="report"
+          key="reject"
           icon={
             <ReportOutlined
               sx={{
                 fontSize: { xs: 20, sm: 24, md: 28 },
-                color: "#ff9800",
+                color: "#f44336",
               }}
             />
           }
-          label="Flag"
-          onClick={() => handleReportReview(params.row)}
+          label="Reject"
+          onClick={() => handleRejectReview(params.row)}
           showInMenu={false}
         />,
       ],
@@ -251,11 +258,11 @@ const Moderator: React.FC = () => {
             <Typography variant="h6">Review Details</Typography>
             {selectedReview && (
               <Chip
-                label={getReviewSentiment(selectedReview.comment || "")}
+                label={getReviewSentiment(selectedReview.rating)}
                 size="small"
                 sx={{
                   backgroundColor: getSentimentColor(
-                    getReviewSentiment(selectedReview.comment || "")
+                    getReviewSentiment(selectedReview.rating)
                   ),
                   color: "white",
                 }}
@@ -338,11 +345,11 @@ const Moderator: React.FC = () => {
             Approve
           </Button>
           <Button
-            onClick={() => selectedReview && handleReportReview(selectedReview)}
-            color="warning"
+            onClick={() => selectedReview && handleRejectReview(selectedReview)}
+            color="error"
             startIcon={<ReportOutlined />}
           >
-            Flag
+            Reject
           </Button>
           <Button onClick={handleCloseDialog}>Close</Button>
         </DialogActions>

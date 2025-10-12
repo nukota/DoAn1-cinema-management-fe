@@ -161,7 +161,7 @@ export type DiscountType = {
   max_usage: number;
   expiry_date: string;
   movie_id?: string; // Movie this discount applies to (optional)
-  credit?: number;   // User's credit required to use this discount (optional)
+  credit?: number; // User's credit required to use this discount (optional)
 };
 
 export type ReviewType = {
@@ -179,6 +179,7 @@ export type ReviewType = {
   };
   rating: number;
   comment: string;
+  isVerify?: boolean;
   created_at?: string;
 };
 

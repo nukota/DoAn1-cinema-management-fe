@@ -15,9 +15,12 @@ interface ReviewsContextType {
   reviews: ReviewType[];
   fetchReviewsData: () => Promise<void>;
   createReview: (newReview: ReviewType) => Promise<void>;
-  updateReview: (updatedReview: ReviewType) => Promise<void>;
+  updateReview: (id: string, updateData: Partial<ReviewType>) => Promise<void>;
   deleteReview: (reviewId: string) => Promise<void>;
-  getReviewsByMovieId: (movieId: string) => Promise<ReviewType[]>;
+  getReviewsByMovieId: (
+    movieId: string,
+    userId?: string
+  ) => Promise<ReviewType[]>;
   loading: boolean;
 }
 
@@ -33,7 +36,7 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`${baseURL}/review`, {
+      const response = await axios.get(`${baseURL}/review/unverified`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -69,34 +72,37 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, []);
 
-  const updateReview = useCallback(async (updatedReview: ReviewType) => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("accessToken");
-      const response = await axios.patch(
-        `${baseURL}/review/${updatedReview._id}`,
-        updatedReview,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  const updateReview = useCallback(
+    async (id: string, updateData: Partial<ReviewType>) => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.patch(
+          `${baseURL}/review/${id}`,
+          updateData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      const updatedData = response.data;
-      setReviews((prevReviews) =>
-        prevReviews.map((review) =>
-          review._id === updatedData._id ? updatedData : review
-        )
-      );
-    } catch (error: any) {
-      console.error("Failed to update review:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        const updatedData = response.data;
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
+            review._id === updatedData._id ? updatedData : review
+          )
+        );
+      } catch (error: any) {
+        console.error("Failed to update review:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   const deleteReview = useCallback(async (reviewId: string) => {
     setLoading(true);
@@ -120,11 +126,18 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const getReviewsByMovieId = useCallback(
-    async (movieId: string): Promise<ReviewType[]> => {
+    async (movieId: string, userId?: string): Promise<ReviewType[]> => {
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.get(`${baseURL}/review/movie/${movieId}`, {
+
+        // Build URL with optional user_id query parameter
+        let url = `${baseURL}/review/movie/${movieId}`;
+        if (userId) {
+          url += `?user_id=${userId}`;
+        }
+
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

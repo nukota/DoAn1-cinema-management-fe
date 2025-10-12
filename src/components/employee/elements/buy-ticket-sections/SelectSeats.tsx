@@ -75,7 +75,7 @@ const SelectSeats: React.FC<SelectSeatsProps> = ({
   };
 
   return (
-    <div className="w-full h-[480px] overflow-y-scroll custom-scrollbar flex flex-col gap-4 pb-4">
+    <div className="w-full h-full overflow-y-scroll custom-scrollbar flex flex-col gap-4 pb-4">
       {/* Ticket Count Picker */}
       <div
         style={{

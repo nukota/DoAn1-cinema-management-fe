@@ -47,7 +47,14 @@ const CustomerInformation: React.FC<CustomerInformationProps> = ({
   );
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        maxHeight: { xs: "572px", xl: "772px" },
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Tabs for Existed Account and Guest */}
       <Tabs
         value={selectedTab}
@@ -81,7 +88,12 @@ const CustomerInformation: React.FC<CustomerInformationProps> = ({
           </Box>
 
           {/* Customer List */}
-          <List sx={{ maxHeight: "380px", overflowY: "auto" }}>
+          <List
+            sx={{
+              maxHeight: { xs: "380px", xl: "580px" },
+              overflowY: "auto",
+            }}
+          >
             {filteredAccounts.map((account: UserType) => (
               <ListItem key={account._id} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton

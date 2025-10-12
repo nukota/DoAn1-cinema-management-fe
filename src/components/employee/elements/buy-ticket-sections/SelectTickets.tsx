@@ -1,9 +1,7 @@
-import React, { useRef } from "react";
-import { Box, Typography, IconButton } from "@mui/material";
+import React from "react";
+import { Box, Typography } from "@mui/material";
 import { MovieType, ShowtimeType } from "../../../../interfaces/types";
 import ShowtimeUnit from "../../items/ShowtimeUnit";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface SelectTicketsProps {
   filteredShowtimes: MovieType[];
@@ -18,20 +16,6 @@ const SelectTickets: React.FC<SelectTicketsProps> = ({
   selectedShowtime,
   onShowtimeSelect,
 }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
   return (
     <div className="relative w-full">
       {filteredShowtimes.length === 0 ? (
@@ -49,30 +33,12 @@ const SelectTickets: React.FC<SelectTicketsProps> = ({
           </Typography>
         </Box>
       ) : (
-        <>
-          <IconButton
-            onClick={scrollLeft}
-            sx={{
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              backgroundColor: "rgba(255,255,255,0.8)",
-              "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" },
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <div
-            ref={scrollRef}
-            className="flex gap-4 overflow-x-auto custom-scrollbar px-8"
-            style={{ scrollBehavior: "smooth" }}
-          >
+        <div className="max-h-[572px] xl:max-h-[772px] overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
             {filteredShowtimes.map((movie: MovieType) => (
               <div
                 key={movie._id}
-                className="w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 flex-shrink-0 overflow-clip"
+                className="w-full max-w-[220px] h-[480px] flex flex-col items-center border border-light-gray rounded-lg bg-white pb-2 overflow-clip mx-auto"
               >
                 {/* Movie Image */}
                 <div
@@ -102,14 +68,17 @@ const SelectTickets: React.FC<SelectTicketsProps> = ({
                   {movie.showtimes
                     ?.filter(
                       (showtime: any) =>
-                        new Date(showtime.showtime).toLocaleDateString("en-CA") ===
-                        selectedDate
+                        new Date(showtime.showtime).toLocaleDateString(
+                          "en-CA"
+                        ) === selectedDate
                     )
                     .map((showtime: any) => (
                       <ShowtimeUnit
                         key={showtime._id}
                         showtimeData={showtime}
-                        selected={selectedShowtime?.showtime._id === showtime._id}
+                        selected={
+                          selectedShowtime?.showtime._id === showtime._id
+                        }
                         onClick={() => onShowtimeSelect(movie, showtime)}
                       />
                     ))}
@@ -117,21 +86,7 @@ const SelectTickets: React.FC<SelectTicketsProps> = ({
               </div>
             ))}
           </div>
-          <IconButton
-            onClick={scrollRight}
-            sx={{
-              position: "absolute",
-              right: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              backgroundColor: "rgba(255,255,255,0.8)",
-              "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" },
-            }}
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </>
+        </div>
       )}
     </div>
   );

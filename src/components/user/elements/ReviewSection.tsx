@@ -4,13 +4,14 @@ import {
   Typography,
   Button,
   TextField,
-  Rating,
   CircularProgress,
   Card,
   CardContent,
+  Rating,
 } from "@mui/material";
 import { useReviews } from "../../../providers/ReviewsProvider";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
 import { ReviewType } from "../../../interfaces/types";
 
 interface ReviewSectionProps {
@@ -31,8 +32,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
   useEffect(() => {
     let isMounted = true;
     setLocalLoading(true);
-    getReviewsByMovieId(movieId)
+    getReviewsByMovieId(movieId, userId || undefined)
       .then((data) => {
+        console.log("Reviews data from backend:", data);
         if (isMounted) setMovieReviews(data);
       })
       .catch(() => {
@@ -44,7 +46,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
     return () => {
       isMounted = false;
     };
-  }, [getReviewsByMovieId, movieId]);
+  }, [getReviewsByMovieId, movieId, userId]);
 
   const handleSubmit = async () => {
     setErrorMsg("");
@@ -65,7 +67,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
       setRating(5);
       // Refetch reviews after successful submit
       setLocalLoading(true);
-      const data = await getReviewsByMovieId(movieId);
+      const data = await getReviewsByMovieId(movieId, userId || undefined);
       setMovieReviews(data);
       setLocalLoading(false);
     } catch (error: any) {
@@ -98,78 +100,88 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
           <CircularProgress color="primary" />
         </Box>
       ) : (
-        <Swiper
-          spaceBetween={16}
-          slidesPerView={1.2}
-          breakpoints={{
-            640: { slidesPerView: 2.2 },
-            900: { slidesPerView: 3.2 },
-          }}
-          style={{ paddingBottom: 24 }}
-        >
-          {movieReviews.map((review) => (
-            <SwiperSlide key={review._id}>
-              <Card
-                sx={{
-                  minWidth: 260,
-                  maxWidth: 320,
-                  m: 1,
-                  background: "#232323",
-                  color: "#fff",
-                  borderRadius: 2,
-                  height: 200, // Fixed height for at least 5 lines
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <CardContent
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    p: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mb: 1,
-                    }}
-                  >
-                    <Typography
-                      sx={{ fontWeight: 600, mr: 1 }}
-                    >{`${review.user?.full_name}`}</Typography>
-                    <Rating
-                      value={review.rating}
-                      readOnly
-                      size="small"
-                      sx={{ color: "#fbc02d" }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mb: 1,
-                      color: "#bbb",
-                      flex: 1,
-                      overflow: "hidden",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 5,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >{`${review.comment}`}</Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "#888" }}
-                  >{`${review.created_at?.slice(0, 10)}`}</Typography>
-                </CardContent>
-              </Card>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <>
+          <div>Debug: {movieReviews.length} reviews loaded</div>
+          <Box sx={{ width: "100%", maxWidth: "100%" }}>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.2}
+              breakpoints={{
+                640: { slidesPerView: 2.2 },
+                900: { slidesPerView: 3.2 },
+              }}
+              style={{ paddingBottom: 24 }}
+            >
+              {movieReviews.map((review, index) => {
+                console.log("Rendering review:", index, review);
+                return (
+                  <SwiperSlide key={review._id || index}>
+                    <Card
+                      sx={{
+                        minWidth: 260,
+                        maxWidth: 320,
+                        m: 1,
+                        background: "#232323",
+                        color: "#fff",
+                        borderRadius: 2,
+                        height: 200, // Fixed height for at least 5 lines
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <CardContent
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          p: 2,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mb: 1,
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: 600, mr: 1 }}>{`${
+                            review.user?.full_name || "Unknown User"
+                          }`}</Typography>
+                          <Rating
+                            value={review.rating}
+                            readOnly
+                            size="small"
+                            sx={{ color: "#fbc02d" }}
+                          />
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            mb: 1,
+                            color: "#bbb",
+                            flex: 1,
+                            overflow: "hidden",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 5,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                        >{`${review.comment}`}</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "#888" }}
+                        >{`${
+                          review.created_at?.slice(0, 10) || "No date"
+                        }`}</Typography>
+                      </CardContent>
+                    </Card>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          </Box>
+        </>
       )}
       <Box
         sx={{

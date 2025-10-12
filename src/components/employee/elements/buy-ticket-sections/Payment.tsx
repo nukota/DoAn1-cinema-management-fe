@@ -29,11 +29,10 @@ const Payment: React.FC<PaymentProps> = ({
       sx={{
         width: "100%",
         display: "flex",
-        height: "500px",
+        height: "100%",
         gap: 4,
       }}
     >
-      {/* Radio Group for Payment Methods */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h6" sx={{ fontWeight: 400, my: 3 }}>
           Select Payment Method
