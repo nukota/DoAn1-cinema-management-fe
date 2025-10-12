@@ -12,15 +12,6 @@ export interface MovieShowtimeDTO {
   }[];
 }
 
-// DTO for fetching seats for seat selection (Step 1)
-export interface SeatDTO {
-  room_id: string;
-  _id: string;
-  seat_column: number;
-  seat_name: string;
-  available?: boolean;
-}
-
 // DTO for fetching products for product selection (Step 2)
 export interface ProductDTO {
   _id: string;
@@ -36,6 +27,12 @@ export interface CustomerDTO {
   full_name: string;
   phone: string;
   email?: string;
+}
+
+export interface BuyingTicketDTO {
+  movies: MovieShowtimeDTO[];
+  products: ProductDTO[];
+  customers: CustomerDTO[];
 }
 
 // DTO for creating an order (Step 4 - Payment)
@@ -65,40 +62,4 @@ export interface OrderResponseDTO {
   pdf_url?: string; // URL to generated PDF ticket
   success: boolean;
   message?: string;
-}
-
-// Additional DTOs for API endpoints
-
-// Request DTO for fetching seats by showtime
-export interface FetchSeatsRequestDTO {
-  showtime_id: string;
-}
-
-// Request DTO for fetching movies with showtimes by date
-export interface FetchMovieShowtimesRequestDTO {
-  date: string; // Format: YYYY-MM-DD
-}
-
-// Request DTO for searching customers
-export interface SearchCustomersRequestDTO {
-  name?: string;
-  phone?: string;
-}
-
-// Summary DTO for displaying order summary in payment step
-export interface OrderSummaryDTO {
-  movie_title: string;
-  showtime: string;
-  seats: string[]; // Array of seat names like ["A1", "B2"]
-  seat_count: number;
-  ticket_total: number;
-  products: {
-    name: string;
-    quantity: number;
-    unit_price: number;
-    total_price: number;
-  }[];
-  products_total: number;
-  final_total: number;
-  payment_method: string;
 }

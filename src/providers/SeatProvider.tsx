@@ -39,10 +39,7 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
 
-      setSeats(response.data);
-    } catch (error: any) {
-      console.error("Failed to fetch seats:", error);
-      throw error;
+      setSeats(response.data.data || response.data);
     } finally {
       setLoading(false);
     }
@@ -58,7 +55,7 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         },
       });
 
-      setSeats(response.data);
+      setSeats(response.data.data || response.data);
     } catch (error: any) {
       console.error("Failed to fetch seats by room ID:", error);
       throw error;
@@ -80,7 +77,7 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
 
-      setSeats(response.data);
+      setSeats(response.data.data || response.data);
     } catch (error: any) {
       console.error("Failed to fetch seats by showtime ID:", error);
       throw error;

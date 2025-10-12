@@ -232,11 +232,11 @@ const BuyTicket: React.FC = () => {
         <Typography
           variant="h4"
           color="black"
-          sx={{ mb: 4, fontWeight: "bold", alignSelf: "center" }}
+          sx={{ mb: 4, fontWeight: "bold", textAlign: "center", width: "100%" }}
         >
           Buy Ticket Workflow
         </Typography>
-        <Stepper activeStep={activeStep} sx={{ width: "100%", mb: 4 }}>
+        <Stepper activeStep={activeStep} sx={{ width: "calc(100% - 224px)", mb: 4 }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -246,8 +246,7 @@ const BuyTicket: React.FC = () => {
         <Paper
           elevation={0}
           sx={{
-            width: "100%",
-            minWidth: "1200px",
+            width: "calc(100% - 224px)",
             minHeight: { xs: "600px", xl: "800px" },
             display: "flex",
             flexDirection: "column",
@@ -265,7 +264,7 @@ const BuyTicket: React.FC = () => {
               </Typography>
             </div>
           ) : (
-            <div className="overflow-x-scroll custom-scrollbar h-full relative px-4 pt-4">
+            <div className={`custom-scrollbar w-full h-full relative px-4 pt-4`}>
               {activeStep === 0 && (
                 <SelectTickets
                   filteredShowtimes={filteredShowtimes}

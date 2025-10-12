@@ -7,11 +7,12 @@ import React, {
 } from "react";
 import axios from "axios";
 import { CinemaType } from "../interfaces/types";
+import { CinemasPageItemDTO } from "../interfaces/dto/cinemaDTO";
 
 interface CinemasContextType {
   cinemas: CinemaType[];
   fetchCinemasData: () => Promise<void>;
-  fetchCinemaDetails: (cinemaId: string) => Promise<any>;
+  fetchCinemaDetails: () => Promise<CinemasPageItemDTO[]>;
   createCinema: (cinema: CinemaType) => Promise<void>;
   updateCinema: (cinema: CinemaType) => Promise<void>;
   deleteCinema: (_id: string) => Promise<void>;
@@ -47,12 +48,12 @@ export const CinemasProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, []);
 
-  const fetchCinemaDetails = useCallback(async (cinemaId: string) => {
+  const fetchCinemaDetails = useCallback(async (): Promise<CinemasPageItemDTO[]> => {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.get(
-        `${baseURL}/cinema/employeeandroom/${cinemaId}`,
+        `${baseURL}/cinema/employeeandroom`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
