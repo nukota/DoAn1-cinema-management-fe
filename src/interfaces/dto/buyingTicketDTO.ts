@@ -14,21 +14,20 @@ export interface MovieShowtimeDTO {
 
 // DTO for fetching seats for seat selection (Step 1)
 export interface SeatDTO {
+  room_id: string;
   _id: string;
-  seat_name: string; // e.g., "A1", "B2"
-  seat_type: string; // e.g., "regular", "vip"
-  status: string; // e.g., "available", "occupied", "selected"
-  row: number;
-  column: number;
+  seat_column: number;
+  seat_name: string;
+  available?: boolean;
 }
 
 // DTO for fetching products for product selection (Step 2)
 export interface ProductDTO {
   _id: string;
+  image: string;
   name: string;
   price: number;
-  image: string; // URL to product image
-  type: string; // e.g., "Food", "Drink", "Combo"
+  category: string;
 }
 
 // DTO for fetching customers for customer information (Step 3)
