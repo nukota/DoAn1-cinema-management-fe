@@ -25,6 +25,8 @@ import { TimerProvider } from "./providers/page/TimerProvider";
 import { RevenueProvider } from "./providers/RevenueProvider";
 import { ChatbotProvider } from "./providers/ChatbotProvider";
 import UsersProvider from "./providers/UserProvider";
+import { PaymentProvider } from "./providers/PaymentProvider";
+import VNPayResult from "./components/shared/VNPayResult";
 
 const App: React.FC = () => {
   return (
@@ -45,28 +47,34 @@ const App: React.FC = () => {
                                 <RevenueProvider>
                                   <TimerProvider>
                                     <ChatbotProvider>
-                                      <Routes>
-                                        <Route
-                                          path="/"
-                                          element={<Navigate to="/user" />}
-                                        />
-                                        <Route
-                                          path="/admin/*"
-                                          element={<Admin />}
-                                        />
-                                        <Route
-                                          path="/user/*"
-                                          element={<User />}
-                                        />
-                                        <Route
-                                          path="/employee/*"
-                                          element={<Employee />}
-                                        />
-                                        <Route
-                                          path="/*"
-                                          element={<AdminNotFound />}
-                                        />
-                                      </Routes>
+                                      <PaymentProvider>
+                                        <Routes>
+                                          <Route
+                                            path="/"
+                                            element={<Navigate to="/user" />}
+                                          />
+                                          <Route
+                                            path="/admin/*"
+                                            element={<Admin />}
+                                          />
+                                          <Route
+                                            path="/user/*"
+                                            element={<User />}
+                                          />
+                                          <Route
+                                            path="/employee/*"
+                                            element={<Employee />}
+                                          />
+                                          <Route
+                                            path="/*"
+                                            element={<AdminNotFound />}
+                                          />
+                                          <Route
+                                            path="/vnpay-result"
+                                            element={<VNPayResult />}
+                                          />
+                                        </Routes>
+                                      </PaymentProvider>
                                     </ChatbotProvider>
                                   </TimerProvider>
                                 </RevenueProvider>

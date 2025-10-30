@@ -22,13 +22,13 @@ import {
 } from "@mui/material";
 
 const Moderator: React.FC = () => {
-  const { reviews, fetchReviewsData, updateReview, deleteReview, loading } =
+  const { reviews, getUnverifiedReviews, updateReview, deleteReview, loading } =
     useReviews();
   const [selectedReview, setSelectedReview] = useState<ReviewType | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchReviewsData();
+    getUnverifiedReviews();
   }, []);
 
   const handleInfoClick = (review: ReviewType) => {
@@ -54,7 +54,7 @@ const Moderator: React.FC = () => {
       }
 
       // Refresh the reviews list to remove the approved review
-      await fetchReviewsData();
+      await getUnverifiedReviews();
     } catch (error) {
       console.error("Failed to approve review:", error);
       toast.error("Failed to approve review. Please try again.");

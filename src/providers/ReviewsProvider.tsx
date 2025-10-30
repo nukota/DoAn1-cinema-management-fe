@@ -14,6 +14,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 interface ReviewsContextType {
   reviews: ReviewType[];
   fetchReviewsData: () => Promise<void>;
+  getUnverifiedReviews: () => Promise<void>;
   createReview: (newReview: ReviewType) => Promise<void>;
   updateReview: (id: string, updateData: Partial<ReviewType>) => Promise<void>;
   deleteReview: (reviewId: string) => Promise<void>;
@@ -36,7 +37,7 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`${baseURL}/review/unverified`, {
+      const response = await axios.get(`${baseURL}/review`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,6 +46,25 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
       setReviews(response.data);
     } catch (error: any) {
       console.error("Failed to fetch reviews:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getUnverifiedReviews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(`${baseURL}/review/unverified`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setReviews(response.data);
+    } catch (error: any) {
+      console.error("Failed to fetch unverified reviews:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -131,14 +151,17 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
       try {
         const token = localStorage.getItem("accessToken");
 
-        // Build URL with optional user_id query parameter
-        let url = `${baseURL}/review/movie/${movieId}`;
+        const requestBody: { movie_id: string; user_id?: string } = {
+          movie_id: movieId,
+        };
+        
         if (userId) {
-          url += `?user_id=${userId}`;
+          requestBody.user_id = userId;
         }
 
-        const response = await axios.get(url, {
+        const response = await axios.post(`${baseURL}/review/movie`, requestBody, {
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
@@ -159,6 +182,7 @@ export const ReviewsProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         reviews,
         fetchReviewsData,
+        getUnverifiedReviews,
         createReview,
         updateReview,
         deleteReview,

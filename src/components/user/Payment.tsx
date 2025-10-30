@@ -12,13 +12,13 @@ import {
   Step,
   StepLabel,
   Stepper,
-  TextField,
   Typography,
 } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import VisaImg from "../../assets/images/visa.png";
 import MomoImg from "../../assets/images/momo.png";
 import BankingImg from "../../assets/images/banking.png";
+import VNPayImg from "../../assets/images/vnpay.png";
 import { DiscountType, ProductType, SeatType } from "../../interfaces/types";
 import { useLocation, useNavigate } from "react-router-dom";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
@@ -30,6 +30,8 @@ import { formatTime } from "../../utils/formatUtils";
 import qrCodeImg from "../../assets/images/qrCode.jpeg";
 import { useMovies } from "../../providers/MoviesProvider";
 import { useUsers } from "../../providers/UserProvider";
+import VisaForm from "./elements/VisaForm";
+import { usePayment } from "../../providers/PaymentProvider";
 
 const Payment: React.FC = () => {
   const location = useLocation();
@@ -45,6 +47,7 @@ const Payment: React.FC = () => {
   const { createDetailedOrder } = useOrders();
   const { movies } = useMovies();
   const { getCreditByUserId } = useUsers();
+  const { createVNPayPayment } = usePayment();
   const [availableDiscounts, setAvailableDiscounts] = useState<DiscountType[]>(
     []
   );
@@ -58,6 +61,7 @@ const Payment: React.FC = () => {
     cvc: "",
   });
   const [userCredit, setUserCredit] = useState<number | null>(null);
+  const [isProcessingVNPay, setIsProcessingVNPay] = useState(false);
   const steps = ["Payment Method", "Pay", "Finish"];
 
   // User's credit, assumed to be available in order or user context
@@ -78,8 +82,13 @@ const Payment: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const now = new Date();
     const filteredDiscounts = discounts.filter(
-      (d) => order.total_price >= d.min_purchase
+      (d) => {
+        const isNotExpired = !d.expiry_date || new Date(d.expiry_date) > now;
+        const meetsMinPurchase = order.total_price >= d.min_purchase;
+        return isNotExpired && meetsMinPurchase;
+      }
     );
     setAvailableDiscounts(filteredDiscounts);
   }, [discounts, order.total_price]);
@@ -105,13 +114,77 @@ const Payment: React.FC = () => {
     fetchCredit();
   }, [order?.user_id, getCreditByUserId]);
 
+  useEffect(() => {
+    const processVNPayPayment = async () => {
+      if (activeStep === 1 && paymentMethod === "vnpay" && !isProcessingVNPay) {
+        setIsProcessingVNPay(true);
+        
+        const data = {
+          total_price: discountedPrice,
+          user_id: order.user_id,
+          email: order.email,
+          payment_method: "banking",
+          discount_id: discount ? discount._id : null,
+          amount: discountedPrice,
+          products: order.products.map((p: any) => ({
+            product_id: p.product._id,
+            quantity: p.amount,
+          })),
+          tickets: {
+            showtime_id: order.showtime._id,
+            price: order.showtime.price,
+            seats: order.seats.map((seat: any) => ({
+              seat_id: seat._id,
+            })),
+          },
+        };
+
+        try {
+          // Create order first (returns a Blob for PDF)
+          await createDetailedOrder(data);
+          
+          // For VNPay, we'll use the order code or generate a temporary ID
+          // Since we don't get order_id from the blob response, we'll use a timestamp-based approach
+          const tempOrderId = `ORDER_${Date.now()}_${order.user_id}`;
+
+          // Create VNPay payment
+          const vnpayResponse = await createVNPayPayment({
+            order_id: tempOrderId,
+            amount: Math.round(discountedPrice),
+            bankCode: "VNPAY",
+          });
+
+          stopTimer();
+
+          // Redirect to VNPay payment page
+          if (vnpayResponse.vnpUrl) {
+            window.location.href = vnpayResponse.vnpUrl;
+          } else {
+            throw new Error("VNPay URL not found in response");
+          }
+        } catch (error) {
+          setIsProcessingVNPay(false);
+          toast.error(
+            `Failed to process VNPay payment: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+          // Go back to previous step on error
+          setActiveStep(0);
+        }
+      }
+    };
+
+    processVNPayPayment();
+  }, [activeStep, paymentMethod, isProcessingVNPay]);
+
   const handleNext = async () => {
     if (activeStep === 1) {
       const data = {
         total_price: discountedPrice,
         user_id: order.user_id,
         email: order.email,
-        payment_method: paymentMethod,
+        payment_method: paymentMethod === "vnpay" ? "banking" : paymentMethod,
         discount_id: discount ? discount._id : null,
         amount: discountedPrice,
         products: order.products.map((p: any) => ({
@@ -255,6 +328,7 @@ const Payment: React.FC = () => {
               {[
                 { label: "Momo", img: MomoImg, value: "momo" },
                 { label: "Banking", img: BankingImg, value: "banking" },
+                { label: "VNPAY", img: VNPayImg, value: "vnpay" },
                 {
                   label: "Visa/Mastercard",
                   img: VisaImg,
@@ -289,7 +363,18 @@ const Payment: React.FC = () => {
                     alt={method.label}
                     style={{ width: 40, height: 40, marginBottom: 12 }}
                   />
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      fontWeight: 500,
+                      textAlign: "center",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      px: 1,
+                      maxWidth: "100%"
+                    }}
+                  >
                     {method.label}
                   </Typography>
                 </Card>
@@ -369,6 +454,17 @@ const Payment: React.FC = () => {
                 </Typography>
               </>
             )}
+            {paymentMethod === "vnpay" && (
+              <Box sx={{ textAlign: "center", py: 4 }}>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  You will be redirected to VNPAY payment page, please finish
+                  the rest of the payment process there...
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Please wait while we prepare your payment...
+                </Typography>
+              </Box>
+            )}
             {paymentMethod === "visa/mastercard" && (
               <VisaForm
                 onValidChange={setVisaFormValid}
@@ -446,7 +542,7 @@ const Payment: React.FC = () => {
           }}
         >
           <Button
-            disabled={activeStep === 0}
+            disabled={activeStep === 0 || (activeStep === 1 && paymentMethod === "vnpay")}
             onClick={handleBack}
             variant="outlined"
           >
@@ -462,6 +558,7 @@ const Payment: React.FC = () => {
               variant="contained"
               disabled={
                 (activeStep === 0 && !paymentMethod) ||
+                (activeStep === 1 && paymentMethod === "vnpay") ||
                 (activeStep === 1 &&
                   paymentMethod === "visa/mastercard" &&
                   !visaFormValid)
@@ -605,112 +702,3 @@ const Payment: React.FC = () => {
 };
 
 export default Payment;
-
-// Add VisaForm component above Payment
-const VisaForm = ({
-  onValidChange,
-  onInfoChange,
-}: {
-  onValidChange: (valid: boolean) => void;
-  onInfoChange: (info: any) => void;
-}) => {
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [showValidation, setShowValidation] = useState(false);
-
-  // Simple expiry validation: MM/YY and not expired
-  const isExpiryValid = (exp: string) => {
-    if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
-    const [mm, yy] = exp.split("/").map(Number);
-    if (mm < 1 || mm > 12) return false;
-    const now = new Date();
-    const currentYear = now.getFullYear() % 100;
-    const currentMonth = now.getMonth() + 1;
-    return yy > currentYear || (yy === currentYear && mm >= currentMonth);
-  };
-
-  const valid =
-    cardNumber.length === 16 &&
-    cardName.trim().length > 0 &&
-    isExpiryValid(expiry) &&
-    cvc.length === 3;
-
-  // Show validation message when all fields are filled (not required all digits)
-  const allFieldsFilled =
-    cardNumber.length > 0 &&
-    cardName.trim().length > 0 &&
-    expiry.trim().length > 0 &&
-    cvc.length > 0;
-
-  useEffect(() => {
-    onValidChange(valid);
-    onInfoChange({ cardNumber, cardName, expiry, cvc });
-    setShowValidation(allFieldsFilled);
-  }, [
-    cardNumber,
-    cardName,
-    expiry,
-    cvc,
-    valid,
-    onValidChange,
-    onInfoChange,
-    allFieldsFilled,
-  ]);
-
-  return (
-    <Box
-      sx={{
-        width: 320,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        mt: 2,
-      }}
-    >
-      <TextField
-        label="Card Number (16 digits)"
-        value={cardNumber}
-        onChange={(e) =>
-          setCardNumber(e.target.value.replace(/\D/g, "").slice(0, 16))
-        }
-        inputProps={{ maxLength: 16 }}
-        fullWidth
-      />
-      <TextField
-        label="Cardholder Name"
-        value={cardName}
-        onChange={(e) => setCardName(e.target.value)}
-        fullWidth
-      />
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <TextField
-          label="Expiry (MM/YY)"
-          value={expiry}
-          onChange={(e) => setExpiry(e.target.value)}
-          fullWidth
-        />
-        <TextField
-          label="CVC"
-          value={cvc}
-          onChange={(e) =>
-            setCvc(e.target.value.replace(/\D/g, "").slice(0, 3))
-          }
-          inputProps={{ maxLength: 3 }}
-          fullWidth
-        />
-      </Box>
-      {showValidation && (
-        <Typography
-          variant="body2"
-          sx={{ color: valid ? "green" : "red", mt: 1, textAlign: "center" }}
-        >
-          {valid
-            ? "Card information is valid."
-            : "Card information is invalid."}
-        </Typography>
-      )}
-    </Box>
-  );
-};
