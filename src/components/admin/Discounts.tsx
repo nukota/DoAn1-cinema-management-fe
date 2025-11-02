@@ -139,6 +139,12 @@ const Discounts: React.FC = () => {
       valueGetter: (_, row) => row.movie?.title || "All Movies",
     },
     {
+      field: "rank",
+      headerName: "Rank",
+      width: 100,
+      valueGetter: (_, row) => row.rank || "N/A",
+    },
+    {
       field: "actions",
       type: "actions",
       headerName: "Action",

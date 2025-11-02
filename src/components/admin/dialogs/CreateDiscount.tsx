@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMovies } from "../../../providers/MoviesProvider";
 import CreateDialog from "./template/CreateDialog";
+import { FormControlLabel, Checkbox, Box, Typography } from "@mui/material";
 
 interface CreateDiscountProps {
   open: boolean;
@@ -8,6 +9,7 @@ interface CreateDiscountProps {
   onAdd: (newDiscount: any) => Promise<boolean>;
 }
 const types: string[] = ["percentage", "fixed"];
+const ranks = ["Bronze", "Silver", "Gold"] as const;
 
 const CreateDiscount: React.FC<CreateDiscountProps> = ({
   open,
@@ -23,7 +25,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
   const [maxUsage, setMaxUsage] = useState<string>("");
   const [remaining, setRemaining] = useState<string>("");
   const [movieId, setMovieId] = useState<string | null>(null);
-  const [credit, setCredit] = useState<string>("");
+  const [rank, setRank] = useState<"Bronze" | "Silver" | "Gold" | null>(null);
   const [error, setError] = useState<string>("");
 
   // Fetch movies on mount
@@ -48,8 +50,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       isNaN(Number(value)) ||
       isNaN(Number(minPurchase)) ||
       isNaN(Number(maxUsage)) ||
-      isNaN(Number(remaining)) ||
-      (credit && isNaN(Number(credit)))
+      isNaN(Number(remaining))
     ) {
       setError("Value, Min Purchase, Max Usage, and Remaining must be numbers");
       return;
@@ -63,7 +64,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       remaining,
       expiry_date: expiryDate,
       movie_id: movieId || undefined,
-      credit: credit ? Number(credit) : undefined,
+      rank: rank || undefined,
     };
     const success = await onAdd(newDiscount);
     if (success) {
@@ -75,7 +76,7 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       setExpiryDate("");
       setRemaining("");
       setMovieId(null);
-      setCredit("");
+      setRank(null);
       setError("");
     }
   };
@@ -159,17 +160,13 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
           options: movieOptions,
           getOptionLabel: (option: any) => option.title,
         },
-        {
-          name: "credit",
-          label: "Credit",
-          type: "number" as const,
-          placeholder: "Credit",
-          value: credit,
-          onChange: setCredit,
-        },
       ],
     },
   ];
+
+  const handleRankChange = (selectedRank: "Bronze" | "Silver" | "Gold" | "All") => {
+    setRank(selectedRank === "All" ? null : selectedRank);
+  };
 
   return (
     <CreateDialog
@@ -179,7 +176,33 @@ const CreateDiscount: React.FC<CreateDiscountProps> = ({
       sections={sections}
       onAdd={handleAddClick}
       error={error}
-    />
+    >
+      <Box sx={{ mt: 2, mb: 2 }}>
+        <Typography sx={{ mb: 1, fontWeight: "bold" }}>
+          This discount applies to rank:
+        </Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          {[...ranks, "All" as const].map((r) => (
+            <FormControlLabel
+              key={r}
+              control={
+                <Checkbox
+                  checked={r === "All" ? rank === null : rank === r}
+                  onChange={() => handleRankChange(r)}
+                  sx={{
+                    color: r === "Bronze" ? "#cd7f32" : r === "Silver" ? "#c0c0c0" : r === "Gold" ? "#ffd700" : "#666",
+                    "&.Mui-checked": {
+                      color: r === "Bronze" ? "#cd7f32" : r === "Silver" ? "#c0c0c0" : r === "Gold" ? "#ffd700" : "#666",
+                    },
+                  }}
+                />
+              }
+              label={r}
+            />
+          ))}
+        </Box>
+      </Box>
+    </CreateDialog>
   );
 };
 

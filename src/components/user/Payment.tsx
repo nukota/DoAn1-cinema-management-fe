@@ -46,7 +46,7 @@ const Payment: React.FC = () => {
   } = useDiscounts();
   const { createDetailedOrder } = useOrders();
   const { movies } = useMovies();
-  const { getCreditByUserId } = useUsers();
+  const { getCreditByUserId, getLoyaltyPointsByUserId } = useUsers();
   const { createVNPayPayment } = usePayment();
   const [availableDiscounts, setAvailableDiscounts] = useState<DiscountType[]>(
     []
@@ -61,11 +61,10 @@ const Payment: React.FC = () => {
     cvc: "",
   });
   const [userCredit, setUserCredit] = useState<number | null>(null);
+  const [userLoyaltyPoints, setUserLoyaltyPoints] = useState<number | null>(null);
   const [isProcessingVNPay, setIsProcessingVNPay] = useState(false);
   const steps = ["Payment Method", "Pay", "Finish"];
 
-  // User's credit, assumed to be available in order or user context
-  const userCreditDefault = order?.user_credit ?? 0;
   // Movie id for this order
   const selectedMovieId = order?.showtime?.movie_id || null;
 
@@ -102,17 +101,21 @@ const Payment: React.FC = () => {
   }, [timeLeft, stopTimer, navigate]);
 
   useEffect(() => {
-    const fetchCredit = async () => {
+    const fetchUserData = async () => {
       if (order?.user_id) {
         const credit = await getCreditByUserId(order.user_id);
+        const loyaltyPoints = await getLoyaltyPointsByUserId(order.user_id);
         console.log("User credit fetched:", credit);
+        console.log("User loyalty points fetched:", loyaltyPoints);
         setUserCredit(credit);
+        setUserLoyaltyPoints(loyaltyPoints);
       } else {
         setUserCredit(null);
+        setUserLoyaltyPoints(null);
       }
     };
-    fetchCredit();
-  }, [order?.user_id, getCreditByUserId]);
+    fetchUserData();
+  }, [order?.user_id, getCreditByUserId, getLoyaltyPointsByUserId]);
 
   useEffect(() => {
     const processVNPayPayment = async () => {
@@ -286,18 +289,35 @@ const Payment: React.FC = () => {
                 >
                   {availableDiscounts.map((d) => {
                     const movie = movies.find((m) => m._id === d.movie_id);
+                    
+                    // Check if user can use this discount based on rank requirement
+                    const canUseRankDiscount = () => {
+                      if (!d.rank) return true; // No rank requirement
+                      if (userLoyaltyPoints === null) return false; // User has no loyalty points
+                      
+                      // Define loyalty point thresholds for each rank
+                      const rankThresholds = {
+                        Bronze: 0,
+                        Silver: 100,
+                        Gold: 500,
+                      };
+                      
+                      return userLoyaltyPoints >= rankThresholds[d.rank];
+                    };
+                    
                     // Ensure disabled is always boolean
                     const disabled = Boolean(
                       (d.movie_id && d.movie_id !== selectedMovieId) ||
-                        (d.credit && userCreditDefault < d.credit)
+                      !canUseRankDiscount()
                     );
+                    
                     return (
                       <MenuItem key={d._id} value={d._id} disabled={disabled}>
                         <Box display="flex" flexDirection="column">
                           <Typography variant="body1">{d.code}</Typography>
                           <Typography variant="caption" color="text.secondary">
                             {movie ? movie.title : ""}
-                            {d.credit ? ` | Credit required: ${d.credit}` : ""}
+                            {d.rank ? ` | Rank: ${d.rank} ${!canUseRankDiscount() ? "(Insufficient loyalty points)" : ""}` : ""}
                             {d.discount_type === "percentage"
                               ? ` | Value: ${d.value}% off`
                               : ` | Value: -${d.value.toLocaleString()} vnd`}

@@ -9,6 +9,8 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DiscountType } from "../../../interfaces/types";
@@ -38,6 +40,7 @@ interface DetailDiscountProps {
   onSave: (newDiscount: any) => Promise<boolean>;
 }
 const types: String[] = ["percentage", "fixed"];
+const ranks = ["Bronze", "Silver", "Gold"] as const;
 
 const DetailDiscount: React.FC<DetailDiscountProps> = ({
   discount,
@@ -55,7 +58,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
   const [maxUsage, setMaxUsage] = useState<String>("");
   const [remaining, setRemaining] = useState<String>("");
   const [movieId, setMovieId] = useState<string | null>(null);
-  const [credit, setCredit] = useState<string>("");
+  const [rank, setRank] = useState<"Bronze" | "Silver" | "Gold" | null>(null);
 
   useEffect(() => {
     if (discount) {
@@ -67,7 +70,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
       setRemaining(discount.remaining.toString());
       setExpiryDate(discount.expiry_date);
       setMovieId(discount.movie_id || null);
-      setCredit(discount.credit !== undefined ? discount.credit.toString() : "");
+      setRank(discount.rank || null);
     }
     if (!open) {
       setIsEditing(false);
@@ -98,8 +101,7 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
       isNaN(Number(value)) ||
       isNaN(Number(minPurchase)) ||
       isNaN(Number(maxUsage)) ||
-      isNaN(Number(remaining)) ||
-      (credit && isNaN(Number(credit)))
+      isNaN(Number(remaining))
     ) {
       toast.error(
         "Value, Min Purchase, Max Usage, and Remaining must be numbers"
@@ -115,9 +117,14 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
       value,
       expiry_date: expiryDate,
       movie_id: movieId || undefined, // not required
-      credit: credit ? Number(credit) : undefined, // not required
+      rank: rank || undefined, // not required
     };
     onSave(updatedDiscount);
+  };
+
+  const handleRankChange = (selectedRank: "Bronze" | "Silver" | "Gold" | "All") => {
+    if (!isEditing) return;
+    setRank(selectedRank === "All" ? null : selectedRank);
   };
 
   return (
@@ -266,19 +273,31 @@ const DetailDiscount: React.FC<DetailDiscountProps> = ({
             ))}
           </TextField>
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", height: 45 }}>
-          <Typography sx={{ mr: 2, marginTop: 1, width: 164 }}>
-            Credit:
+        <Box sx={{ display: "flex", alignItems: "center", minHeight: 45, mt: 2 }}>
+          <Typography sx={{ mr: 2, width: 164, fontWeight: "bold" }}>
+            This discount applies to rank:
           </Typography>
-          <TextField
-            type="number"
-            fullWidth
-            disabled={!isEditing}
-            margin="dense"
-            size="small"
-            value={credit}
-            onChange={(e) => setCredit(e.target.value)}
-          />
+          <Box sx={{ display: "flex", gap: 2 }}>
+            {[...ranks, "All" as const].map((r) => (
+              <FormControlLabel
+                key={r}
+                control={
+                  <Checkbox
+                    checked={r === "All" ? rank === null : rank === r}
+                    onChange={() => handleRankChange(r)}
+                    disabled={!isEditing}
+                    sx={{
+                      color: r === "Bronze" ? "#cd7f32" : r === "Silver" ? "#c0c0c0" : r === "Gold" ? "#ffd700" : "#666",
+                      "&.Mui-checked": {
+                        color: r === "Bronze" ? "#cd7f32" : r === "Silver" ? "#c0c0c0" : r === "Gold" ? "#ffd700" : "#666",
+                      },
+                    }}
+                  />
+                }
+                label={r}
+              />
+            ))}
+          </Box>
         </Box>
       </CustomDialogContent>
       <DialogActions sx={{ mb: 1.5, mr: 2 }}>

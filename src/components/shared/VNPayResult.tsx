@@ -43,8 +43,6 @@ const VNPayResult: React.FC = () => {
         const vnp_Amount = searchParams.get("vnp_Amount");
         const vnp_TxnRef = searchParams.get("vnp_TxnRef");
         const vnp_TransactionNo = searchParams.get("vnp_TransactionNo");
-        const vnp_BankCode = searchParams.get("vnp_BankCode");
-        const vnp_OrderInfo = searchParams.get("vnp_OrderInfo");
 
         // Check if payment was successful (response code 00 means success)
         const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";

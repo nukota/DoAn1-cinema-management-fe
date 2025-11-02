@@ -11,7 +11,7 @@ import { formatToDateInput } from "../../utils/formatUtils";
 const UserProfile: React.FC = () => {
   const { userProfile } = useAuth();
   const { updateCustomer } = useCustomers();
-  const { getCreditByUserId } = useUsers();
+  const { getLoyaltyPointsByUserId } = useUsers();
   const { getOrderByUserId } = useOrders();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,21 +25,67 @@ const UserProfile: React.FC = () => {
     role: userProfile?.role || "employee",
     created_at: userProfile?.created_at || "",
   });
-  const [userCredit, setUserCredit] = useState<number | null>(null);
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number | null>(null);
   const [bookingHistory, setBookingHistory] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  // Calculate user rank based on loyalty points
+  const getUserRank = (): { 
+    rank: string; 
+    color: string; 
+    bgColor: string; 
+    pointsToNext: number | null;
+    nextRank: string | null;
+  } => {
+    if (loyaltyPoints === null) {
+      return { 
+        rank: "No Rank", 
+        color: "#9e9e9e", 
+        bgColor: "rgba(158, 158, 158, 0.1)",
+        pointsToNext: null,
+        nextRank: null,
+      };
+    }
+    if (loyaltyPoints >= 500) {
+      return { 
+        rank: "Gold", 
+        color: "#ffd700", 
+        bgColor: "rgba(255, 215, 0, 0.15)",
+        pointsToNext: null, // Max rank
+        nextRank: null,
+      };
+    }
+    if (loyaltyPoints >= 100) {
+      return { 
+        rank: "Silver", 
+        color: "#c0c0c0", 
+        bgColor: "rgba(192, 192, 192, 0.15)",
+        pointsToNext: 500 - loyaltyPoints,
+        nextRank: "Gold",
+      };
+    }
+    return { 
+      rank: "Bronze", 
+      color: "#cd7f32", 
+      bgColor: "rgba(205, 127, 50, 0.15)",
+      pointsToNext: 100 - loyaltyPoints,
+      nextRank: "Silver",
+    };
+  };
+
+  const rankInfo = getUserRank();
+
   useEffect(() => {
-    const fetchCredit = async () => {
+    const fetchLoyaltyPoints = async () => {
       if (userProfile?._id) {
-        const credit = await getCreditByUserId(userProfile._id);
-        setUserCredit(credit);
+        const points = await getLoyaltyPointsByUserId(userProfile._id);
+        setLoyaltyPoints(points);
       } else {
-        setUserCredit(null);
+        setLoyaltyPoints(null);
       }
     };
-    fetchCredit();
-  }, [userProfile?._id, getCreditByUserId]);
+    fetchLoyaltyPoints();
+  }, [userProfile?._id, getLoyaltyPointsByUserId]);
 
   useEffect(() => {
     const fetchBookingHistory = async () => {
@@ -108,35 +154,81 @@ const UserProfile: React.FC = () => {
               }}
             >
               <h2 className="text-4xl font-semibold mb-1">Profile</h2>
-              {/* Credit Banner */}
+              {/* Rank Banner */}
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "row",
+                  flexDirection: "column",
                   alignItems: "center",
                   borderRadius: 2,
-                  border: `3px solid`,
-                  borderColor: "primary.main",
+                  border: `3px solid ${rankInfo.color}`,
                   padding: 1.5,
-                  color: "black",
+                  backgroundColor: rankInfo.bgColor,
                   textAlign: "center",
-                  gap: 2,
+                  gap: 0.5,
                   flexShrink: 0,
-                  boxShadow: "0 4px 12px rgba(25, 118, 210, 0.2)",
+                  minWidth: "200px",
+                  boxShadow: `0 4px 12px ${rankInfo.color}40`,
+                  transition: "all 0.3s ease",
                 }}
               >
                 <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "bold", fontSize: "18px", flexShrink: 0 }}
+                  variant="body2"
+                  sx={{ 
+                    fontWeight: "medium", 
+                    fontSize: "14px", 
+                    color: "text.secondary",
+                  }}
                 >
-                  Available Credit
+                  Your Rank
                 </Typography>
                 <Typography
-                  variant="h5"
-                  sx={{ fontWeight: "bold", flexShrink: 0 }}
+                  variant="h4"
+                  sx={{ 
+                    fontWeight: "bold", 
+                    color: rankInfo.color,
+                    textShadow: `0 2px 4px ${rankInfo.color}40`,
+                  }}
                 >
-                  {userCredit !== null ? userCredit : "Loading..."}
+                  {rankInfo.rank}
                 </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ 
+                    fontSize: "12px", 
+                    color: "text.secondary",
+                  }}
+                >
+                  {loyaltyPoints !== null 
+                    ? `${loyaltyPoints} Loyalty Points` 
+                    : "No loyalty points"}
+                </Typography>
+                {rankInfo.pointsToNext !== null && rankInfo.nextRank && (
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      fontSize: "11px", 
+                      color: rankInfo.color,
+                      fontWeight: "medium",
+                      mt: 0.5,
+                    }}
+                  >
+                    {rankInfo.pointsToNext} points to {rankInfo.nextRank}
+                  </Typography>
+                )}
+                {rankInfo.rank === "Gold" && (
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      fontSize: "11px", 
+                      color: rankInfo.color,
+                      fontWeight: "medium",
+                      mt: 0.5,
+                    }}
+                  >
+                    ⭐ Maximum Rank Achieved!
+                  </Typography>
+                )}
               </Box>
             </Box>
 

@@ -8,6 +8,7 @@ export type UserType = {
   cccd: string;
   role: "employee" | "admin" | "customer";
   created_at: string;
+  loyalty_points?: number;
 };
 
 export type EmployeeType = UserType & {
@@ -161,7 +162,7 @@ export type DiscountType = {
   max_usage: number;
   expiry_date: string;
   movie_id?: string; // Movie this discount applies to (optional)
-  credit?: number; // User's credit required to use this discount (optional)
+  rank?: "Bronze" | "Silver" | "Gold";
 };
 
 export type ReviewType = {
