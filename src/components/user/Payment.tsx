@@ -126,6 +126,7 @@ const Payment: React.FC = () => {
           payment_method: "banking",
           discount_id: discount ? discount._id : null,
           amount: discountedPrice,
+          status: "pending",
           products: order.products.map((p: any) => ({
             product_id: p.product._id,
             quantity: p.amount,
@@ -187,6 +188,7 @@ const Payment: React.FC = () => {
         payment_method: paymentMethod === "vnpay" ? "banking" : paymentMethod,
         discount_id: discount ? discount._id : null,
         amount: discountedPrice,
+        status: "pending",
         products: order.products.map((p: any) => ({
           product_id: p.product._id,
           quantity: p.amount,

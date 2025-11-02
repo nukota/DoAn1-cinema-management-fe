@@ -12,12 +12,15 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useAuth } from "../../providers/AuthProvider";
+import { useOrders } from "../../providers/OrdersProvider";
 import VNPayImg from "../../assets/images/vnpay.png";
+import { toast } from "react-toastify";
 
 const VNPayResult: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { userProfile } = useAuth();
+  const { updateOrder, fetchOrderDetails } = useOrders();
   const [loading, setLoading] = useState(true);
   const [paymentResult, setPaymentResult] = useState<{
     success: boolean;
@@ -29,29 +32,59 @@ const VNPayResult: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    // Simulate API call with mock data
     const fetchPaymentStatus = async () => {
       setLoading(true);
       try {
-        // Mock API delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Parse URL parameters from VNPay redirect
+        const searchParams = new URLSearchParams(location.search);
+        
+        const vnp_ResponseCode = searchParams.get("vnp_ResponseCode");
+        const vnp_TransactionStatus = searchParams.get("vnp_TransactionStatus");
+        const vnp_Amount = searchParams.get("vnp_Amount");
+        const vnp_TxnRef = searchParams.get("vnp_TxnRef");
+        const vnp_TransactionNo = searchParams.get("vnp_TransactionNo");
+        const vnp_BankCode = searchParams.get("vnp_BankCode");
+        const vnp_OrderInfo = searchParams.get("vnp_OrderInfo");
 
-        // Mock payment result - you can change this to test different scenarios
-        const mockSuccess = true; // Change to false to test error state
+        // Check if payment was successful (response code 00 means success)
+        const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
 
-        if (mockSuccess) {
+        if (isSuccess && vnp_TxnRef) {
+          // Extract order ID from vnp_TxnRef (format: ORDER_timestamp_userId)
+          const orderId = vnp_TxnRef;
+          
+          try {
+            // Fetch order details to get the full order object
+            const orderDetails = await fetchOrderDetails(orderId);
+            
+            if (orderDetails) {
+              // Update order status to completed
+              await updateOrder({
+                ...orderDetails,
+                status: "completed",
+              });
+              
+              toast.success("Order completed successfully!");
+            }
+          } catch (error) {
+            console.error("Failed to update order status:", error);
+            toast.error("Payment successful but failed to update order status");
+          }
+          
           setPaymentResult({
             success: true,
             message: "Payment Successfully!",
-            order_id: "507f1f77bcf86cd799439011",
-            code: "00",
-            added_points: 50,
-            amount: 139000,
+            order_id: orderId,
+            code: vnp_TransactionNo || "N/A",
+            added_points: 50, // This should come from your backend
+            amount: vnp_Amount ? parseInt(vnp_Amount) / 100 : 0, // VNPay returns amount in cents
           });
         } else {
           setPaymentResult({
             success: false,
-            message: "Order not found!",
+            message: vnp_ResponseCode === "24" 
+              ? "Payment cancelled by user" 
+              : "Payment failed. Please try again.",
           });
         }
       } catch (error) {
