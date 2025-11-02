@@ -6,12 +6,15 @@ import { Typography, Box, CircularProgress } from "@mui/material";
 import QuickBook from "./elements/QuickBook";
 import { useMovies } from "../../providers/MoviesProvider";
 import { MovieType } from "../../interfaces/types";
+import { useAuth } from "../../providers/AuthProvider";
 
 const UserHome: React.FC = () => {
-  const { fetchMovieByStatus, loading } = useMovies();
+  const { fetchMovieByStatus, fetchRecommendedMovies, loading } = useMovies();
+  const { userProfile, isLoggedIn } = useAuth();
 
   const [nowShowingMovies, setNowShowingMovies] = useState<MovieType[]>([]);
   const [upComingMovies, setUpComingMovies] = useState<MovieType[]>([]);
+  const [recommendedMovieIds, setRecommendedMovieIds] = useState<string[]>([]);
   const nextSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,13 +25,24 @@ const UserHome: React.FC = () => {
 
         setNowShowingMovies(nowShowing);
         setUpComingMovies(upComing);
+
+        // Fetch recommended movies if user is logged in
+        if (isLoggedIn && userProfile?._id) {
+          try {
+            const recommended = await fetchRecommendedMovies(userProfile._id);
+            setRecommendedMovieIds(recommended);
+          } catch (error) {
+            console.error("Failed to fetch recommendations:", error);
+            // Don't show error to user, just continue without recommendations
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch movies:", error);
       }
     };
 
     fetchMovies();
-  }, []);
+  }, [isLoggedIn, userProfile]);
 
   return (
     <div className="bg-black min-h-screen w-full h-full flex flex-col relative custom-scrollbar overflow-hidden">
@@ -137,8 +151,16 @@ const UserHome: React.FC = () => {
           </Box>
         ) : (
           <div className="mb-4 flex flex-col gap-10">
-            <MovieSlide title="Now Showing" movies={nowShowingMovies} />
-            <MovieSlide title="Up Coming" movies={upComingMovies} />
+            <MovieSlide 
+              title="Now Showing" 
+              movies={nowShowingMovies} 
+              recommendedMovies={recommendedMovieIds}
+            />
+            <MovieSlide 
+              title="Up Coming" 
+              movies={upComingMovies} 
+              recommendedMovies={recommendedMovieIds}
+            />
           </div>
         )}
       </div>

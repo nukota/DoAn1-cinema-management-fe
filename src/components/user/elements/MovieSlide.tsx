@@ -7,8 +7,9 @@ import "swiper/swiper-bundle.css";
 interface MovieSlideProps {
   title: string;
   movies: MovieType[];
+  recommendedMovies?: string[];
 }
-const MovieSlide: React.FC<MovieSlideProps> = ({ title, movies }) => {
+const MovieSlide: React.FC<MovieSlideProps> = ({ title, movies, recommendedMovies = [] }) => {
   return (
     <div
       className={`movie-slide-container w-full flex flex-col overflow-visible px-4`}
@@ -49,7 +50,10 @@ const MovieSlide: React.FC<MovieSlideProps> = ({ title, movies }) => {
       >
         {movies.map((item, index) => (
           <SwiperSlide key={index}>
-            <SlideItem movie={item} />
+            <SlideItem 
+              movie={item} 
+              isRecommended={recommendedMovies.includes(item._id)}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

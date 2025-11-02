@@ -13,6 +13,7 @@ interface MoviesContextType {
   fetchMoviesData: () => Promise<void>;
   fetchMovieById: (movieId: string) => Promise<MovieType | null>;
   fetchMovieByStatus: (status: string) => Promise<MovieType[]>;
+  fetchRecommendedMovies: (userId: string) => Promise<string[]>;
   createMovie: (newMovie: MovieType) => Promise<void>;
   updateMovie: (updatedMovie: MovieType) => Promise<void>;
   deleteMovie: (movieId: string) => Promise<void>;
@@ -89,6 +90,30 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, []);
 
+  const fetchRecommendedMovies = useCallback(async (userId: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${baseURL}/recommend/genre/${userId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      return response.data.data || [];
+    } catch (error: any) {
+      console.error("Failed to fetch recommended movies:", error);
+      const errorMsg =
+        error.response?.data?.error?.message ||
+        "Fetching recommended movies failed.";
+      throw new Error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const createMovie = useCallback(async (newMovie: MovieType) => {
     try {
       const response = await axios.post(`${baseURL}/movie`, newMovie, {
@@ -158,6 +183,7 @@ export const MoviesProvider: React.FC<{ children: ReactNode }> = ({
         fetchMoviesData,
         fetchMovieById,
         fetchMovieByStatus,
+        fetchRecommendedMovies,
         createMovie,
         updateMovie,
         deleteMovie,

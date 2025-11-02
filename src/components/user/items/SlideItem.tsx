@@ -12,9 +12,10 @@ import { useAuth } from "../../../providers/AuthProvider";
 
 interface SlideItemProps {
   movie: MovieType;
+  isRecommended?: boolean;
 }
 
-const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
+const SlideItem: React.FC<SlideItemProps> = ({ movie, isRecommended = false }) => {
   const [open, setOpen] = useState(false);
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -54,6 +55,25 @@ const SlideItem: React.FC<SlideItemProps> = ({ movie }) => {
         src={movie.poster_url}
         alt={`${movie.title} poster`}
       />
+      {isRecommended && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            backgroundColor: "white",
+            color: "black",
+            padding: "2px 8px",
+            borderRadius: "4px",
+            fontSize: "16px",
+            fontWeight: "medium",
+            zIndex: 20,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+          }}
+        >
+          Recommended
+        </Box>
+      )}
       <div className="text-xl font-medium text-white absolute top-[376px] w-full flex justify-center">
         <span className="truncate">{movie.title}</span>
       </div>

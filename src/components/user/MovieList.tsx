@@ -14,10 +14,13 @@ import { MovieType } from "../../interfaces/types";
 import { useMovies } from "../../providers/MoviesProvider";
 import wallPaperImg from "../../assets/images/wallpaper.jpg";
 import { toast } from "react-toastify";
+import { useAuth } from "../../providers/AuthProvider";
 
 const MovieList: React.FC = () => {
-  const { movies, fetchMoviesData } = useMovies();
+  const { movies, fetchMoviesData, fetchRecommendedMovies } = useMovies();
+  const { userProfile, isLoggedIn } = useAuth();
   const [filteredMovies, setFilteredMovies] = useState<MovieType[]>([]);
+  const [recommendedMovieIds, setRecommendedMovieIds] = useState<string[]>([]);
   const [searchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState<string>("");
   const [isListening, setIsListening] = useState(false);
@@ -26,9 +29,20 @@ const MovieList: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchMoviesData();
+      
+      // Fetch recommended movies if user is logged in
+      if (isLoggedIn && userProfile?._id) {
+        try {
+          const recommended = await fetchRecommendedMovies(userProfile._id);
+          setRecommendedMovieIds(recommended);
+        } catch (error) {
+          console.error("Failed to fetch recommendations:", error);
+          // Don't show error to user, just continue without recommendations
+        }
+      }
     };
     fetchData();
-  }, []);
+  }, [isLoggedIn, userProfile]);
 
   useEffect(() => {
     const query = searchParams.get("query") || "";
@@ -141,57 +155,85 @@ const MovieList: React.FC = () => {
       }
 
       setIsProcessingImage(true);
-      toast.info("Processing image... Please wait.", { autoClose: false });
+      toast.info("Processing image with AI... Please wait.", { autoClose: false });
 
       try {
-        // Create a URL for the image
-        const imageUrl = URL.createObjectURL(file);
-
-        // Import Tesseract.js dynamically
-        const Tesseract = await import("tesseract.js");
-
-        // Perform OCR on the image
-        const result = await Tesseract.recognize(imageUrl, "eng", {
-          logger: (m: any) => {
-            if (m.status === "recognizing text") {
-              console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
-            }
-          },
+        // Convert image to base64
+        const base64Image = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            // Remove data:image/xxx;base64, prefix
+            const base64 = result.split(",")[1];
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
         });
 
-        // Clean up the URL
-        URL.revokeObjectURL(imageUrl);
+        // Get Google API key from environment
+        const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+        
+        if (!GOOGLE_API_KEY) {
+          throw new Error("Google API key not configured");
+        }
 
-        // Extract text from the result
-        const extractedText = result.data.text.trim();
+        // Call Gemini 2.0 API
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_API_KEY}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: "Extract any movie titles, actor names, or text related to movies from this image. Return only the most relevant text that could be used as a search query for movies. If you find multiple items, return the most prominent one. Keep the response short and concise - just the search term.",
+                    },
+                    {
+                      inline_data: {
+                        mime_type: file.type,
+                        data: base64Image,
+                      },
+                    },
+                  ],
+                },
+              ],
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Extract text from Gemini response
+        const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
         if (!extractedText) {
           toast.dismiss();
           toast.warning(
-            "No text found in the image. Please try another image."
+            "No relevant text found in the image. Please try another image."
           );
           setIsProcessingImage(false);
           return;
         }
 
-        // Extract potential movie titles (look for capitalized words/phrases)
-        const lines = extractedText
-          .split("\n")
-          .map((line: string) => line.trim())
-          .filter((line: string) => line.length > 2);
+        // Clean up the extracted text (remove quotes, extra spaces, etc.)
+        const searchQuery = extractedText
+          .replace(/["']/g, "")
+          .trim()
+          .split("\n")[0]; // Take only the first line if multiple
 
-        // Use the first meaningful line or the longest line as search query
-        const searchQuery =
-          lines.find((line: string) => /^[A-Z]/.test(line)) ||
-          lines.reduce(
-            (a: string, b: string) => (a.length > b.length ? a : b),
-            ""
-          );
-
-        if (searchQuery) {
+        if (searchQuery && searchQuery.length > 2) {
           setSearchValue(searchQuery);
           toast.dismiss();
-          toast.success(`Found text: "${searchQuery}"`, { autoClose: 2000 });
+          toast.success(`Found: "${searchQuery}"`, { autoClose: 2000 });
 
           // Filter movies based on extracted text
           const filtered = movies.filter((movie: MovieType) =>
@@ -205,7 +247,11 @@ const MovieList: React.FC = () => {
       } catch (error) {
         console.error("Image processing error:", error);
         toast.dismiss();
-        toast.error("Failed to process image. Please try again.");
+        toast.error(
+          error instanceof Error 
+            ? `Failed: ${error.message}` 
+            : "Failed to process image. Please try again."
+        );
       } finally {
         setIsProcessingImage(false);
       }
@@ -330,7 +376,11 @@ const MovieList: React.FC = () => {
         }}
       >
         {filteredMovies.map((movie) => (
-          <SlideItem key={movie._id} movie={movie} />
+          <SlideItem 
+            key={movie._id} 
+            movie={movie} 
+            isRecommended={recommendedMovieIds.includes(movie._id)}
+          />
         ))}
       </Box>
       {filteredMovies.length === 0 && (
