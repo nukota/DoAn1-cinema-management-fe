@@ -122,7 +122,7 @@ const Discounts: React.FC = () => {
       field: "min_purchase",
       headerName: "Min Purchase",
       width: 140,
-      valueFormatter: (value: any) => (value ? `$${value}` : "N/A"),
+      valueFormatter: (value: any) => (value ? `${value}` : "N/A"),
     },
     { field: "max_usage", headerName: "Max Usage", width: 120 },
     {

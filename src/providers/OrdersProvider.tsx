@@ -15,7 +15,7 @@ interface OrdersContextType {
   getOrderByUserId: (userId: string) => Promise<OrderType[]>;
   getOrderByCode: (code: string) => Promise<Blob>;
   createOrder: (newOrder: OrderType) => Promise<void>;
-  createDetailedOrder: (newOrder: any) => Promise<Blob>;
+  createDetailedOrder: (newOrder: any) => Promise<{ pdfBlob: Blob; orderId: string; orderCode: string }>;
   updateOrder: (updatedOrder: OrderType) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   loading: boolean;
@@ -138,7 +138,16 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
         },
         responseType: "blob",
       });
-      return response.data;
+      
+      // Extract order_id and ordercode from response headers
+      const orderId = response.headers['x-order-id'];
+      const orderCode = response.headers['x-order-code'];
+      
+      return {
+        pdfBlob: response.data,
+        orderId,
+        orderCode,
+      };
     } catch (error: any) {
       console.error("Failed to create detailed order:", error);
       throw error;
@@ -151,9 +160,10 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
+      const { _id, ...updateData } = updatedOrder;
       const response = await axios.patch(
-        `${baseURL}/order/${updatedOrder._id}`,
-        updatedOrder,
+        `${baseURL}/order/${_id}`,
+        updateData,
         {
           headers: {
             "Content-Type": "application/json",

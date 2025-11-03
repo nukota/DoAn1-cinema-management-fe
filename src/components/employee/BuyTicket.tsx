@@ -142,7 +142,7 @@ const BuyTicket: React.FC = () => {
       };
 
       try {
-        const pdfBlob = await createDetailedOrder(data);
+        const { pdfBlob } = await createDetailedOrder(data);
         const url = URL.createObjectURL(pdfBlob);
         window.open(url, "_blank");
         setPdfUrl(url);

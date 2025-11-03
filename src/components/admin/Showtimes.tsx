@@ -92,7 +92,7 @@ const Showtimes: React.FC = () => {
       field: "price",
       headerName: "Price",
       width: 120,
-      valueFormatter: (value: any) => `$${value?.toFixed(2) || "0.00"}`,
+      valueFormatter: (value: any) => `${value?.toFixed(2) || "0.00"}`,
     },
     {
       field: "seats_available",

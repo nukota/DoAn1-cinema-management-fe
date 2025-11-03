@@ -20,14 +20,13 @@ const VNPayResult: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { userProfile } = useAuth();
-  const { updateOrder, fetchOrderDetails } = useOrders();
+  const { updateOrder } = useOrders();
   const [loading, setLoading] = useState(true);
   const [paymentResult, setPaymentResult] = useState<{
     success: boolean;
     message: string;
     order_id?: string;
     code?: string;
-    added_points?: number;
     amount?: number;
   } | null>(null);
 
@@ -48,22 +47,19 @@ const VNPayResult: React.FC = () => {
         const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
 
         if (isSuccess && vnp_TxnRef) {
-          // Extract order ID from vnp_TxnRef (format: ORDER_timestamp_userId)
-          const orderId = vnp_TxnRef;
+          // Get the real order ID from sessionStorage (stored before redirecting to VNPay)
+          const orderId = sessionStorage.getItem('vnpay_order_id');
+          
+          if (!orderId) {
+            throw new Error("Order ID not found in session storage");
+          }
+
+          // Clear the stored order ID
+          sessionStorage.removeItem('vnpay_order_id');
           
           try {
-            // Fetch order details to get the full order object
-            const orderDetails = await fetchOrderDetails(orderId);
-            
-            if (orderDetails) {
-              // Update order status to completed
-              await updateOrder({
-                ...orderDetails,
-                status: "completed",
-              });
-              
-              toast.success("Order completed successfully!");
-            }
+            await updateOrder({ _id: orderId, status: "completed" } as any);
+            toast.success("Order completed successfully!");
           } catch (error) {
             console.error("Failed to update order status:", error);
             toast.error("Payment successful but failed to update order status");
@@ -74,10 +70,12 @@ const VNPayResult: React.FC = () => {
             message: "Payment Successfully!",
             order_id: orderId,
             code: vnp_TransactionNo || "N/A",
-            added_points: 50, // This should come from your backend
             amount: vnp_Amount ? parseInt(vnp_Amount) / 100 : 0, // VNPay returns amount in cents
           });
         } else {
+          // Clear the stored order ID on failure
+          sessionStorage.removeItem('vnpay_order_id');
+          
           setPaymentResult({
             success: false,
             message: vnp_ResponseCode === "24" 
@@ -288,7 +286,7 @@ const VNPayResult: React.FC = () => {
               </Box>
             )}
 
-            {paymentResult?.added_points !== undefined && (
+            {paymentResult?.amount && Math.floor(paymentResult.amount / 1000) > 0 && (
               <Box
                 sx={{
                   display: "flex",
@@ -303,7 +301,7 @@ const VNPayResult: React.FC = () => {
                   variant="body1"
                   sx={{ fontWeight: "medium", color: "#1976d2" }}
                 >
-                  +{paymentResult.added_points} points
+                  +{Math.floor(paymentResult.amount / 1000)} points
                 </Typography>
               </Box>
             )}

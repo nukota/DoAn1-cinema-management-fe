@@ -144,16 +144,15 @@ const Payment: React.FC = () => {
         };
 
         try {
-          // Create order first (returns a Blob for PDF)
-          await createDetailedOrder(data);
-          
-          // For VNPay, we'll use the order code or generate a temporary ID
-          // Since we don't get order_id from the blob response, we'll use a timestamp-based approach
-          const tempOrderId = `ORDER_${Date.now()}_${order.user_id}`;
+          // Create order first and get the real order ID from response headers
+          const { orderId } = await createDetailedOrder(data);
 
-          // Create VNPay payment
+          // Store order ID in sessionStorage before redirecting to VNPay
+          sessionStorage.setItem('vnpay_order_id', orderId);
+
+          // Create VNPay payment with the real order ID
           const vnpayResponse = await createVNPayPayment({
-            order_id: tempOrderId,
+            order_id: orderId,
             amount: Math.round(discountedPrice),
             bankCode: "VNPAY",
           });
