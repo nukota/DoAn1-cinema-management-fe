@@ -105,8 +105,6 @@ const Payment: React.FC = () => {
       if (order?.user_id) {
         const credit = await getCreditByUserId(order.user_id);
         const loyaltyPoints = await getLoyaltyPointsByUserId(order.user_id);
-        console.log("User credit fetched:", credit);
-        console.log("User loyalty points fetched:", loyaltyPoints);
         setUserCredit(credit);
         setUserLoyaltyPoints(loyaltyPoints);
       } else {
@@ -159,9 +157,9 @@ const Payment: React.FC = () => {
 
           stopTimer();
 
-          // Redirect to VNPay payment page
+          // Open VNPay payment page in new tab
           if (vnpayResponse.vnpUrl) {
-            window.location.href = vnpayResponse.vnpUrl;
+            window.open(vnpayResponse.vnpUrl, '_blank');
           } else {
             throw new Error("VNPay URL not found in response");
           }

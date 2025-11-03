@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     try {
-      console.log("Attempting login...", { email, password });
       const response = await axios.post(
         `${baseURL}/auth/login`,
         { email, password },

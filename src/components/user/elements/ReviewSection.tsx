@@ -34,7 +34,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
     setLocalLoading(true);
     getReviewsByMovieId(movieId, userId || undefined)
       .then((data) => {
-        console.log("Reviews data from backend:", data);
         if (isMounted) setMovieReviews(data);
       })
       .catch(() => {
@@ -113,7 +112,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ movieId }) => {
               style={{ paddingBottom: 24 }}
             >
               {movieReviews.map((review, index) => {
-                console.log("Rendering review:", index, review);
                 return (
                   <SwiperSlide key={review._id || index}>
                     <Card

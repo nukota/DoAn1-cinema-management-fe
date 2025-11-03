@@ -70,7 +70,6 @@ const DetailMovie: React.FC<DetailMovieProps> = ({
   const [trailerURL, setTrailerURL] = useState<string>("");
 
   useEffect(() => {
-    console.log("Movie: ", movie);
     if (movie) {
       setTitle(movie.title ?? "");
       setStatus(movie.status ?? "");

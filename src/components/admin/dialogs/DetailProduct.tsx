@@ -54,7 +54,6 @@ const DetailProduct: React.FC<DetailProductProps> = ({
   const [category, setCategory] = useState<string>("");
 
   useEffect(() => {
-    console.log("Product: ", product);
     if (product) {
       setName(product.name);
       setImage(product.image);

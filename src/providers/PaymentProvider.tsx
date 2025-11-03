@@ -44,6 +44,7 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
+        console.log("createVNPayPayment called with data:", data);
         const response = await axios.post(
           `${baseURL}/payment/vnpay/create`,
           data,
@@ -54,6 +55,7 @@ export const PaymentProvider: React.FC<{ children: ReactNode }> = ({
             },
           }
         );
+        console.log("createVNPayPayment response:", response.data);
 
         return response.data;
       } catch (error: any) {

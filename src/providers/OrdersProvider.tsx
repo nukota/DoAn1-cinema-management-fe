@@ -131,6 +131,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
+      console.log("createDetailedOrder called with newOrder:", newOrder);
       const response = await axios.post(`${baseURL}/order/orders`, newOrder, {
         headers: {
           "Content-Type": "application/json",
@@ -140,8 +141,10 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
       });
       
       // Extract order_id and ordercode from response headers
+      console.log("Response headers:", response.headers);
       const orderId = response.headers['x-order-id'];
       const orderCode = response.headers['x-order-code'];
+      console.log("createDetailedOrder response headers - orderId:", orderId, "orderCode:", orderCode);
       
       return {
         pdfBlob: response.data,
@@ -161,6 +164,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const token = localStorage.getItem("accessToken");
       const { _id, ...updateData } = updatedOrder;
+      console.log("updateOrder called with _id:", _id, "updateData:", updateData);
       const response = await axios.patch(
         `${baseURL}/order/${_id}`,
         updateData,
@@ -171,6 +175,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({
           },
         }
       );
+      console.log("updateOrder response:", response.data);
       const updatedData = response.data;
       setOrders((prevOrders) =>
         prevOrders.map((order) =>

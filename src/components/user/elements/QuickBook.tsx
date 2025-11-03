@@ -141,15 +141,9 @@ const QuickBook: React.FC = () => {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    console.log("User ID:", userId);
-  }, []);
-
-  useEffect(() => {
     const fetchMovies = async () => {
       try {
         await getCurrentShowtime();
-        console.log("Current Showtimes:", currentShowtime);
       } catch (error) {
         console.error("Failed to fetch movies:", error);
       }

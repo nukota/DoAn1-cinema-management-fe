@@ -80,7 +80,6 @@ const MovieDetail: React.FC = () => {
         }
       }
     };
-    console.log("Setting: ", setting);
 
     const fetchShowtimes = async () => {
       if (movieId) {
