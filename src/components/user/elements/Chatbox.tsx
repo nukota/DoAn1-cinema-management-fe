@@ -13,9 +13,11 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
+import MicIcon from "@mui/icons-material/Mic";
 import { useChatbot } from "../../../providers/ChatbotProvider";
 import { enhanceHTML } from "../../../utils/enhanceHTML";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Chatbot: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -24,6 +26,7 @@ const Chatbot: React.FC = () => {
     { sender: "user" | "ai"; text: string; isHtml?: boolean; mentionedMovies?: { id: string; title: string; poster_url: string }[] }[]
   >([]);
   const [input, setInput] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -33,11 +36,76 @@ const Chatbot: React.FC = () => {
     }
   }, [messages, open]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, { sender: "user", text: input }]);
-    const userInput = input;
+  const handleVoiceInput = () => {
+    // Check if speech recognition is supported
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      toast.error("Voice input is not supported in this browser");
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    setIsListening(true);
+    toast.info("Listening... Speak now!", { autoClose: 2000 });
+
+    recognition.start();
+
+    recognition.onstart = () => {
+      console.log("Voice recognition started");
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+
+      // Only send on final result
+      if (event.results[0].isFinal) {
+        setIsListening(false);
+        toast.success(`Voice input: "${transcript}"`, { autoClose: 2000 });
+        // Auto-send the message
+        setTimeout(() => handleSend(transcript), 500);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+
+      if (event.error === "no-speech") {
+        toast.warning("No speech detected. Please try again.");
+      } else if (event.error === "not-allowed") {
+        toast.error(
+          "Microphone access denied. Please allow microphone access."
+        );
+      } else {
+        toast.error("Voice input failed. Please try again.");
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      console.log("Voice recognition ended");
+    };
+  };
+
+  const handleSend = async (messageText?: string) => {
+    const textToSend = messageText || input;
+    if (!textToSend.trim()) return;
+    
+    setMessages((prev) => [...prev, { sender: "user", text: textToSend }]);
+    const userInput = textToSend;
     setInput("");
+    
     try {
       const response = await sendMessage(userInput);
       // If API returns { reply, mentionedMovies }
@@ -310,6 +378,28 @@ const Chatbot: React.FC = () => {
                 if (e.key === "Enter" && !loading) handleSend();
               }}
               disabled={loading}
+              InputProps={{
+                endAdornment: (
+                  <Tooltip title={isListening ? "Listening..." : "Voice Input"}>
+                    <IconButton
+                      size="small"
+                      onClick={handleVoiceInput}
+                      disabled={loading}
+                      sx={{
+                        color: isListening ? "#f44336" : "#999",
+                        animation: isListening ? "pulse 1.5s infinite" : "none",
+                        "@keyframes pulse": {
+                          "0%": { opacity: 1 },
+                          "50%": { opacity: 0.5 },
+                          "100%": { opacity: 1 },
+                        },
+                      }}
+                    >
+                      <MicIcon />
+                    </IconButton>
+                  </Tooltip>
+                ),
+              }}
             />
             <Button
               variant="contained"
@@ -317,7 +407,7 @@ const Chatbot: React.FC = () => {
               endIcon={
                 loading ? <CircularProgress size={18} /> : <SendIcon />
               }
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={loading || !input.trim()}
               sx={{ minWidth: 48, px: 2 }}
             >
