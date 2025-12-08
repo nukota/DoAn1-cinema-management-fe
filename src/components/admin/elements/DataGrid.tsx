@@ -3,6 +3,7 @@ import { DataGrid as MuiDataGrid, GridColDef } from "@mui/x-data-grid";
 import { Button, Box, Typography, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 
 interface CustomDataGridProps {
   title: string;
@@ -11,6 +12,7 @@ interface CustomDataGridProps {
   columns: GridColDef[];
   onAddNew?: () => void;
   addButtonText?: string;
+  onGenerateShowtimes?: () => void;
   selectedRows?: string[];
   onRowSelectionChange?: (newSelection: string[]) => void;
   onDeleteSelected?: () => void;
@@ -27,6 +29,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
   columns,
   onAddNew,
   addButtonText = "Add New",
+  onGenerateShowtimes,
   selectedRows = [],
   onRowSelectionChange,
   onDeleteSelected,
@@ -43,7 +46,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
       </div>
 
       {/* Action Bar */}
-      {onAddNew || onDeleteSelected ? (
+      {onAddNew || onDeleteSelected || onGenerateShowtimes ? (
         <div className="flex justify-end gap-4 items-center mb-2 sm:mb-2">
           {onDeleteSelected && selectedRows.length > 0 && onDeleteSelected && (
             <Button
@@ -54,6 +57,17 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({
               disableElevation
             >
               Delete Selected ({selectedRows.length})
+            </Button>
+          )}
+          {onGenerateShowtimes && (
+            <Button
+              onClick={onGenerateShowtimes}
+              variant="contained"
+              color="primary"
+              startIcon={<AutoFixHighIcon />}
+              disableElevation
+            >
+              Generate Showtimes
             </Button>
           )}
           {onAddNew ? (

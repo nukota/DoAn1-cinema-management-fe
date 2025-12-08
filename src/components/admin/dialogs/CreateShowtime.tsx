@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { MovieType } from "../../../interfaces/types";
+import { MovieType, RoomType } from "../../../interfaces/types";
 import CreateDialog from "./template/CreateDialog";
 
 interface CreateShowtimeProps {
   open: boolean;
-  roomId: string;
+  rooms: RoomType[];
   movies: MovieType[];
   onClose: () => void;
   onAdd: (newShowtime: any) => Promise<boolean>;
@@ -14,16 +14,17 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
   open,
   onClose,
   onAdd,
-  roomId,
+  rooms,
   movies,
 }) => {
+  const [roomId, setRoomId] = useState<string | null>(null);
   const [movieId, setMovieId] = useState<string | null>(null);
   const [showtime, setShowtime] = useState<string>("");
   const [price, setPrice] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const handleAddClick = async () => {
-    if (!movieId || !showtime || !price) {
+    if (!roomId || !movieId || !showtime || !price) {
       setError("Please fill in all fields");
       return;
     }
@@ -35,6 +36,7 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
     };
     const success = await onAdd(newShowtime);
     if (success) {
+      setRoomId(null);
       setMovieId(null);
       setShowtime("");
       setPrice("");
@@ -51,12 +53,14 @@ const CreateShowtime: React.FC<CreateShowtimeProps> = ({
     {
       fields: [
         {
-          name: "roomId",
-          label: "Room ID",
-          type: "text" as const,
-          value: roomId || "",
-          onChange: () => {}, // Read-only field
-          disabled: true,
+          name: "room",
+          label: "Room",
+          type: "autocomplete" as const,
+          placeholder: "Room",
+          value: rooms.find((r) => r._id === roomId) || null,
+          onChange: (newValue: any) => setRoomId(newValue?._id || null),
+          options: rooms,
+          getOptionLabel: (option: any) => option.name,
         },
         {
           name: "movie",

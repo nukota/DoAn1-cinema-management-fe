@@ -2,18 +2,33 @@ import React, { useEffect, useState } from "react";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { ShowtimeType } from "../../interfaces/types";
 import { useShowtimes } from "../../providers/ShowtimesProvider";
+import { useRooms } from "../../providers/RoomsProvider";
+import { useMovies } from "../../providers/MoviesProvider";
 import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomDataGrid from "./elements/DataGrid";
 import { DeleteOutline } from "@mui/icons-material";
+import GenerateShowtimes from "./dialogs/GenerateShowtimes";
+import CreateShowtime from "./dialogs/CreateShowtime";
 
 const Showtimes: React.FC = () => {
-  const { showtimes, fetchShowtimesData, deleteShowtime, loading } =
-    useShowtimes();
+  const {
+    showtimes,
+    fetchShowtimesData,
+    deleteShowtime,
+    createShowtime,
+    loading,
+  } = useShowtimes();
+  const { rooms, fetchRoomsData } = useRooms();
+  const { movies, fetchMoviesData } = useMovies();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchShowtimesData();
+    fetchRoomsData();
+    fetchMoviesData();
   }, []);
 
   const handleDeleteShowtime = async (showtime: ShowtimeType) => {
@@ -36,6 +51,27 @@ const Showtimes: React.FC = () => {
       }
     } else {
       toast.info("Deletion canceled.");
+    }
+  };
+
+  const handleGenerateShowtimes = () => {
+    setGenerateDialogOpen(true);
+  };
+
+  const handleAddNewClick = () => {
+    setCreateDialogOpen(true);
+  };
+
+  const handleCreateShowtime = async (newShowtime: any): Promise<boolean> => {
+    try {
+      await createShowtime(newShowtime);
+      await fetchShowtimesData();
+      setCreateDialogOpen(false);
+      toast.success("Showtime created successfully!");
+      return true;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
     }
   };
 
@@ -64,40 +100,36 @@ const Showtimes: React.FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "ID", width: 60 },
     {
       field: "movie_title",
       headerName: "Movie",
       flex: 1,
-      width: 200,
+      minWidth: 180,
       valueGetter: (_, row) => row.movie?.title || "N/A",
     },
     {
       field: "room_name",
       headerName: "Room",
-      width: 200,
-      valueGetter: (_, row) =>
-        `${row.room?.name || "N/A"} (Cinema: ${
-          row.room?.cinema?.name || "N/A"
-        })`,
+      flex: 0.5,
+      minWidth: 100,
+      valueGetter: (_, row) => row.room?.name || "N/A",
     },
     {
       field: "showtime",
       headerName: "Show Time",
-      width: 180,
-      valueFormatter: (value: any) =>
-        value ? new Date(value).toLocaleString() : "N/A",
-    },
-    {
-      field: "price",
-      headerName: "Price",
-      width: 120,
-      valueFormatter: (value: any) => `${value?.toFixed(2) || "0.00"}`,
-    },
-    {
-      field: "seats_available",
-      headerName: "Available Seats",
-      width: 140,
+      flex: 0.75,
+      minWidth: 180,
+      valueFormatter: (value) => {
+        if (!value) return "";
+        const date = new Date(value);
+        return date.toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
     },
     {
       field: "actions",
@@ -123,17 +155,33 @@ const Showtimes: React.FC = () => {
   ];
 
   return (
-    <CustomDataGrid
-      title="Showtimes Management"
-      loading={loading}
-      rows={showtimes}
-      columns={columns}
-      selectedRows={selectedRows}
-      onRowSelectionChange={setSelectedRows}
-      onDeleteSelected={handleDeleteSelectedShowtimes}
-      showCheckboxSelection={true}
-      getRowId={(row) => row._id}
-    />
+    <>
+      <CustomDataGrid
+        title="Showtimes Management"
+        loading={loading}
+        rows={showtimes}
+        columns={columns}
+        selectedRows={selectedRows}
+        onRowSelectionChange={setSelectedRows}
+        onDeleteSelected={handleDeleteSelectedShowtimes}
+        onGenerateShowtimes={handleGenerateShowtimes}
+        onAddNew={handleAddNewClick}
+        showCheckboxSelection={true}
+        getRowId={(row) => row._id}
+      />
+      <GenerateShowtimes
+        open={generateDialogOpen}
+        onClose={() => setGenerateDialogOpen(false)}
+        onGenerated={fetchShowtimesData}
+      />
+      <CreateShowtime
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        onAdd={handleCreateShowtime}
+        rooms={rooms}
+        movies={movies}
+      />
+    </>
   );
 };
 
