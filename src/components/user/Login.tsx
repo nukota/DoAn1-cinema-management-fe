@@ -46,7 +46,7 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptPolicy, setAcceptPolicy] = useState(false);
 
-  const handleChange = (e: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 

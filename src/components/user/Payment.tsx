@@ -54,14 +54,10 @@ const Payment: React.FC = () => {
   const [discount, setDiscount] = useState<DiscountType | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [visaFormValid, setVisaFormValid] = useState(false);
-  const [visaFormInfo, setVisaFormInfo] = useState({
-    cardNumber: "",
-    cardName: "",
-    expiry: "",
-    cvc: "",
-  });
   const [userCredit, setUserCredit] = useState<number | null>(null);
-  const [userLoyaltyPoints, setUserLoyaltyPoints] = useState<number | null>(null);
+  const [userLoyaltyPoints, setUserLoyaltyPoints] = useState<number | null>(
+    null
+  );
   const [isProcessingVNPay, setIsProcessingVNPay] = useState(false);
   const steps = ["Payment Method", "Pay", "Finish"];
 
@@ -82,13 +78,11 @@ const Payment: React.FC = () => {
 
   useEffect(() => {
     const now = new Date();
-    const filteredDiscounts = discounts.filter(
-      (d) => {
-        const isNotExpired = !d.expiry_date || new Date(d.expiry_date) > now;
-        const meetsMinPurchase = order.total_price >= d.min_purchase;
-        return isNotExpired && meetsMinPurchase;
-      }
-    );
+    const filteredDiscounts = discounts.filter((d) => {
+      const isNotExpired = !d.expiry_date || new Date(d.expiry_date) > now;
+      const meetsMinPurchase = order.total_price >= d.min_purchase;
+      return isNotExpired && meetsMinPurchase;
+    });
     setAvailableDiscounts(filteredDiscounts);
   }, [discounts, order.total_price]);
 
@@ -119,7 +113,7 @@ const Payment: React.FC = () => {
     const processVNPayPayment = async () => {
       if (activeStep === 1 && paymentMethod === "vnpay" && !isProcessingVNPay) {
         setIsProcessingVNPay(true);
-        
+
         const data = {
           total_price: discountedPrice,
           user_id: order.user_id,
@@ -146,7 +140,7 @@ const Payment: React.FC = () => {
           const { orderId } = await createDetailedOrder(data);
 
           // Store order ID in sessionStorage before redirecting to VNPay
-          sessionStorage.setItem('vnpay_order_id', orderId);
+          sessionStorage.setItem("vnpay_order_id", orderId);
 
           // Create VNPay payment with the real order ID
           const vnpayResponse = await createVNPayPayment({
@@ -159,7 +153,7 @@ const Payment: React.FC = () => {
 
           // Open VNPay payment page in new tab
           if (vnpayResponse.vnpUrl) {
-            window.open(vnpayResponse.vnpUrl, '_blank');
+            window.open(vnpayResponse.vnpUrl, "_blank");
           } else {
             throw new Error("VNPay URL not found in response");
           }
@@ -286,35 +280,41 @@ const Payment: React.FC = () => {
                 >
                   {availableDiscounts.map((d) => {
                     const movie = movies.find((m) => m._id === d.movie_id);
-                    
+
                     // Check if user can use this discount based on rank requirement
                     const canUseRankDiscount = () => {
                       if (!d.rank) return true; // No rank requirement
                       if (userLoyaltyPoints === null) return false; // User has no loyalty points
-                      
+
                       // Define loyalty point thresholds for each rank
                       const rankThresholds = {
                         Bronze: 0,
                         Silver: 100,
                         Gold: 500,
                       };
-                      
+
                       return userLoyaltyPoints >= rankThresholds[d.rank];
                     };
-                    
+
                     // Ensure disabled is always boolean
                     const disabled = Boolean(
                       (d.movie_id && d.movie_id !== selectedMovieId) ||
-                      !canUseRankDiscount()
+                        !canUseRankDiscount()
                     );
-                    
+
                     return (
                       <MenuItem key={d._id} value={d._id} disabled={disabled}>
                         <Box display="flex" flexDirection="column">
                           <Typography variant="body1">{d.code}</Typography>
                           <Typography variant="caption" color="text.secondary">
                             {movie ? movie.title : ""}
-                            {d.rank ? ` | Rank: ${d.rank} ${!canUseRankDiscount() ? "(Insufficient loyalty points)" : ""}` : ""}
+                            {d.rank
+                              ? ` | Rank: ${d.rank} ${
+                                  !canUseRankDiscount()
+                                    ? "(Insufficient loyalty points)"
+                                    : ""
+                                }`
+                              : ""}
                             {d.discount_type === "percentage"
                               ? ` | Value: ${d.value}% off`
                               : ` | Value: -${d.value.toLocaleString()} vnd`}
@@ -382,16 +382,16 @@ const Payment: React.FC = () => {
                     alt={method.label}
                     style={{ width: 40, height: 40, marginBottom: 12 }}
                   />
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
+                  <Typography
+                    variant="body1"
+                    sx={{
                       fontWeight: 500,
                       textAlign: "center",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                       px: 1,
-                      maxWidth: "100%"
+                      maxWidth: "100%",
                     }}
                   >
                     {method.label}
@@ -487,7 +487,7 @@ const Payment: React.FC = () => {
             {paymentMethod === "visa/mastercard" && (
               <VisaForm
                 onValidChange={setVisaFormValid}
-                onInfoChange={setVisaFormInfo}
+                onInfoChange={() => {}}
               />
             )}
           </Box>
@@ -561,7 +561,10 @@ const Payment: React.FC = () => {
           }}
         >
           <Button
-            disabled={activeStep === 0 || (activeStep === 1 && paymentMethod === "vnpay")}
+            disabled={
+              activeStep === 0 ||
+              (activeStep === 1 && paymentMethod === "vnpay")
+            }
             onClick={handleBack}
             variant="outlined"
           >

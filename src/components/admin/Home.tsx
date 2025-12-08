@@ -16,7 +16,6 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useRevenue } from "../../providers/RevenueProvider";
 import dayjs from "dayjs";
-import { Height } from "@mui/icons-material";
 
 const now = dayjs();
 const earliestYear = 2025;
