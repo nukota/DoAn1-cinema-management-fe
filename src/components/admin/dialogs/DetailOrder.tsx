@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { OrderType } from "../../../interfaces/types";
-import { formatTime } from "../../../utils/formatUtils";
+import { formatTime, formatCurrency } from "../../../utils/formatUtils";
 import Dialog from "./template/Dialog";
 
 interface DetailOrderProps {
@@ -146,15 +146,21 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                 Price:{" "}
                 {order.tickets.seats && order.tickets.seats.length > 1
                   ? `${order.tickets.seats.length} x ${
-                      order.tickets.price ? order.tickets.price.toFixed(0) : "0"
+                      order.tickets.price
+                        ? formatCurrency(order.tickets.price)
+                        : formatCurrency(0)
                     } = ${
                       order.tickets.price
-                        ? (
+                        ? formatCurrency(
                             order.tickets.seats.length * order.tickets.price
-                          ).toFixed(0)
-                        : "0"
-                    } VND`
-                  : `${order.tickets.price ? order.tickets.price.toFixed(0) : "0"} VND`}
+                          )
+                        : formatCurrency(0)
+                    }`
+                  : `${
+                      order.tickets.price
+                        ? formatCurrency(order.tickets.price)
+                        : formatCurrency(0)
+                    }`}
               </Typography>
               {!order.tickets.seats ||
               order.tickets.seats.length === 0 ||
@@ -231,10 +237,10 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                     {product.quantity}
                   </TableCell>
                   <TableCell sx={{ width: "22%", padding: 1 }}>
-                    {product.price}
+                    {formatCurrency(product.price)}
                   </TableCell>
                   <TableCell sx={{ width: "22%", padding: 1 }}>
-                    {product.total}
+                    {formatCurrency(product.total)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -246,9 +252,11 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
                   Products Total:
                 </TableCell>
                 <TableCell sx={{ fontWeight: 600, p: 1 }}>
-                  {order.products.reduce(
-                    (sum, p) => sum + (p.total || p.price * p.quantity),
-                    0
+                  {formatCurrency(
+                    order.products.reduce(
+                      (sum, p) => sum + (p.total || p.price * p.quantity),
+                      0
+                    )
                   )}
                 </TableCell>
               </TableRow>
@@ -269,7 +277,7 @@ const DetailOrder: React.FC<DetailOrderProps> = ({
       </TableContainer>
 
       <Typography sx={{ mr: 2, marginTop: 3, fontWeight: 600 }}>
-        Total: {order.total_price}
+        Total: {formatCurrency(order.total_price)}
       </Typography>
     </Dialog>
   );

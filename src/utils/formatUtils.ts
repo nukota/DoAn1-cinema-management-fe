@@ -21,7 +21,9 @@ export function toUTCPlus7(utcDateTimeString: string): string {
   const utc = new Date(utcDateTimeString + "Z");
   const utcPlus7 = new Date(utc.getTime() + 7 * 60 * 60 * 1000);
   const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${utcPlus7.getFullYear()}-${pad(utcPlus7.getMonth() + 1)}-${pad(utcPlus7.getDate())}T${pad(utcPlus7.getHours())}:${pad(utcPlus7.getMinutes())}`;
+  return `${utcPlus7.getFullYear()}-${pad(utcPlus7.getMonth() + 1)}-${pad(
+    utcPlus7.getDate()
+  )}T${pad(utcPlus7.getHours())}:${pad(utcPlus7.getMinutes())}`;
 }
 
 export const formatDateOnly = (dateString: string) => {
@@ -33,4 +35,12 @@ export const formatDateOnly = (dateString: string) => {
     month: "2-digit",
     year: "numeric",
   });
+};
+
+export const formatNumber = (value: number): string => {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+};
+
+export const formatCurrency = (value: number): string => {
+  return formatNumber(value) + " ₫";
 };

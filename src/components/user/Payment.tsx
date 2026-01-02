@@ -26,7 +26,7 @@ import { useDiscounts } from "../../providers/DiscountsProvider";
 import { useOrders } from "../../providers/OrdersProvider";
 import { toast } from "react-toastify";
 import { useTimer } from "../../providers/page/TimerProvider";
-import { formatTime } from "../../utils/formatUtils";
+import { formatTime, formatCurrency } from "../../utils/formatUtils";
 import qrCodeImg from "../../assets/images/qrCode.jpeg";
 import { useMovies } from "../../providers/MoviesProvider";
 import { useUsers } from "../../providers/UserProvider";
@@ -317,7 +317,7 @@ const Payment: React.FC = () => {
                               : ""}
                             {d.discount_type === "percentage"
                               ? ` | Value: ${d.value}% off`
-                              : ` | Value: -${d.value.toLocaleString()} vnd`}
+                              : ` | Value: -${formatCurrency(d.value)}`}
                             {(() => {
                               let reduced = 0;
                               if (d.discount_type === "percentage") {
@@ -327,7 +327,7 @@ const Payment: React.FC = () => {
                               }
                               // Don't show negative reduction
                               reduced = Math.min(reduced, order.total_price);
-                              return ` | Save: -${reduced.toLocaleString()} vnd`;
+                              return ` | Save: -${formatCurrency(reduced)}`;
                             })()}
                           </Typography>
                         </Box>
@@ -643,7 +643,7 @@ const Payment: React.FC = () => {
         <Typography variant="body1" sx={{ mb: 0.5 }}>
           Seats:{" "}
           <span className="text-[#999]">
-            {order.seats.length} x {order.showtime.price.toFixed(0)} vnd
+            {order.seats.length} x {formatCurrency(order.showtime.price)}
           </span>
         </Typography>
         <Typography
@@ -683,7 +683,7 @@ const Payment: React.FC = () => {
           >
             <Typography variant="body1">Total Price:</Typography>
             <Typography variant="body1" color="#999">
-              {order.total_price.toFixed(0)} vnd
+              {formatCurrency(order.total_price)}
             </Typography>
           </Box>
           <Box
@@ -697,9 +697,8 @@ const Payment: React.FC = () => {
             <Typography variant="body1" color="#999">
               -{" "}
               {discount
-                ? (order.total_price - discountedPrice).toFixed(0)
-                : "0"}{" "}
-              vnd
+                ? formatCurrency(order.total_price - discountedPrice)
+                : formatCurrency(0)}
             </Typography>
           </Box>
           <Divider sx={{ my: 0.5 }} />
@@ -714,7 +713,7 @@ const Payment: React.FC = () => {
               Final Price:
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              {discountedPrice.toFixed(0)} vnd
+              {formatCurrency(discountedPrice)}
             </Typography>
           </Box>
         </Box>

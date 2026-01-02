@@ -14,6 +14,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useAuth } from "../../providers/AuthProvider";
 import { useOrders } from "../../providers/OrdersProvider";
 import VNPayImg from "../../assets/images/vnpay.png";
+import { formatCurrency } from "../../utils/formatUtils";
 import { toast } from "react-toastify";
 
 const VNPayResult: React.FC = () => {
@@ -36,7 +37,7 @@ const VNPayResult: React.FC = () => {
       try {
         // Parse URL parameters from VNPay redirect
         const searchParams = new URLSearchParams(location.search);
-        
+
         const vnp_ResponseCode = searchParams.get("vnp_ResponseCode");
         const vnp_TransactionStatus = searchParams.get("vnp_TransactionStatus");
         const vnp_Amount = searchParams.get("vnp_Amount");
@@ -44,19 +45,20 @@ const VNPayResult: React.FC = () => {
         const vnp_TransactionNo = searchParams.get("vnp_TransactionNo");
 
         // Check if payment was successful (response code 00 means success)
-        const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
+        const isSuccess =
+          vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
 
         if (isSuccess && vnp_TxnRef) {
           // Get the real order ID from sessionStorage (stored before redirecting to VNPay)
-          const orderId = sessionStorage.getItem('vnpay_order_id');
-          
+          const orderId = sessionStorage.getItem("vnpay_order_id");
+
           if (!orderId) {
             throw new Error("Order ID not found in session storage");
           }
 
           // Clear the stored order ID
-          sessionStorage.removeItem('vnpay_order_id');
-          
+          sessionStorage.removeItem("vnpay_order_id");
+
           try {
             await updateOrder({ _id: orderId, status: "completed" } as any);
             toast.success("Order completed successfully!");
@@ -64,7 +66,7 @@ const VNPayResult: React.FC = () => {
             console.error("Failed to update order status:", error);
             toast.error("Payment successful but failed to update order status");
           }
-          
+
           setPaymentResult({
             success: true,
             message: "Payment Successfully!",
@@ -74,13 +76,14 @@ const VNPayResult: React.FC = () => {
           });
         } else {
           // Clear the stored order ID on failure
-          sessionStorage.removeItem('vnpay_order_id');
-          
+          sessionStorage.removeItem("vnpay_order_id");
+
           setPaymentResult({
             success: false,
-            message: vnp_ResponseCode === "24" 
-              ? "Payment cancelled by user" 
-              : "Payment failed. Please try again.",
+            message:
+              vnp_ResponseCode === "24"
+                ? "Payment cancelled by user"
+                : "Payment failed. Please try again.",
           });
         }
       } catch (error) {
@@ -281,30 +284,31 @@ const VNPayResult: React.FC = () => {
                   Amount:
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: "medium" }}>
-                  {paymentResult.amount.toLocaleString()} VND
+                  {formatCurrency(paymentResult.amount)}
                 </Typography>
               </Box>
             )}
 
-            {paymentResult?.amount && Math.floor(paymentResult.amount / 1000) > 0 && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mb: 1.5,
-                }}
-              >
-                <Typography variant="body1" color="text.secondary">
-                  Points Earned:
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: "medium", color: "#1976d2" }}
+            {paymentResult?.amount &&
+              Math.floor(paymentResult.amount / 1000) > 0 && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1.5,
+                  }}
                 >
-                  +{Math.floor(paymentResult.amount / 1000)} points
-                </Typography>
-              </Box>
-            )}
+                  <Typography variant="body1" color="text.secondary">
+                    Points Earned:
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "medium", color: "#1976d2" }}
+                  >
+                    +{Math.floor(paymentResult.amount / 1000)} points
+                  </Typography>
+                </Box>
+              )}
           </Box>
 
           <Divider sx={{ my: 3 }} />

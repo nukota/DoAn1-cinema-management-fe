@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { ProductType } from "../../../interfaces/types";
 import NumberPicker from "../../shared/NumberPicker";
+import { formatCurrency } from "../../../utils/formatUtils";
 
 interface ProductItemProps {
   product: ProductType;
@@ -9,7 +10,11 @@ interface ProductItemProps {
   setAmount: (product: ProductType, newAmount: number) => void;
 }
 
-const ProductItem: React.FC<ProductItemProps> = ({ product, amount, setAmount }) => {
+const ProductItem: React.FC<ProductItemProps> = ({
+  product,
+  amount,
+  setAmount,
+}) => {
   const theme = useTheme();
   const [currentAmount, setCurrentAmount] = useState<number>(amount);
 
@@ -72,7 +77,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, amount, setAmount })
           {product.name}
         </Typography>
         <Typography variant="body1" sx={{ color: "gray" }}>
-          {product.price}
+          {formatCurrency(product.price)}
         </Typography>
         <Box sx={{ position: "absolute", bottom: 11, width: "100%" }}>
           <NumberPicker

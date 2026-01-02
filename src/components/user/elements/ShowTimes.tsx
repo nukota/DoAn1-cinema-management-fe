@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { ShowtimeType } from "../../../interfaces/types";
 import { useRooms } from "../../../providers/RoomsProvider";
+import { formatCurrency } from "../../../utils/formatUtils";
 
 const CustomTab = styled(Tab)(() => ({
   minWidth: 0,
@@ -39,9 +40,9 @@ const ShowTimes: React.FC<ShowtimesProps> = ({
 
   useEffect(() => {
     if (selectedShowtime) {
-      const showtimeDate = new Date(selectedShowtime.showtime).toLocaleDateString(
-        "en-GB"
-      );
+      const showtimeDate = new Date(
+        selectedShowtime.showtime
+      ).toLocaleDateString("en-GB");
       const index = Array.from({ length: 7 }).findIndex((_, i) => {
         const tabDate = getFormattedDate(i).fullDate;
         return tabDate === showtimeDate;
@@ -241,7 +242,7 @@ const ShowTimes: React.FC<ShowtimesProps> = ({
                         color: "lightgray",
                       }}
                     >
-                      {showtime.price.toFixed(0)} vnd
+                      {formatCurrency(showtime.price)}
                     </Typography>
                   </Box>
                 ))}

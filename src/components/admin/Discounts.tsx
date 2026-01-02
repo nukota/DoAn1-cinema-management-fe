@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { confirmDeletion } from "../../utils/confirmDeletion";
 import CustomDataGrid from "./elements/DataGrid";
 import { InfoOutlined } from "@mui/icons-material";
+import { formatCurrency } from "../../utils/formatUtils";
 
 const Discounts: React.FC = () => {
   const {
@@ -115,16 +116,25 @@ const Discounts: React.FC = () => {
       width: 100,
       valueFormatter: (value: any) =>
         value
-          ? `${value}${typeof value === "number" && value <= 1 ? "%" : ""}`
+          ? `${
+              typeof value === "number" && value <= 100
+                ? value + "%"
+                : formatCurrency(value)
+            }`
           : "N/A",
     },
     {
       field: "min_purchase",
       headerName: "Min Purchase",
       width: 140,
-      valueFormatter: (value: any) => (value ? `${value}` : "N/A"),
+      valueFormatter: (value: any) => (value ? formatCurrency(value) : "N/A"),
     },
-    { field: "max_usage", headerName: "Max Usage", width: 120 },
+    {
+      field: "max_usage",
+      headerName: "Max Usage",
+      width: 120,
+      valueFormatter: (value: any) => (value ? formatCurrency(value) : "N/A"),
+    },
     {
       field: "expiry_date",
       headerName: "Expiry Date",

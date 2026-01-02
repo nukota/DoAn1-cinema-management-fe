@@ -16,6 +16,7 @@ import { useMovies } from "../../providers/MoviesProvider";
 import { useProducts } from "../../providers/ProductsProvider";
 import { useRevenue } from "../../providers/RevenueProvider";
 import dayjs from "dayjs";
+import { formatCurrency } from "../../utils/formatUtils";
 
 const now = dayjs();
 const earliestYear = 2025;
@@ -260,16 +261,12 @@ const AdminHome: React.FC = () => {
                   width: "100%",
                   textAlign: "start",
                 }}
-                title={
-                  revenueLoading
-                    ? ""
-                    : `${stats.totalRevenue.toLocaleString()} VND`
-                }
+                title={revenueLoading ? "" : formatCurrency(stats.totalRevenue)}
               >
                 {revenueLoading ? (
                   <CircularProgress color="inherit" size={28} />
                 ) : (
-                  `${stats.totalRevenue.toLocaleString()} VND`
+                  formatCurrency(stats.totalRevenue)
                 )}
               </Typography>
             </Box>
@@ -315,15 +312,13 @@ const AdminHome: React.FC = () => {
                   textAlign: "start",
                 }}
                 title={
-                  revenueLoading
-                    ? ""
-                    : `${stats.ticketRevenue.toLocaleString()} VND`
+                  revenueLoading ? "" : formatCurrency(stats.ticketRevenue)
                 }
               >
                 {revenueLoading ? (
                   <CircularProgress color="inherit" size={24} />
                 ) : (
-                  `${stats.ticketRevenue.toLocaleString()} VND`
+                  formatCurrency(stats.ticketRevenue)
                 )}
               </Typography>
               <Typography
@@ -387,15 +382,13 @@ const AdminHome: React.FC = () => {
                   textAlign: "start",
                 }}
                 title={
-                  revenueLoading
-                    ? ""
-                    : `${stats.productRevenue.toLocaleString()} VND`
+                  revenueLoading ? "" : formatCurrency(stats.productRevenue)
                 }
               >
                 {revenueLoading ? (
                   <CircularProgress color="inherit" size={24} />
                 ) : (
-                  `${stats.productRevenue.toLocaleString()} VND`
+                  formatCurrency(stats.productRevenue)
                 )}
               </Typography>
               <Typography

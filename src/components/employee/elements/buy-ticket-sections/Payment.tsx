@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import VisaImg from "../../../../assets/images/visa.png";
+import { formatCurrency } from "../../../../utils/formatUtils";
 import MomoImg from "../../../../assets/images/momo.png";
 import CashImg from "../../../../assets/images/cash.png";
 import BankingImg from "../../../../assets/images/banking.png";
@@ -283,7 +284,7 @@ const Payment: React.FC<PaymentProps> = ({
                 Message: <b>CM-BANK-TICKET-654321</b>
               </Typography>
               <Typography variant="body1" sx={{ color: "#333" }}>
-                Amount: <b>200,000 VND</b>
+                Amount: <b>{formatCurrency(200000)}</b>
               </Typography>
             </Box>
             <Typography

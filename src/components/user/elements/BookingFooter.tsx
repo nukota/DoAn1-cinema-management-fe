@@ -9,6 +9,7 @@ import {
 } from "../../../interfaces/types";
 import { useNavigate } from "react-router-dom";
 import { useTimer } from "../../../providers/page/TimerProvider";
+import { formatCurrency } from "../../../utils/formatUtils";
 
 interface BookingFooterProps {
   movie: MovieType;
@@ -213,7 +214,7 @@ const BookingFooter: React.FC<BookingFooterProps> = ({
             <Typography
               sx={{ color: "#999", fontSize: 18, fontWeight: 500, mt: 1 }}
             >
-              {totalPrice} vnd
+              {formatCurrency(totalPrice)}
             </Typography>
           </Box>
           {/* Buy Ticket Button */}
