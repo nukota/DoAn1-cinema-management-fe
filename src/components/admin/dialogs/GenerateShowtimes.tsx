@@ -141,6 +141,7 @@ const GenerateShowtimes: React.FC<GenerateShowtimesProps> = ({
             room_id: suggestion.room_id,
             movie_id: suggestion.movie_id,
             showtime: suggestion.showtime,
+            price: 50000, // Default price for generated showtimes
           },
           {
             headers: {

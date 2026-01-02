@@ -23,57 +23,86 @@ const UserProfile: React.FC = () => {
     dateOfBirth: userProfile?.dateOfBirth || "",
     cccd: userProfile?.cccd || "",
     role: userProfile?.role || "employee",
-    created_at: userProfile?.created_at || "",
+    createdAt: userProfile?.createdAt || "",
+    rank: userProfile?.rank || null,
   });
   const [loyaltyPoints, setLoyaltyPoints] = useState<number | null>(null);
   const [bookingHistory, setBookingHistory] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // Calculate user rank based on loyalty points
-  const getUserRank = (): { 
-    rank: string; 
-    color: string; 
-    bgColor: string; 
+  useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        _id: userProfile._id || "",
+        full_name: userProfile.full_name || "",
+        email: userProfile.email || "",
+        phone: userProfile.phone || "",
+        password_hash: userProfile.password_hash || "",
+        dateOfBirth: userProfile.dateOfBirth || "",
+        cccd: userProfile.cccd || "",
+        role: userProfile.role || "employee",
+        createdAt: userProfile.createdAt || "",
+        rank: userProfile.rank || null,
+      });
+    }
+  }, [userProfile]);
+
+  // Get rank info based on rank string
+  const getRankInfo = (
+    rank: string | null
+  ): {
+    rank: string;
+    color: string;
+    bgColor: string;
     pointsToNext: number | null;
     nextRank: string | null;
   } => {
-    if (loyaltyPoints === null) {
-      return { 
-        rank: "No Rank", 
-        color: "#9e9e9e", 
+    if (!rank) {
+      return {
+        rank: "No Rank",
+        color: "#9e9e9e",
         bgColor: "rgba(158, 158, 158, 0.1)",
         pointsToNext: null,
         nextRank: null,
       };
     }
-    if (loyaltyPoints >= 500) {
-      return { 
-        rank: "Gold", 
-        color: "#ffd700", 
+    if (rank === "gold") {
+      return {
+        rank: "Gold",
+        color: "#ffd700",
         bgColor: "rgba(255, 215, 0, 0.15)",
-        pointsToNext: null, // Max rank
+        pointsToNext: null,
         nextRank: null,
       };
     }
-    if (loyaltyPoints >= 100) {
-      return { 
-        rank: "Silver", 
-        color: "#c0c0c0", 
+    if (rank === "silver") {
+      return {
+        rank: "Silver",
+        color: "#c0c0c0",
         bgColor: "rgba(192, 192, 192, 0.15)",
-        pointsToNext: 500 - loyaltyPoints,
+        pointsToNext: 500 - (loyaltyPoints || 0),
         nextRank: "Gold",
       };
     }
-    return { 
-      rank: "Bronze", 
-      color: "#cd7f32", 
-      bgColor: "rgba(205, 127, 50, 0.15)",
-      pointsToNext: 100 - loyaltyPoints,
-      nextRank: "Silver",
+    if (rank === "bronze") {
+      return {
+        rank: "Bronze",
+        color: "#cd7f32",
+        bgColor: "rgba(205, 127, 50, 0.15)",
+        pointsToNext: 100 - (loyaltyPoints || 0),
+        nextRank: "Silver",
+      };
+    }
+    return {
+      rank: "No Rank",
+      color: "#9e9e9e",
+      bgColor: "rgba(158, 158, 158, 0.1)",
+      pointsToNext: null,
+      nextRank: null,
     };
   };
 
-  const rankInfo = getUserRank();
+  const rankInfo = getRankInfo(userProfile?.rank || null);
 
   useEffect(() => {
     const fetchLoyaltyPoints = async () => {
@@ -174,9 +203,9 @@ const UserProfile: React.FC = () => {
               >
                 <Typography
                   variant="body2"
-                  sx={{ 
-                    fontWeight: "medium", 
-                    fontSize: "14px", 
+                  sx={{
+                    fontWeight: "medium",
+                    fontSize: "14px",
                     color: "text.secondary",
                   }}
                 >
@@ -184,8 +213,8 @@ const UserProfile: React.FC = () => {
                 </Typography>
                 <Typography
                   variant="h4"
-                  sx={{ 
-                    fontWeight: "bold", 
+                  sx={{
+                    fontWeight: "bold",
                     color: rankInfo.color,
                     textShadow: `0 2px 4px ${rankInfo.color}40`,
                   }}
@@ -194,20 +223,20 @@ const UserProfile: React.FC = () => {
                 </Typography>
                 <Typography
                   variant="caption"
-                  sx={{ 
-                    fontSize: "12px", 
+                  sx={{
+                    fontSize: "12px",
                     color: "text.secondary",
                   }}
                 >
-                  {loyaltyPoints !== null 
-                    ? `${loyaltyPoints} Loyalty Points` 
+                  {loyaltyPoints !== null
+                    ? `${loyaltyPoints} Loyalty Points`
                     : "No loyalty points"}
                 </Typography>
                 {rankInfo.pointsToNext !== null && rankInfo.nextRank && (
                   <Typography
                     variant="caption"
-                    sx={{ 
-                      fontSize: "11px", 
+                    sx={{
+                      fontSize: "11px",
                       color: rankInfo.color,
                       fontWeight: "medium",
                       mt: 0.5,
@@ -219,8 +248,8 @@ const UserProfile: React.FC = () => {
                 {rankInfo.rank === "Gold" && (
                   <Typography
                     variant="caption"
-                    sx={{ 
-                      fontSize: "11px", 
+                    sx={{
+                      fontSize: "11px",
                       color: rankInfo.color,
                       fontWeight: "medium",
                       mt: 0.5,
@@ -260,7 +289,7 @@ const UserProfile: React.FC = () => {
             <TextField
               placeholder="Email"
               name="email"
-              value={formData.phone}
+              value={formData.email}
               onChange={handleInputChange}
               disabled={!isEditing}
               fullWidth
@@ -394,7 +423,7 @@ const UserProfile: React.FC = () => {
             </Box>
           </Box>
         </div>
-        <div className="w-[50%] h-[520px] px-[48px] py-[24px]">
+        <div className="w-[50%] h-[80%] pl-[48px] py-[24px]">
           <Typography
             variant="h5"
             sx={{ fontWeight: "bold", mb: 2, color: "black" }}
@@ -403,7 +432,7 @@ const UserProfile: React.FC = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <div
-            className="flex flex-col gap-2 h-[420px] overflow-y-scroll"
+            className="flex flex-col gap-2 h-full overflow-y-scroll"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#e0e0e0 #f5f5f5",
@@ -425,30 +454,67 @@ const UserProfile: React.FC = () => {
               {bookingHistory.length === 0 && (
                 <Typography color="gray">No booking history found.</Typography>
               )}
-              {bookingHistory.map((order) =>
-                order.tickets?.map((ticket: any, idx: number) => (
-                  <div
-                    key={order._id + "-" + idx}
-                    className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1 m-1"
+              {bookingHistory.map((order) => (
+                <div
+                  key={order.order_id || order._id}
+                  className="p-2 bg-gray-100 rounded-md border border-solid border-[#dadada] flex flex-col gap-1 m-1"
+                >
+                  <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
+                    Order Code: {order.ordercode}
+                  </Typography>
+                  <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                    Ordered At: {new Date(order.ordered_at).toLocaleString()}
+                  </Typography>
+                  {(() => {
+                    const groupedTickets = (order.tickets || []).reduce(
+                      (acc: Record<string, any[]>, ticket: any) => {
+                        const title = ticket.title;
+                        if (!acc[title]) acc[title] = [];
+                        acc[title].push(...ticket.seats);
+                        return acc;
+                      },
+                      {}
+                    );
+                    const uniqueTitles = Object.keys(groupedTickets);
+                    return (
+                      <>
+                        <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                          Movies: {uniqueTitles.join(", ")}
+                        </Typography>
+                        <Typography sx={{ color: "gray", fontSize: "14px" }}>
+                          Total Price: {order.total_price} VND
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: "medium",
+                            fontSize: "14px",
+                            mt: 1,
+                          }}
+                        >
+                          Tickets ({order.ticketCount}):{" "}
+                          {Object.values(groupedTickets)
+                            .flat()
+                            .map((s: any) => s.seat_name)
+                            .join(", ")}
+                        </Typography>
+                      </>
+                    );
+                  })()}
+                  <Typography
+                    sx={{ fontWeight: "medium", fontSize: "14px", mt: 1 }}
                   >
-                    <Typography sx={{ fontWeight: "medium", fontSize: "16px" }}>
-                      {ticket.title}
-                    </Typography>
-                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                      {new Date(ticket.showtime).toLocaleString()}
-                    </Typography>
-                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                      Seats:{" "}
-                      {ticket.seats.map((s: any) => s.seat_name).join(", ")} (
-                      {ticket.seats.length}{" "}
-                      {ticket.seats.length > 1 ? "seats" : "seat"})
-                    </Typography>
-                    <Typography sx={{ color: "gray", fontSize: "14px" }}>
-                      Order Code: {order.ordercode}
-                    </Typography>
-                  </div>
-                ))
-              )}
+                    Products ({order.productCount}):
+                  </Typography>
+                  {order.products?.map((product: any, idx: number) => (
+                    <div key={idx} className="ml-2">
+                      <Typography sx={{ fontSize: "14px" }}>
+                        {product.name} (x{product.quantity}) - {product.price}{" "}
+                        VND
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>

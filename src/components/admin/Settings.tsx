@@ -25,6 +25,9 @@ const Settings: React.FC = () => {
     employee_min_age: "",
     employee_max_age: "",
     reservation_time: "",
+    bronze_member: "",
+    silver_member: "",
+    gold_member: "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -45,6 +48,9 @@ const Settings: React.FC = () => {
         employee_min_age: setting.employee_min_age?.toString() ?? "",
         employee_max_age: setting.employee_max_age?.toString() ?? "",
         reservation_time: setting.reservation_time?.toString() ?? "",
+        bronze_member: setting.bronze_member?.toString() ?? "",
+        silver_member: setting.silver_member?.toString() ?? "",
+        gold_member: setting.gold_member?.toString() ?? "",
       });
     }
   }, [setting]);
@@ -233,6 +239,39 @@ const Settings: React.FC = () => {
               <Typography variant="caption" color="gray">
                 Reservation time in seconds
               </Typography>
+            </Box>
+          </Box>
+
+          {/* Membership Points Fields */}
+          <Box display="flex" gap={6}>
+            <Box display="flex" gap={1}>
+              <TextField
+                label="Bronze Member Points"
+                name="bronze_member"
+                type="number"
+                value={form.bronze_member}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing || loading}
+              />
+              <TextField
+                label="Silver Member Points"
+                name="silver_member"
+                type="number"
+                value={form.silver_member}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing || loading}
+              />
+              <TextField
+                label="Gold Member Points"
+                name="gold_member"
+                type="number"
+                value={form.gold_member}
+                onChange={handleChange}
+                fullWidth
+                disabled={!isEditing || loading}
+              />
             </Box>
           </Box>
 

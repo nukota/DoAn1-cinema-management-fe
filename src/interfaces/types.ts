@@ -7,7 +7,8 @@ export type UserType = {
   dateOfBirth: string;
   cccd: string;
   role: "employee" | "admin" | "customer";
-  created_at: string;
+  createdAt: string;
+  rank: "bronze" | "silver" | "gold" | null;
   loyalty_points?: number;
 };
 
@@ -196,6 +197,9 @@ export type SettingType = {
   employee_min_age: number;
   employee_max_age: number;
   reservation_time: number;
+  bronze_member: number;
+  silver_member: number;
+  gold_member: number;
   __v: number;
 };
 
