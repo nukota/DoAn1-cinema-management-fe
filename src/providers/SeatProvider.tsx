@@ -13,6 +13,7 @@ interface SeatsContextType {
   fetchSeatsData: () => Promise<void>;
   fetchSeatsByRoomId: (roomId: string) => Promise<void>;
   fetchSeatsByShowtimeId: (showtimeId: string) => Promise<void>;
+  fetchSuggestedSeats: (showtimeId: string, numPeople: number) => Promise<SeatType[]>;
   createSeat: (newSeat: SeatType) => Promise<void>;
   updateSeat: (updatedSeat: SeatType) => Promise<void>;
   deleteSeat: (seatId: string) => Promise<void>;
@@ -83,6 +84,30 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
       throw error;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSuggestedSeats = async (showtimeId: string, numPeople: number): Promise<SeatType[]> => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.post(
+        `${baseURL}/seat/suggest`,
+        {
+          showtime_id: showtimeId,
+          numPeople: numPeople,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data.data || response.data || [];
+    } catch (error: any) {
+      console.error("Failed to fetch suggested seats:", error);
+      return [];
     }
   };
 
@@ -162,6 +187,7 @@ export const SeatProvider: React.FC<{ children: ReactNode }> = ({
         fetchSeatsData,
         fetchSeatsByRoomId,
         fetchSeatsByShowtimeId,
+        fetchSuggestedSeats,
         createSeat,
         updateSeat,
         deleteSeat,

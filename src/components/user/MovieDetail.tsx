@@ -175,6 +175,7 @@ const MovieDetail: React.FC = () => {
               selectedProducts={selectedProducts}
               setSelectedProducts={setSelectedProducts}
               reservationTime={setting?.reservation_time || 10}
+              showtime_id={selectedShowtime?._id || ""}
             />
           </div>
         </div>

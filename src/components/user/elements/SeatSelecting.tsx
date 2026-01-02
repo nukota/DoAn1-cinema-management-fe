@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Lightbulb as LightbulbIcon } from "@mui/icons-material";
 import { SeatType } from "../../../interfaces/types";
 import SeatUnit from "../items/SeatUnit";
 import NumberPicker from "../../shared/NumberPicker";
@@ -15,6 +16,7 @@ interface SeatSelectingProps {
   ticketCount: number;
   setTicketCount: React.Dispatch<React.SetStateAction<number>>;
   reservationTime: number;
+  showtime_id: string;
 }
 const SeatSelecting: React.FC<SeatSelectingProps> = ({
   seats,
@@ -24,10 +26,11 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
   ticketCount,
   setTicketCount,
   reservationTime,
+  showtime_id,
 }) => {
   const theme = useTheme();
   const { startTimer } = useTimer();
-  const { loading } = useSeats();
+  const { loading, fetchSuggestedSeats } = useSeats();
   const rows = "ABCDEFGHIJKLMN".split("");
 
   if (loading) {
@@ -96,6 +99,23 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
     });
   };
 
+  const handleSuggestSeats = async () => {
+    try {
+      const suggestedSeats = await fetchSuggestedSeats(showtime_id, ticketCount);
+      if (suggestedSeats.length > 0) {
+        setSelectedSeats(suggestedSeats);
+        if (suggestedSeats.length > 0) {
+          startTimer(reservationTime);
+        }
+      } else {
+        alert("No consecutive seats available for the requested number of tickets.");
+      }
+    } catch (error) {
+      console.error("Failed to get seat suggestions:", error);
+      alert("Failed to suggest seats. Please try again.");
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -149,6 +169,9 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
               position: "absolute",
               bottom: 12,
               left: 12,
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
             }}
           >
             <NumberPicker
@@ -162,6 +185,38 @@ const SeatSelecting: React.FC<SeatSelectingProps> = ({
                 setTicketCount(value);
               }}
             />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleSuggestSeats}
+              disabled={ticketCount === 0 || loading}
+              startIcon={<LightbulbIcon />}
+              sx={{
+                textTransform: "none",
+                fontWeight: "medium",
+                fontSize: "0.875rem",
+                paddingX: 2,
+                paddingY: 0.5,
+                borderRadius: 2,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+                color: "white",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.secondary.dark} 90%)`,
+                  transform: "translateY(-2px)",
+                },
+                "&:active": {
+                  transform: "translateY(0px)",
+                },
+                "&:disabled": {
+                  background: "rgba(255, 255, 255, 0.12)",
+                  color: "rgba(255, 255, 255, 0.3)",
+                },
+                minWidth: "120px",
+              }}
+            >
+              Auto Select
+            </Button>
           </Box>
         </Box>
 
