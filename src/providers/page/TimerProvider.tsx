@@ -64,12 +64,6 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (timeLeft === 0) {
-      navigate("/");
-    }
-  }, [timeLeft, navigate]);
-
   return (
     <TimerContext.Provider value={{ timeLeft, startTimer, stopTimer }}>
       {children}
