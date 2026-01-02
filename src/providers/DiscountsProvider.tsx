@@ -109,9 +109,10 @@ export const DiscountsProvider: React.FC<{ children: ReactNode }> = ({
     async (newDiscount: DiscountType) => {
       try {
         const token = localStorage.getItem("accessToken");
+        const { _id, ...updateData } = newDiscount; // Omit _id and any other read-only fields
         const response = await axios.patch(
-          `${baseURL}/discount/${newDiscount._id}`,
-          newDiscount,
+          `${baseURL}/discount/${_id}`,
+          updateData,
           {
             headers: {
               "Content-Type": "application/json",

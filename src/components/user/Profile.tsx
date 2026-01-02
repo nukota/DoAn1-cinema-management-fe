@@ -232,19 +232,6 @@ const UserProfile: React.FC = () => {
                     ? `${loyaltyPoints} Loyalty Points`
                     : "No loyalty points"}
                 </Typography>
-                {rankInfo.pointsToNext !== null && rankInfo.nextRank && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontSize: "11px",
-                      color: rankInfo.color,
-                      fontWeight: "medium",
-                      mt: 0.5,
-                    }}
-                  >
-                    {rankInfo.pointsToNext} points to {rankInfo.nextRank}
-                  </Typography>
-                )}
                 {rankInfo.rank === "Gold" && (
                   <Typography
                     variant="caption"
