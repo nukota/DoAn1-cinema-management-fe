@@ -29,7 +29,7 @@ const MovieList: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchMoviesData();
-      
+
       // Fetch recommended movies if user is logged in
       if (isLoggedIn && userProfile?._id) {
         try {
@@ -155,7 +155,9 @@ const MovieList: React.FC = () => {
       }
 
       setIsProcessingImage(true);
-      toast.info("Processing image with AI... Please wait.", { autoClose: false });
+      toast.info("Processing image with AI... Please wait.", {
+        autoClose: false,
+      });
 
       try {
         // Convert image to base64
@@ -173,14 +175,14 @@ const MovieList: React.FC = () => {
 
         // Get Google API key from environment
         const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-        
+
         if (!GOOGLE_API_KEY) {
           throw new Error("Google API key not configured");
         }
 
         // Call Gemini 2.0 API
         const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`,
           {
             method: "POST",
             headers: {
@@ -211,9 +213,10 @@ const MovieList: React.FC = () => {
         }
 
         const data = await response.json();
-        
+
         // Extract text from Gemini response
-        const extractedText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        const extractedText =
+          data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
         if (!extractedText) {
           toast.dismiss();
@@ -248,8 +251,8 @@ const MovieList: React.FC = () => {
         console.error("Image processing error:", error);
         toast.dismiss();
         toast.error(
-          error instanceof Error 
-            ? `Failed: ${error.message}` 
+          error instanceof Error
+            ? `Failed: ${error.message}`
             : "Failed to process image. Please try again."
         );
       } finally {
@@ -376,9 +379,9 @@ const MovieList: React.FC = () => {
         }}
       >
         {filteredMovies.map((movie) => (
-          <SlideItem 
-            key={movie._id} 
-            movie={movie} 
+          <SlideItem
+            key={movie._id}
+            movie={movie}
             isRecommended={recommendedMovieIds.includes(movie._id)}
           />
         ))}

@@ -10,7 +10,7 @@ interface User {
 interface UserContextType {
   getUserById: (id: string) => User | undefined;
   getCreditByUserId: (id: string) => Promise<number>;
-  getLoyaltyPointsByUserId: (id: string) => Promise<number | null>;
+  getUserByIdFromAPI: (id: string) => Promise<any>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -41,7 +41,7 @@ const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const getLoyaltyPointsByUserId = async (id: string): Promise<number | null> => {
+  const getUserByIdFromAPI = async (id: string): Promise<any> => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.get(`${baseURL}/user/${id}`, {
@@ -49,15 +49,17 @@ const UsersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data.loyalty_points ?? null;
+      return response.data;
     } catch (error: any) {
-      console.error("Error fetching user loyalty points:", error);
+      console.error("Error fetching user:", error);
       return null;
     }
   };
 
   return (
-    <UserContext.Provider value={{ getUserById, getCreditByUserId, getLoyaltyPointsByUserId }}>
+    <UserContext.Provider
+      value={{ getUserById, getCreditByUserId, getUserByIdFromAPI }}
+    >
       {children}
     </UserContext.Provider>
   );

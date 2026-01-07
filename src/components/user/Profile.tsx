@@ -11,41 +11,56 @@ import { formatToDateInput } from "../../utils/formatUtils";
 const UserProfile: React.FC = () => {
   const { userProfile } = useAuth();
   const { updateCustomer } = useCustomers();
-  const { getLoyaltyPointsByUserId } = useUsers();
+  const { getUserByIdFromAPI } = useUsers();
   const { getOrderByUserId } = useOrders();
   const [isEditing, setIsEditing] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const [formData, setFormData] = useState({
-    _id: userProfile?._id || "",
-    full_name: userProfile?.full_name || "",
-    email: userProfile?.email || "",
-    phone: userProfile?.phone || "",
-    password_hash: userProfile?.password_hash || "",
-    dateOfBirth: userProfile?.dateOfBirth || "",
-    cccd: userProfile?.cccd || "",
-    role: userProfile?.role || "employee",
-    createdAt: userProfile?.createdAt || "",
-    rank: userProfile?.rank || null,
+    _id: "",
+    full_name: "",
+    email: "",
+    phone: "",
+    password_hash: "",
+    dateOfBirth: "",
+    cccd: "",
+    role: "employee" as "employee" | "admin" | "customer",
+    createdAt: "",
+    rank: null,
   });
   const [loyaltyPoints, setLoyaltyPoints] = useState<number | null>(null);
   const [bookingHistory, setBookingHistory] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userProfile) {
+    const fetchUserData = async () => {
+      if (userProfile?._id) {
+        const data = await getUserByIdFromAPI(userProfile._id);
+        setUserData(data);
+        setLoyaltyPoints(data?.loyalty_points || null);
+      }
+    };
+    fetchUserData();
+  }, [userProfile?._id, getUserByIdFromAPI]);
+
+  useEffect(() => {
+    if (userData) {
       setFormData({
-        _id: userProfile._id || "",
-        full_name: userProfile.full_name || "",
-        email: userProfile.email || "",
-        phone: userProfile.phone || "",
-        password_hash: userProfile.password_hash || "",
-        dateOfBirth: userProfile.dateOfBirth || "",
-        cccd: userProfile.cccd || "",
-        role: userProfile.role || "employee",
-        createdAt: userProfile.createdAt || "",
-        rank: userProfile.rank || null,
+        _id: userData._id || "",
+        full_name: userData.full_name || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        password_hash: userData.password_hash || "",
+        dateOfBirth: userData.dateOfBirth || "",
+        cccd: userData.cccd || "",
+        role: (userData.role || "employee") as
+          | "employee"
+          | "admin"
+          | "customer",
+        createdAt: userData.createdAt || "",
+        rank: userData.rank || null,
       });
     }
-  }, [userProfile]);
+  }, [userData]);
 
   // Get rank info based on rank string
   const getRankInfo = (
@@ -54,7 +69,6 @@ const UserProfile: React.FC = () => {
     rank: string;
     color: string;
     bgColor: string;
-    pointsToNext: number | null;
     nextRank: string | null;
   } => {
     if (!rank) {
@@ -62,7 +76,6 @@ const UserProfile: React.FC = () => {
         rank: "No Rank",
         color: "#9e9e9e",
         bgColor: "rgba(158, 158, 158, 0.1)",
-        pointsToNext: null,
         nextRank: null,
       };
     }
@@ -71,7 +84,6 @@ const UserProfile: React.FC = () => {
         rank: "Gold",
         color: "#ffd700",
         bgColor: "rgba(255, 215, 0, 0.15)",
-        pointsToNext: null,
         nextRank: null,
       };
     }
@@ -80,7 +92,6 @@ const UserProfile: React.FC = () => {
         rank: "Silver",
         color: "#c0c0c0",
         bgColor: "rgba(192, 192, 192, 0.15)",
-        pointsToNext: 500 - (loyaltyPoints || 0),
         nextRank: "Gold",
       };
     }
@@ -89,7 +100,6 @@ const UserProfile: React.FC = () => {
         rank: "Bronze",
         color: "#cd7f32",
         bgColor: "rgba(205, 127, 50, 0.15)",
-        pointsToNext: 100 - (loyaltyPoints || 0),
         nextRank: "Silver",
       };
     }
@@ -97,30 +107,17 @@ const UserProfile: React.FC = () => {
       rank: "No Rank",
       color: "#9e9e9e",
       bgColor: "rgba(158, 158, 158, 0.1)",
-      pointsToNext: null,
       nextRank: null,
     };
   };
 
-  const rankInfo = getRankInfo(userProfile?.rank || null);
-
-  useEffect(() => {
-    const fetchLoyaltyPoints = async () => {
-      if (userProfile?._id) {
-        const points = await getLoyaltyPointsByUserId(userProfile._id);
-        setLoyaltyPoints(points);
-      } else {
-        setLoyaltyPoints(null);
-      }
-    };
-    fetchLoyaltyPoints();
-  }, [userProfile?._id, getLoyaltyPointsByUserId]);
+  const rankInfo = getRankInfo(userData?.rank || null);
 
   useEffect(() => {
     const fetchBookingHistory = async () => {
-      if (userProfile?._id) {
+      if (userData?._id) {
         try {
-          const orders = await getOrderByUserId(userProfile._id);
+          const orders = await getOrderByUserId(userData._id);
           setBookingHistory(orders || []);
         } catch (error) {
           setBookingHistory([]);
@@ -128,16 +125,22 @@ const UserProfile: React.FC = () => {
       }
     };
     fetchBookingHistory();
-  }, [userProfile, getOrderByUserId]);
+  }, [userData, getOrderByUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
-      updateCustomer(formData);
+      await updateCustomer(formData);
+      // Refresh userData with updated data
+      if (userProfile?._id) {
+        const data = await getUserByIdFromAPI(userProfile._id);
+        setUserData(data);
+        setLoyaltyPoints(data?.loyalty_points || null);
+      }
       console.log("User profile updated successfully.");
       setIsEditing(false);
     } catch (error) {

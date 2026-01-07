@@ -46,7 +46,7 @@ const Payment: React.FC = () => {
   } = useDiscounts();
   const { createDetailedOrder } = useOrders();
   const { movies } = useMovies();
-  const { getCreditByUserId, getLoyaltyPointsByUserId } = useUsers();
+  const { getUserByIdFromAPI } = useUsers();
   const { createVNPayPayment } = usePayment();
   const [availableDiscounts, setAvailableDiscounts] = useState<DiscountType[]>(
     []
@@ -54,10 +54,7 @@ const Payment: React.FC = () => {
   const [discount, setDiscount] = useState<DiscountType | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [visaFormValid, setVisaFormValid] = useState(false);
-  const [userCredit, setUserCredit] = useState<number | null>(null);
-  const [userLoyaltyPoints, setUserLoyaltyPoints] = useState<number | null>(
-    null
-  );
+  const [userRank, setUserRank] = useState<string | null>(null);
   const [isProcessingVNPay, setIsProcessingVNPay] = useState(false);
   const steps = ["Payment Method", "Pay", "Finish"];
 
@@ -97,17 +94,14 @@ const Payment: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (order?.user_id) {
-        const credit = await getCreditByUserId(order.user_id);
-        const loyaltyPoints = await getLoyaltyPointsByUserId(order.user_id);
-        setUserCredit(credit);
-        setUserLoyaltyPoints(loyaltyPoints);
+        const userData = await getUserByIdFromAPI(order.user_id);
+        setUserRank(userData?.rank || null);
       } else {
-        setUserCredit(null);
-        setUserLoyaltyPoints(null);
+        setUserRank(null);
       }
     };
     fetchUserData();
-  }, [order?.user_id, getCreditByUserId, getLoyaltyPointsByUserId]);
+  }, [order?.user_id, getUserByIdFromAPI]);
 
   useEffect(() => {
     const processVNPayPayment = async () => {
@@ -255,10 +249,13 @@ const Payment: React.FC = () => {
                 variant="body2"
                 sx={{
                   mb: 2,
-                  color: userCredit === null ? "text.disabled" : "text.primary",
+                  color: userRank === null ? "text.disabled" : "text.primary",
                 }}
               >
-                Credit: {userCredit !== null ? userCredit : "-"}
+                Rank:{" "}
+                {userRank !== null
+                  ? userRank.charAt(0).toUpperCase() + userRank.slice(1)
+                  : "-"}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -284,16 +281,20 @@ const Payment: React.FC = () => {
                     // Check if user can use this discount based on rank requirement
                     const canUseRankDiscount = () => {
                       if (!d.rank) return true; // No rank requirement
-                      if (userLoyaltyPoints === null) return false; // User has no loyalty points
+                      if (!userRank) return false; // User has no rank
 
-                      // Define loyalty point thresholds for each rank
-                      const rankThresholds = {
-                        Bronze: 0,
-                        Silver: 100,
-                        Gold: 500,
+                      // Define rank hierarchy
+                      const rankOrder: Record<string, number> = {
+                        bronze: 1,
+                        silver: 2,
+                        gold: 3,
                       };
+                      const userRankLevel =
+                        rankOrder[userRank.toLowerCase()] || 0;
+                      const requiredRankLevel =
+                        rankOrder[d.rank.toLowerCase()] || 0;
 
-                      return userLoyaltyPoints >= rankThresholds[d.rank];
+                      return userRankLevel >= requiredRankLevel;
                     };
 
                     // Ensure disabled is always boolean
