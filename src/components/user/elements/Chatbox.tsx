@@ -23,7 +23,12 @@ const Chatbot: React.FC = () => {
   const [open, setOpen] = useState(false);
   const { sendMessage, loading } = useChatbot();
   const [messages, setMessages] = useState<
-    { sender: "user" | "ai"; text: string; isHtml?: boolean; mentionedMovies?: { id: string; title: string; poster_url: string }[] }[]
+    {
+      sender: "user" | "ai";
+      text: string;
+      isHtml?: boolean;
+      mentionedMovies?: { id: string; title: string; poster_url: string }[];
+    }[]
   >([]);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -101,25 +106,37 @@ const Chatbot: React.FC = () => {
   const handleSend = async (messageText?: string) => {
     const textToSend = messageText || input;
     if (!textToSend.trim()) return;
-    
+
     setMessages((prev) => [...prev, { sender: "user", text: textToSend }]);
     const userInput = textToSend;
     setInput("");
-    
+
     try {
       const response = await sendMessage(userInput);
       // If API returns { reply, mentionedMovies }
       let reply = response.reply ?? response;
       let mentionedMovies = response.mentionedMovies ?? [];
+
+      // Strip markdown code blocks if present
+      if (reply.startsWith("```") && reply.endsWith("```")) {
+        const lines = reply.split("\n");
+        if (lines[0].startsWith("```")) {
+          lines.shift(); // remove opening ```
+        }
+        if (lines[lines.length - 1] === "```") {
+          lines.pop(); // remove closing ```
+        }
+        reply = lines.join("\n").trim();
+      }
+
       const isHtml = /<[^>]+>/.test(reply);
       setMessages((prev) => [
         ...prev,
         {
           sender: "ai",
-          text:
-            isHtml
-              ? enhanceHTML(reply)
-              : reply || "Sorry, I couldn't understand that.",
+          text: isHtml
+            ? enhanceHTML(reply)
+            : reply || "Sorry, I couldn't understand that.",
           isHtml,
           mentionedMovies,
         },
@@ -277,7 +294,9 @@ const Chatbot: React.FC = () => {
                     maxWidth: "80%",
                     fontSize: 14,
                     mb:
-                      msg.mentionedMovies && msg.mentionedMovies.length > 0 ? 1 : 0,
+                      msg.mentionedMovies && msg.mentionedMovies.length > 0
+                        ? 1
+                        : 0,
                   }}
                 >
                   {msg.isHtml ? (
@@ -287,72 +306,86 @@ const Chatbot: React.FC = () => {
                   )}
                 </Box>
                 {/* Show mentioned movies as cards below the AI message, outside the message bubble */}
-                {msg.sender === "ai" && msg.mentionedMovies && msg.mentionedMovies.length > 0 && (
-                  <Box
-                    sx={{
-                      display: 'grid',
-                      gridTemplateColumns: msg.mentionedMovies.length <= 6 ? '1fr 1fr 1fr' : '1fr 1fr 1fr 1fr',
-                      gap: 1,
-                      mt: 1,
-                      mb: 1,
-                      alignSelf: 'flex-start',
-                      width: '100%',
-                    }}
-                  >
-                    {msg.mentionedMovies.map((movie) => (
+                {msg.sender === "ai" &&
+                  msg.mentionedMovies &&
+                  msg.mentionedMovies.length > 0 && (
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          msg.mentionedMovies.length <= 6
+                            ? "1fr 1fr 1fr"
+                            : "1fr 1fr 1fr 1fr",
+                        gap: 1,
+                        mt: 1,
+                        mb: 1,
+                        alignSelf: "flex-start",
+                        width: "100%",
+                      }}
+                    >
+                      {msg.mentionedMovies.map((movie) => (
                         <Paper
-                        key={movie.id}
-                        elevation={2}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          borderRadius: 2,
-                          cursor: 'pointer',
-                          height: 130,
-                          justifyContent: 'flex-end',
-                          '&:hover': {
-                          transform: 'scale(1.04)',
-                          backgroundColor: '#ffe0b2',
-                          },
-                          overflow: 'hidden',
-                        }}
-                        onClick={() => {
-                          navigate(`/user/movie-detail/${movie.id}`);
-                          setOpen(false);
-                        }}
-                        >
-                        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
-                          <img
-                          src={movie.poster_url}
-                          alt={movie.title}
-                          style={{
-                            width: "100%",
-                            objectFit: 'cover',
-                            display: 'block',
-                          }}
-                          />
-                        </Box>
-                        <Typography
-                          variant="caption"
+                          key={movie.id}
+                          elevation={2}
                           sx={{
-                          mt: 0.5,
-                          fontSize: 11,
-                          textAlign: 'center',
-                          fontWeight: 500,
-                          width: '100%',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          maxWidth: 72,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            borderRadius: 2,
+                            cursor: "pointer",
+                            height: 130,
+                            justifyContent: "flex-end",
+                            "&:hover": {
+                              transform: "scale(1.04)",
+                              backgroundColor: "#ffe0b2",
+                            },
+                            overflow: "hidden",
+                          }}
+                          onClick={() => {
+                            navigate(`/user/movie-detail/${movie.id}`);
+                            setOpen(false);
                           }}
                         >
-                          {movie.title}
-                        </Typography>
+                          <Box
+                            sx={{
+                              flex: 1,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: "100%",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <img
+                              src={movie.poster_url}
+                              alt={movie.title}
+                              style={{
+                                width: "100%",
+                                objectFit: "cover",
+                                display: "block",
+                              }}
+                            />
+                          </Box>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              mt: 0.5,
+                              fontSize: 11,
+                              textAlign: "center",
+                              fontWeight: 500,
+                              width: "100%",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxWidth: 72,
+                            }}
+                          >
+                            {movie.title}
+                          </Typography>
                         </Paper>
-                    ))}
-                  </Box>
-                )}
+                      ))}
+                    </Box>
+                  )}
               </React.Fragment>
             ))}
             <div ref={chatEndRef} />
@@ -404,9 +437,7 @@ const Chatbot: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              endIcon={
-                loading ? <CircularProgress size={18} /> : <SendIcon />
-              }
+              endIcon={loading ? <CircularProgress size={18} /> : <SendIcon />}
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
               sx={{ minWidth: 48, px: 2 }}
